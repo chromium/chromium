@@ -23,6 +23,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/side_panel_history_resources.h"
+#include "chrome/grit/side_panel_history_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -81,12 +83,23 @@ HistorySidePanelUI::HistorySidePanelUI(content::WebUI* web_ui)
           history_embeddings::GetFeatureParameters().enable_side_panel);
   history_embeddings::PopulateSourceForWebUI(source, profile);
 
+  webui::SetupWebUIDataSource(source, kSidePanelHistoryResources,
+                              IDR_SIDE_PANEL_HISTORY_HISTORY_HTML);
+
   source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 HistorySidePanelUI::~HistorySidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistorySidePanelUI)
+
+void HistorySidePanelUI::BindInterface(
+    mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler) {
+  browsing_history_handler_ = std::make_unique<BrowsingHistoryHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents());
+  browsing_history_handler_->SetSidePanelUIEmbedder(this->embedder());
+}
 
 void HistorySidePanelUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
