@@ -242,11 +242,11 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillPredictionImprovementsFeature:
+  // kIPHAutofillAiOptInFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHAutofillPredictionImprovementsFeature,
-          autofill::PopupViewViews::kAutofillPredictionImprovementsIphElementId,
+          feature_engagement::kIPHAutofillAiOptInFeature,
+          autofill::PopupViewViews::kAutofillAiOptInIphElementId,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS,
           base::BindRepeating(
@@ -261,12 +261,12 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(131, "brunobraga@google.com",
+          .SetMetadata(136, "brunobraga@google.com",
                        "Displayed on input fields that are eligible for "
-                       "improved predictions. These can be input fields on any "
-                       "website, as long as the page and field supports the "
-                       "feature. The IPH is displayed when the user clicks on "
-                       "such input field and is anchored against it.")));
+                       "AutofillAI. These can be input fields on any website "
+                       "as long as the field has AutofillAI predictions. "
+                       "The IPH is displayed when the user clicks on such an "
+                       "input field and is anchored against it.")));
 
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
