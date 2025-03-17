@@ -91,8 +91,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) override;
   bool IsRelatedWebsiteSetsDataAccessEnabled() const override;
   bool IsRelatedWebsiteSetsDataAccessManaged() const override;
-  base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleRelatedWebsiteSets() const override;
   std::optional<net::SchemefulSite> GetRelatedWebsiteSetOwner(
       const GURL& site_url) const override;
   std::optional<std::u16string> GetRelatedWebsiteSetOwnerForDisplay(

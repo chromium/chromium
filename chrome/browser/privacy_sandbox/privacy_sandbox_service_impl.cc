@@ -1295,29 +1295,6 @@ void PrivacySandboxServiceImpl::RecordPromptStartupStateHistograms(
   }
 }
 
-base::flat_map<net::SchemefulSite, net::SchemefulSite>
-PrivacySandboxServiceImpl::GetSampleRelatedWebsiteSets() const {
-  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
-      IsRelatedWebsiteSetsDataAccessEnabled()) {
-    return {{net::SchemefulSite(GURL("https://youtube.com")),
-             net::SchemefulSite(GURL("https://google.com"))},
-            {net::SchemefulSite(GURL("https://google.com")),
-             net::SchemefulSite(GURL("https://google.com"))},
-            {net::SchemefulSite(GURL("https://google.com.au")),
-             net::SchemefulSite(GURL("https://google.com"))},
-            {net::SchemefulSite(GURL("https://google.de")),
-             net::SchemefulSite(GURL("https://google.com"))},
-            {net::SchemefulSite(GURL("https://chromium.org")),
-             net::SchemefulSite(GURL("https://chromium.org"))},
-            {net::SchemefulSite(GURL("https://googlesource.com")),
-             net::SchemefulSite(GURL("https://chromium.org"))},
-            {net::SchemefulSite(GURL("https://muenchen.de")),
-             net::SchemefulSite(GURL("https://xn--mnchen-3ya.de"))}};
-  }
-
-  return {};
-}
-
 std::optional<net::SchemefulSite>
 PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
     const GURL& site_url) const {
@@ -1328,21 +1305,6 @@ PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
         base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
     return std::nullopt;
-  }
-
-  // Return the owner according to the sample sets if they're provided.
-  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite> sets =
-        GetSampleRelatedWebsiteSets();
-    net::SchemefulSite schemeful_site(site_url);
-
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>::const_iterator
-        site_entry = sets.find(schemeful_site);
-    if (site_entry == sets.end()) {
-      return std::nullopt;
-    }
-
-    return site_entry->second;
   }
 
   std::optional<net::FirstPartySetEntry> site_entry =
@@ -1368,12 +1330,6 @@ PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwnerForDisplay(
 
 bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(
     const net::SchemefulSite& site) const {
-  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
-    return IsRelatedWebsiteSetsDataAccessManaged() ||
-           GetSampleRelatedWebsiteSets()[site].IsSameSiteWith(
-               GURL("https://chromium.org"));
-  }
-
   return first_party_sets_policy_service_->IsSiteInManagedSet(site);
 }
 
