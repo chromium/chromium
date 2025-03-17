@@ -12,6 +12,12 @@ namespace ash {
 
 // Helper class to switch implementation of TokenHandleStore depending
 // on feature flag state.
+// TokenHandleStoreFactory just switches the returned implementation by either
+// creating a TokenHandleUtil or returning the global instance of
+// TokenHandleStoreImpl.
+// This class is temporary, and will be removed once we completely migrate to
+// TokenHandleStoreImpl.
+// TODO(b/387248794): Remove as part of cleanup.
 class TokenHandleStoreFactory {
  public:
   TokenHandleStoreFactory(const TokenHandleStoreFactory&) = delete;
