@@ -247,8 +247,8 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHAutofillAiOptInFeature,
           autofill::PopupViewViews::kAutofillAiOptInIphElementId,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS,
+          IDS_AUTOFILL_AI_OPT_IN_IPH_BODY,
+          IDS_AUTOFILL_AI_OPT_IN_IPH_GO_TO_SETTINGS,
           base::BindRepeating(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -259,7 +259,7 @@ void MaybeRegisterChromeFeaturePromos(
                 chrome::ShowSettingsSubPage(browser,
                                             chrome::kAutofillAiSubPage);
               }))
-          .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
+          .SetBubbleTitleText(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(136, "brunobraga@google.com",
                        "Displayed on input fields that are eligible for "
