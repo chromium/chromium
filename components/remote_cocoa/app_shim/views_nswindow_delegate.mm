@@ -153,7 +153,12 @@
   return resizedWindowRect.size().ToCGSize();
 }
 
+- (void)windowWillStartLiveResize:(NSNotification*)notification {
+  _parent->OnWindowWillStartLiveResize();
+}
+
 - (void)windowDidEndLiveResize:(NSNotification*)notification {
+  _parent->OnWindowDidEndLiveResize();
   _resizingHorizontally.reset();
 }
 
