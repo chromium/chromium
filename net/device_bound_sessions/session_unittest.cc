@@ -126,6 +126,20 @@ TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
             SessionError::ErrorType::kScopeOriginSameSiteMismatch);
 }
 
+TEST_F(SessionTest, ScopeOriginPrivateRegistryChildDomainSameSiteMismatch) {
+  // Since appspot.com is on the Public Suffix List (with private registries
+  // included), it should not be possible for any of its child domains to
+  // create a session on the parent domain.
+  auto params = CreateValidParams();
+  params.fetcher_url = GURL("https://example.appspot.com/refresh");
+  params.refresh_url = "https://example.appspot.com/refresh";
+  params.scope.origin = "https://appspot.com";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kScopeOriginSameSiteMismatch);
+}
+
 TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = kUrlStringForWrongETLD;
