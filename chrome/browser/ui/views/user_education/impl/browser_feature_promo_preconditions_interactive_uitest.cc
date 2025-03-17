@@ -372,8 +372,11 @@ IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        ReturnsBlockedAfterKeyPress) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId), Check([this]() {
-        return ui_test_utils::SendKeyPressSync(
-            browser(), ui::KeyboardCode::VKEY_A, false, false, false, false);
+        // Use a keypress that is is not an accelerator but won't open the
+        // omnibox.
+        return ui_test_utils::SendKeyPressSync(browser(),
+                                               ui::KeyboardCode::VKEY_SPACE,
+                                               false, false, false, false);
       }),
       CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
       Advance(less_than_activity_time_),

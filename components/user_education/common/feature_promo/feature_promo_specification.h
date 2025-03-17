@@ -8,6 +8,7 @@
 #include <functional>
 #include <initializer_list>
 #include <optional>
+#include <set>
 #include <string>
 #include <variant>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/anchor_element_provider.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
@@ -565,6 +567,15 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     return additional_conditions_;
   }
 
+  // Sets exempt preconditions. Only has an effect in UE2.5; requires
+  // allowlisting; use sparingly. Note that only certain preconditions may be
+  // exempted; attempting to exempt other preconditions will have no effect.
+  FeaturePromoSpecification& AddPreconditionExemption(
+      FeaturePromoPrecondition::Identifier exempt_precondition);
+  bool is_exempt_from(FeaturePromoPrecondition::Identifier precondition) const {
+    return exempt_preconditions_.contains(precondition);
+  }
+
   // Sets the metadata for this promotion.
   FeaturePromoSpecification& SetMetadata(Metadata metadata);
   const Metadata& metadata() const { return metadata_; }
@@ -692,6 +703,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
 
   // Additional conditions describing when the promo can show.
   AdditionalConditions additional_conditions_;
+
+  // Preconditions this promo is exempt from. Requires explicit allowlisting.
+  std::set<FeaturePromoPrecondition::Identifier> exempt_preconditions_;
 
   // For rotating promos, maintain a list of sub-promos.
   RotatingPromos rotating_promos_;
