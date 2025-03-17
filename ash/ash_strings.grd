@@ -5055,9 +5055,6 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when pin is the only auth method.">
         PIN
       </message>
-      <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when both password and pin are allowed.">
-        PIN or password
-      </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME" desc="The accessible name of the pin input field used for PIN Auto-submit">
         Enter your PIN
       </message>
@@ -5077,9 +5074,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_LOGIN_SWITCH_TO_PIN" desc="Text to display on the button that is used for switching between PIN and password authentication">
         Switch to PIN
-      </message>
-      <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because PIN or password is invalid">
-        Your PIN or password couldn't be verified. Try again.
       </message>
       <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PIN" desc="Couldn't sign in because PIN is invalid">
         Your PIN couldn't be verified. Try again.
