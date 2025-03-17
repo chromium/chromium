@@ -2,12 +2,15 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file. */
 
-
 body {
   --custodian-name-color: #333333;
   --custodian-email-color: #5f6368;
   --paragraph-color: var(--google-gray-700);
   font-family: 'Roboto', sans-serif;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 button {
@@ -76,7 +79,7 @@ p {
   flex-direction: row-reverse;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  margin: 40px -12px;
+  margin: 51px 0;
 }
 
 .go-back-button {
@@ -223,7 +226,7 @@ iframes. */
     flex-direction: column;
     justify-content: center;
     margin: auto 0 28px;
-    padding-top: 16px;
+    padding: 16px 0;
   }
 
   .go-back-button {
@@ -231,27 +234,10 @@ iframes. */
   }
 }
 
-/* Short version, primarily targeting iframes. */
-@media (max-height: 300px) {
-  #error-page-illustration,
-  #custodians-information {
-    display: none;
-  }
-
-  .message-container {
-    margin-top: 0;
-  }
-}
-
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
+/* Short version for landscape mode on mobile. */
+@media (min-height: 301px) and (max-height: 400px) and (min-width:481px) {
   .frame-blocked {
-    background-color: initial;
-  }
-}
-
-@media (max-height: 400px) {
-  .frame-blocked {
-    margin-top: 4vh;
+    margin-top: 6vh;
   }
 
   #main-message {
@@ -259,6 +245,29 @@ iframes. */
   }
 
   .button-container {
-    margin: 30px 0;
+    margin: 8vh 0;
+  }
+}
+
+/* Short version, primarily targeting iframes. */
+@media (max-height: 300px) {
+  #error-page-illustration,
+  #waiting-for-approval-illustration,
+  #custodians-information {
+    display: none;
+  }
+
+  .message-container {
+    margin-top: 0;
+  }
+
+  .button-container {
+    margin: 8vh 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+  .frame-blocked {
+    background-color: initial;
   }
 }
