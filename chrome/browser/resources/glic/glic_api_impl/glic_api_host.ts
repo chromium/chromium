@@ -492,7 +492,10 @@ class OneShotTimer {
   // Cancels any running timer, starts a new one. Callback is only
   // run if the timer is not reset first.
   start(callback: () => void): void {
-    this.startPromise().then(callback);
+    this.startPromise().then(callback).catch(
+        () => {
+            // Catch and ignore timer reset.
+        });
   }
 
   // Cancels any running timer, starts a new one. Resolves when
@@ -614,7 +617,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
           const timeoutPromise = new Promise((_, reject) => {
             timeoutId = setTimeout(
                 () => reject(
-                    new Error('No response received within the timeout.')),
+                    new Error('No response received from Glic web client.')),
                 timeoutMs);
           });
 
@@ -644,11 +647,12 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
   }
 
-  async startUnresponsiveUiTimer() {
-    await this.webClientUnresponsiveUiTimer.startPromise();
-    this.webClientState = WebClientState.ERROR;
-    this.embedder?.webClientStateChanged(WebClientState.ERROR);
-    this.stopWebClientResponsivenessCheck();
+  startUnresponsiveUiTimer() {
+    this.webClientUnresponsiveUiTimer.start(() => {
+      this.webClientState = WebClientState.ERROR;
+      this.embedder?.webClientStateChanged(WebClientState.ERROR);
+      this.stopWebClientResponsivenessCheck();
+    });
   }
 
   stopUnresponsiveUiTimer() {
