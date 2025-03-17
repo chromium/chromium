@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/page_info/about_this_site_tab_helper.h"
+#import "ios/chrome/browser/page_info/model/about_this_site_tab_helper.h"
 
 #import <string>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_TAB_HELPER_H_
 
 #import "base/memory/raw_ptr.h"
 #import "components/optimization_guide/core/optimization_guide_decision.h"
@@ -72,4 +72,4 @@ class AboutThisSiteTabHelper
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_TAB_HELPER_H_

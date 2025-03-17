@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
+#import "ios/chrome/browser/page_info/model/about_this_site_service_factory.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "components/page_info/core/about_this_site_service.h"
