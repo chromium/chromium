@@ -19858,8 +19858,7 @@
                         "throttle-frame-rate-on-initialization": "true"
                     },
                     "enable_features": [
-                        "RenderBlockingFullFrameRate",
-                        "RenderThrottleFrameRate"
+                        "RenderBlockingFullFrameRate"
                     ]
                 }
             ]
