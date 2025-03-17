@@ -351,13 +351,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         Runnable openManageSharingRunnable =
                 () -> {
                     // TODO(crbug.com/379148260): Use shared #isCollaborationIdValid.
-                    if (!TextUtils.isEmpty(collaborationId)) {
-                        dataSharingTabManager.createOrManageFlow(
-                                activity,
-                                syncId,
-                                new LocalTabGroupId(localId),
-                                /* createGroupFinishedCallback= */ null);
-                    }
+                    if (TextUtils.isEmpty(collaborationId)) return;
+                    if (mTabGroupSyncService.getGroup(syncId) == null) return;
+
+                    dataSharingTabManager.createOrManageFlow(
+                            activity,
+                            syncId,
+                            new LocalTabGroupId(localId),
+                            /* createGroupFinishedCallback= */ null);
                 };
 
         fetchAvatarIconFromMessage(
