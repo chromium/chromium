@@ -19,7 +19,7 @@
 @protocol PageInfoCommands;
 @protocol PopupMenuActionHandlerDelegate;
 @protocol PopupMenuCommands;
-@protocol PriceNotificationsCommands;
+@protocol PriceTrackedItemsCommands;
 @protocol QRScannerCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
@@ -39,7 +39,7 @@ class WebNavigationBrowserAgent;
                               BrowserCommands,
                               FindInPageCommands,
                               LoadQueryCommands,
-                              PriceNotificationsCommands,
+                              PriceTrackedItemsCommands,
                               TextZoomCommands>
     dispatcher;
 

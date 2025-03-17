@@ -49,7 +49,7 @@
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
@@ -305,7 +305,7 @@ using base::UserMetricsAction;
     mediator.popupMenuHandler =
         HandlerForProtocol(dispatcher, PopupMenuCommands);
     mediator.priceNotificationHandler =
-        HandlerForProtocol(dispatcher, PriceNotificationsCommands);
+        HandlerForProtocol(dispatcher, PriceTrackedItemsCommands);
     mediator.reminderNotificationsHandler =
         HandlerForProtocol(dispatcher, ReminderNotificationsCommands);
     mediator.textZoomHandler = HandlerForProtocol(dispatcher, TextZoomCommands);
@@ -450,7 +450,7 @@ using base::UserMetricsAction;
   self.actionHandler.baseViewController = self.baseViewController;
   self.actionHandler.dispatcher = static_cast<
       id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-         LoadQueryCommands, PriceNotificationsCommands, TextZoomCommands>>(
+         LoadQueryCommands, PriceTrackedItemsCommands, TextZoomCommands>>(
       self.browser->GetCommandDispatcher());
   self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);

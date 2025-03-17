@@ -41,7 +41,7 @@ class OverlayPresenter;
 @protocol PageInfoCommands;
 @protocol PopupMenuCommands;
 class PrefService;
-@protocol PriceNotificationsCommands;
+@protocol PriceTrackedItemsCommands;
 class PromosManager;
 @protocol QuickDeleteCommands;
 class ReadingListBrowserAgent;
@@ -81,7 +81,7 @@ class WebStateList;
     overflowMenuCustomizationHandler;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuHandler;
-@property(nonatomic, weak) id<PriceNotificationsCommands>
+@property(nonatomic, weak) id<PriceTrackedItemsCommands>
     priceNotificationHandler;
 @property(nonatomic, weak) id<ReminderNotificationsCommands>
     reminderNotificationsHandler;
