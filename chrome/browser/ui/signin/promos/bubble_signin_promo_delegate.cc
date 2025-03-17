@@ -31,6 +31,8 @@ syncer::DataType GetDataTypeFromAccessPoint(
       return syncer::PASSWORDS;
     case signin_metrics::AccessPoint::kAddressBubble:
       return syncer::CONTACT_INFO;
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+      return syncer::BOOKMARKS;
     default:
       NOTREACHED();
   }
@@ -108,6 +110,15 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
   // sign in event in that case.
   if (!sign_in_tab_contents) {
+    return;
+  }
+
+  // Non-autofill types are already saved to pending account storage in sign in
+  // pending state and will automatically be uploaded after the user completes
+  // the sign in, so there is no need to wait for a sign in event with the
+  // correct access point.
+  if (!signin::IsAutofillSigninPromo(access_point_) &&
+      signed_in_state == signin_util::SignedInState::kSignInPending) {
     return;
   }
 

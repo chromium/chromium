@@ -33,6 +33,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleOkButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolderFieldId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkNameFieldId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkSecondaryButtonId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleFrameViewId);
 
 // BookmarkBubbleView provides a dialog for unstarring and editing the bookmark
 // it is created with. The dialog is created using the static ShowBubble method.

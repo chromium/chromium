@@ -242,11 +242,14 @@
   </if>
   <!-- End of Bookmarks Bubble strings. -->
 
-  <!-- Begin of Bookmarks Sync Promo strings for Desktop Identity Consistency. -->
+  <!-- Begin of Bookmarks Promo strings for Desktop Identity Consistency. -->
   <message name="IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE" desc="Text of the sync promo displayed at the bottom of the bookmark bubble asking the user to enable sync.">
     To get your bookmarks on all your devices, turn on sync.
   </message>
-  <!-- End of Bookmarks Sync Promo strings for Desktop Identity Consistency. -->
+  <message name="IDS_BOOKMARK_VERIFY_PROMO_SUBTITLE" desc="This is the body text of a confirmation message and means that the bookmark is in an account-pending storage. In other words, it's waiting to be uploaded to the user's Google Account. It appears when the user was signed in to Chrome with account storage for bookmarks enabled but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Bookmark added' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
+    To get this bookmark on all your devices, verify it's you
+  </message>
+  <!-- End of Bookmarks Promo strings for Desktop Identity Consistency. -->
 
   <!-- Begin of Desktop to iOS Promo strings. -->
   <if expr="is_win">

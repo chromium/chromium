@@ -114,6 +114,15 @@ TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithoutExplicitSignin) {
       IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
 }
 
+TEST(SigninPromoTest, IsSignInPromo_BookmarksWithExplicitSignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
+      /*disabled_features=*/{});
+
+  EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
+}
+
 TEST(SigninPromoTest, IsSignInPromo_BookmarksWithoutExplicitSignin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
