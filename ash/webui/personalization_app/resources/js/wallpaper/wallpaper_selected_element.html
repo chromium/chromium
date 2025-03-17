@@ -183,7 +183,10 @@
       </google-photos-shared-album-dialog>
     </template>
     <template is="dom-if" if="[[showDescriptionDialog_]]" restamp>
-      <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>
+      <cr-dialog aria-description-text="[[image_.descriptionContent]]"
+          id="descriptionDialog"
+          on-close="closeDescriptionDialog_"
+          show-on-attach>
         <h3 slot="title" id="descriptionDialogTitle">[[image_.descriptionTitle]]</h3>
         <p slot="body" id="descriptionDialogBody">[[image_.descriptionContent]]</p>
         <div slot="button-container">
