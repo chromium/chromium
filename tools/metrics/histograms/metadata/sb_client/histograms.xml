@@ -109,8 +109,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CancelEphemeralWarning"
-    enum="CancelEphemeralWarningEvent" expires_after="2025-03-30">
-  <owner>xinghuilu@chromium.org</owner>
+    enum="CancelEphemeralWarningEvent" expires_after="2025-09-30">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the events related to ephemeral warning cancellation. Compare the
