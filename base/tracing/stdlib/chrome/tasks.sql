@@ -4,77 +4,95 @@
 
 -- Checks if slice has an ancestor with provided name.
 CREATE PERFETTO FUNCTION _has_parent_slice_with_name(
-  -- Id of the slice to check parents of.
-  id LONG,
-  -- Name of potential ancestor slice.
-  parent_name STRING)
+    -- Id of the slice to check parents of.
+    id LONG,
+    -- Name of potential ancestor slice.
+    parent_name STRING
+)
 -- Whether `parent_name` is a name of an ancestor slice.
 RETURNS BOOL AS
-SELECT EXISTS(
-  SELECT 1
-  FROM ancestor_slice($id)
-  WHERE name = $parent_name
-  LIMIT 1
-);
+SELECT
+  EXISTS(
+    SELECT
+      1
+    FROM ancestor_slice($id)
+    WHERE
+      name = $parent_name
+    LIMIT 1
+  );
 
 -- Returns the mojo ipc hash for a given task, looking it up from the
 -- argument of descendant ScopedSetIpcHash slice.
 -- This is relevant only for the older Chrome traces, where mojo IPC
 -- hash was reported in a separate ScopedSetIpcHash slice.
-CREATE PERFETTO FUNCTION _extract_mojo_ipc_hash(slice_id LONG)
+CREATE PERFETTO FUNCTION _extract_mojo_ipc_hash(
+    slice_id LONG
+)
 RETURNS LONG AS
-SELECT EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.ipc_hash")
+SELECT
+  extract_arg(arg_set_id, "chrome_mojo_event_info.ipc_hash")
 FROM descendant_slice($slice_id)
-WHERE name="ScopedSetIpcHash"
-ORDER BY id
+WHERE
+  name = "ScopedSetIpcHash"
+ORDER BY
+  id
 LIMIT 1;
 
 -- Returns the frame type (main frame vs subframe) for key navigation tasks
 -- which capture the associated RenderFrameHost in an argument.
-CREATE PERFETTO FUNCTION _extract_frame_type(slice_id LONG)
-RETURNS LONG AS
-SELECT EXTRACT_ARG(arg_set_id, "render_frame_host.frame_type")
-FROM descendant_slice($slice_id)
-WHERE name IN (
-  "RenderFrameHostImpl::BeginNavigation",
-  "RenderFrameHostImpl::DidCommitProvisionalLoad",
-  "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
-  "RenderFrameHostImpl::DidStopLoading"
+CREATE PERFETTO FUNCTION _extract_frame_type(
+    slice_id LONG
 )
+RETURNS LONG AS
+SELECT
+  extract_arg(arg_set_id, "render_frame_host.frame_type")
+FROM descendant_slice($slice_id)
+WHERE
+  name IN ("RenderFrameHostImpl::BeginNavigation", "RenderFrameHostImpl::DidCommitProvisionalLoad", "RenderFrameHostImpl::DidCommitSameDocumentNavigation", "RenderFrameHostImpl::DidStopLoading")
 LIMIT 1;
 
 -- Human-readable aliases for a few key navigation tasks.
 CREATE PERFETTO FUNCTION _human_readable_navigation_task_name(
-  task_name STRING)
+    task_name STRING
+)
 RETURNS STRING AS
 SELECT
   CASE
     WHEN $task_name = "content.mojom.FrameHost message (hash=2168461044)"
-      THEN "FrameHost::BeginNavigation"
+    THEN "FrameHost::BeginNavigation"
     WHEN $task_name = "content.mojom.FrameHost message (hash=3561497419)"
-      THEN "FrameHost::DidCommitProvisionalLoad"
+    THEN "FrameHost::DidCommitProvisionalLoad"
     WHEN $task_name = "content.mojom.FrameHost message (hash=1421450774)"
-      THEN "FrameHost::DidCommitSameDocumentNavigation"
+    THEN "FrameHost::DidCommitSameDocumentNavigation"
     WHEN $task_name = "content.mojom.FrameHost message (hash=368650583)"
-      THEN "FrameHost::DidStopLoading"
+    THEN "FrameHost::DidStopLoading"
   END;
 
 -- Takes a task name and formats it correctly for scheduler tasks.
-CREATE PERFETTO FUNCTION _format_scheduler_task_name(task_name STRING)
+CREATE PERFETTO FUNCTION _format_scheduler_task_name(
+    task_name STRING
+)
 RETURNS STRING AS
-SELECT printf("RunTask(posted_from=%s)", $task_name);
+SELECT
+  printf("RunTask(posted_from=%s)", $task_name);
 
 -- Takes the category and determines whether it is "Java" only, as opposed to
 -- "toplevel,Java".
-CREATE PERFETTO FUNCTION _java_not_top_level_category(category STRING)
+CREATE PERFETTO FUNCTION _java_not_top_level_category(
+    category STRING
+)
 RETURNS BOOL AS
-SELECT $category GLOB "*Java*" AND $category not GLOB "*toplevel*";
+SELECT
+  $category GLOB "*Java*" AND NOT $category GLOB "*toplevel*";
 
 -- Takes the category and determines whether is any valid
 -- toplevel category or combination of categories.
-CREATE PERFETTO FUNCTION _any_top_level_category(category STRING)
+CREATE PERFETTO FUNCTION _any_top_level_category(
+    category STRING
+)
 RETURNS BOOL AS
-SELECT $category IN ("toplevel", "toplevel,viz", "toplevel,Java");
+SELECT
+  $category IN ("toplevel", "toplevel,viz", "toplevel,Java");
 
 -- TODO(altimin): the situations with kinds in this file is a bit of a mess.
 -- The idea is that it should work as `type` in the `slice` table, pointing to
@@ -84,12 +102,16 @@ SELECT $category IN ("toplevel", "toplevel,viz", "toplevel,Java");
 -- `CREATE PERFETTO TABLE`.
 
 -- Get task type for a given task kind.
-CREATE PERFETTO FUNCTION _get_java_views_task_type(kind STRING)
+CREATE PERFETTO FUNCTION _get_java_views_task_type(
+    kind STRING
+)
 RETURNS STRING AS
 SELECT
   CASE $kind
-    WHEN "Choreographer" THEN "choreographer"
-    WHEN "SingleThreadProxy::BeginMainFrame" THEN "ui_thread_begin_main_frame"
+    WHEN "Choreographer"
+    THEN "choreographer"
+    WHEN "SingleThreadProxy::BeginMainFrame"
+    THEN "ui_thread_begin_main_frame"
   END;
 
 -- All slices corresponding to receiving mojo messages.
@@ -107,62 +129,72 @@ SELECT
 -- TODO(altimin): This should use EXTEND_TABLE when it becomes available.
 CREATE PERFETTO TABLE _chrome_mojo_slices AS
 WITH
--- Select all new-style (post crrev.com/c/3270337) mojo slices and
--- generate |task_name| for them.
--- If extended tracing is enabled, the slice name will have the full method
--- name (i.e. "Receive content::mojom::FrameHost::DidStopLoading") and we
--- should use it as a full name.
--- If extended tracing is not enabled, we should include the interface name
--- and method hash into the full name.
-new_mojo_slices AS (
-  SELECT
-    EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.mojo_interface_tag") AS interface_name,
-    EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.ipc_hash") AS ipc_hash,
-    CASE name
-      WHEN "Receive mojo message" THEN "message"
-      WHEN "Receive mojo reply" THEN "reply"
-    END AS message_type,
-    id
-  FROM slice
-  WHERE
-    category GLOB '*toplevel*'
-    AND name GLOB 'Receive *'
-),
--- Select old-style slices for channel-associated mojo events.
-old_associated_mojo_slices AS (
-  SELECT
-    name AS interface_name,
-    _extract_mojo_ipc_hash(id) AS ipc_hash,
-    "message" AS message_type,
-    id
-  FROM slice
-  WHERE
-    category GLOB "*mojom*"
-    AND name GLOB '*.mojom.*'
-),
--- Select old-style slices for non-(channel-associated) mojo events.
-old_non_associated_mojo_slices AS (
-  SELECT
-    COALESCE(
-      EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.watcher_notify_interface_tag"),
-      EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.mojo_interface_tag")
-    ) AS interface_name,
-    _extract_mojo_ipc_hash(id) AS ipc_hash,
-    "message" AS message_type,
-    id
-  FROM slice
-  WHERE
-    category GLOB "*toplevel*" AND name = "Connector::DispatchMessage"
-),
-merged AS (
--- Merge all mojo slices.
-SELECT * FROM new_mojo_slices
-UNION ALL
-SELECT * FROM old_associated_mojo_slices
-UNION ALL
-SELECT * FROM old_non_associated_mojo_slices
-)
-SELECT * FROM merged ORDER BY id;
+  -- Select all new-style (post crrev.com/c/3270337) mojo slices and
+  -- generate |task_name| for them.
+  -- If extended tracing is enabled, the slice name will have the full method
+  -- name (i.e. "Receive content::mojom::FrameHost::DidStopLoading") and we
+  -- should use it as a full name.
+  -- If extended tracing is not enabled, we should include the interface name
+  -- and method hash into the full name.
+  new_mojo_slices AS (
+    SELECT
+      extract_arg(arg_set_id, "chrome_mojo_event_info.mojo_interface_tag") AS interface_name,
+      extract_arg(arg_set_id, "chrome_mojo_event_info.ipc_hash") AS ipc_hash,
+      CASE name
+        WHEN "Receive mojo message"
+        THEN "message"
+        WHEN "Receive mojo reply"
+        THEN "reply"
+      END AS message_type,
+      id
+    FROM slice
+    WHERE
+      category GLOB '*toplevel*' AND name GLOB 'Receive *'
+  ),
+  -- Select old-style slices for channel-associated mojo events.
+  old_associated_mojo_slices AS (
+    SELECT
+      name AS interface_name,
+      _extract_mojo_ipc_hash(id) AS ipc_hash,
+      "message" AS message_type,
+      id
+    FROM slice
+    WHERE
+      category GLOB "*mojom*" AND name GLOB '*.mojom.*'
+  ),
+  -- Select old-style slices for non-(channel-associated) mojo events.
+  old_non_associated_mojo_slices AS (
+    SELECT
+      coalesce(
+        extract_arg(arg_set_id, "chrome_mojo_event_info.watcher_notify_interface_tag"),
+        extract_arg(arg_set_id, "chrome_mojo_event_info.mojo_interface_tag")
+      ) AS interface_name,
+      _extract_mojo_ipc_hash(id) AS ipc_hash,
+      "message" AS message_type,
+      id
+    FROM slice
+    WHERE
+      category GLOB "*toplevel*" AND name = "Connector::DispatchMessage"
+  ),
+  merged AS (
+    -- Merge all mojo slices.
+    SELECT
+      *
+    FROM new_mojo_slices
+    UNION ALL
+    SELECT
+      *
+    FROM old_associated_mojo_slices
+    UNION ALL
+    SELECT
+      *
+    FROM old_non_associated_mojo_slices
+  )
+SELECT
+  *
+FROM merged
+ORDER BY
+  id;
 
 -- This table contains a list of slices corresponding to the _representative_
 -- Chrome Java view operations.
@@ -179,82 +211,70 @@ SELECT * FROM merged ORDER BY id;
 --                                      capture toolbar screenshot.
 CREATE PERFETTO TABLE _chrome_java_views AS
 WITH
--- .draw, .onLayout and .onMeasure parts of the java view names don't add much, strip them.
-java_slices_with_trimmed_names AS (
-  SELECT
-    id,
-    REPLACE(
-      REPLACE(
-        REPLACE(
-          REPLACE(
-            REPLACE(
-              s1.name,
-              ".draw", ""),
-            ".onLayout", ""),
-          ".onMeasure", ""),
-        ".Layout", ""),
-      ".Measure", "") AS name,
+  -- .draw, .onLayout and .onMeasure parts of the java view names don't add much, strip them.
+  java_slices_with_trimmed_names AS (
+    SELECT
+      id,
+      replace(
+        replace(
+          replace(replace(replace(s1.name, ".draw", ""), ".onLayout", ""), ".onMeasure", ""),
+          ".Layout",
+          ""
+        ),
+        ".Measure",
+        ""
+      ) AS name,
       ts,
       dur
-    FROM
-      slice s1
+    FROM slice AS s1
     -- Ensure that toplevel Java slices are not included, as they may be logged
     -- with either category = "toplevel" or category = "toplevel,Java".
     -- Also filter out the zero duration slices as an attempt to reduce noise as
     -- "Java" category contains misc events (as it's hard to add new categories).
-    WHERE _java_not_top_level_category(category) AND dur > 0
+    WHERE
+      _java_not_top_level_category(category) AND dur > 0
   ),
   -- We filter out generic slices from various UI frameworks which don't tell us much about
   -- what exactly this view is doing.
   interesting_java_slices AS (
     SELECT
-      id, name, ts, dur
+      id,
+      name,
+      ts,
+      dur
     FROM java_slices_with_trimmed_names
-    WHERE NOT name IN (
-      -- AndroidX.
-      "FitWindowsFrameLayout",
-      "FitWindowsLinearLayout",
-      "ContentFrameLayout",
-      "CoordinatorLayout",
-      -- Other non-Chrome UI libraries.
-      "ComponentHost",
-      -- Generic Chrome frameworks.
-      "CompositorView:finalizeLayers",
-      "CompositorViewHolder",
-      "CompositorViewHolder:layout",
-      "CompositorViewHolder:updateContentViewChildrenDimension",
-      "CoordinatorLayoutForPointer",
-      "OptimizedFrameLayout",
-      "ViewResourceAdapter:getBitmap",
-      "ViewResourceFrameLayout",
-      -- Non-specific Chrome slices.
-      "AppCompatImageButton",
-      "ScrollingBottomViewResourceFrameLayout",
-      -- Screenshots get their custom annotations below.
-      "ViewResourceAdapter:captureWithHardwareDraw",
-      "ViewResourceAdapter:captureWithSoftwareDraw",
-      -- Non-bytecode generated slices.
-      "LayoutDriver:onUpdate"
-    )
-)
+    -- The names below correspond respectively to:
+    -- * AndroidX.
+    -- * Other non-Chrome UI libraries.
+    -- * Generic Chrome frameworks.
+    -- * Non-specific Chrome slices.
+    -- * Screenshots custom annotations.
+    -- * Non-bytecode generated slices.
+    WHERE
+      NOT name IN ("FitWindowsFrameLayout", "FitWindowsLinearLayout", "ContentFrameLayout", "CoordinatorLayout")
+      AND NOT name IN ("ComponentHost")
+      AND NOT name IN ("CompositorView:finalizeLayers", "CompositorViewHolder", "CompositorViewHolder:layout", "CompositorViewHolder:updateContentViewChildrenDimension", "CoordinatorLayoutForPointer", "OptimizedFrameLayout", "ViewResourceAdapter:getBitmap", "ViewResourceFrameLayout")
+      AND NOT name IN ("AppCompatImageButton", "ScrollingBottomViewResourceFrameLayout")
+      AND NOT name IN ("ViewResourceAdapter:captureWithHardwareDraw", "ViewResourceAdapter:captureWithSoftwareDraw")
+      AND NOT name IN ("LayoutDriver:onUpdate")
+  )
 SELECT
   s1.*,
   -- While the parent slices are too generic to be used by themselves,
   -- they can provide some useful metadata.
-  _has_parent_slice_with_name(
-    s1.id,
-    "ViewResourceAdapter:captureWithSoftwareDraw"
-  ) AS is_software_screenshot,
-  _has_parent_slice_with_name(
-    s1.id,
-    "ViewResourceAdapter:captureWithHardwareDraw"
-  ) AS is_hardware_screenshot
-FROM interesting_java_slices s1
+  _has_parent_slice_with_name(s1.id, "ViewResourceAdapter:captureWithSoftwareDraw") AS is_software_screenshot,
+  _has_parent_slice_with_name(s1.id, "ViewResourceAdapter:captureWithHardwareDraw") AS is_hardware_screenshot
+FROM interesting_java_slices AS s1
 -- We select "outermost" interesting slices: interesting slices which
 -- do not another interesting slice in their parent chain.
-WHERE (SELECT count()
-  FROM ancestor_slice(s1.id) s2
-  JOIN interesting_java_slices s3 ON s2.id = s3.id) = 0;
+WHERE
+  (
+    SELECT
+      count()
+    FROM ancestor_slice(s1.id) AS s2
+    JOIN interesting_java_slices AS s3
+      ON s2.id = s3.id
+  ) = 0;
 
 -- A list of slices corresponding to operations on interesting (non-generic)
 -- Chrome Java views. The view is considered interested if it's not a system
@@ -262,7 +282,7 @@ WHERE (SELECT count()
 --
 -- TODO(altimin): Add "columns_from slice" annotation.
 -- TODO(altimin): convert this to EXTEND_TABLE when it becomes available.
-CREATE PERFETTO VIEW chrome_java_views(
+CREATE PERFETTO VIEW chrome_java_views (
   -- Name of the view.
   filtered_name STRING,
   -- Whether this slice is a part of non-accelerated capture toolbar screenshot.
@@ -276,13 +296,13 @@ SELECT
   java_view.name AS filtered_name,
   java_view.is_software_screenshot,
   java_view.is_hardware_screenshot,
-  slice.id as slice_id
-FROM _chrome_java_views java_view
-JOIN slice USING (id);
+  slice.id AS slice_id
+FROM _chrome_java_views AS java_view
+JOIN slice
+  USING (id);
 
 -- A list of Choreographer tasks (Android frame generation) in Chrome.
-CREATE PERFETTO VIEW _chrome_choreographer_tasks
-AS
+CREATE PERFETTO VIEW _chrome_choreographer_tasks AS
 SELECT
   id,
   "Choreographer" AS kind,
@@ -290,17 +310,22 @@ SELECT
   dur,
   name
 FROM slice
-WHERE name GLOB "Looper.dispatch: android.view.Choreographer$FrameHandler*";
+WHERE
+  name GLOB "Looper.dispatch: android.view.Choreographer$FrameHandler*";
 
 -- Extract task's posted_from information from task's arguments.
-CREATE PERFETTO FUNCTION _get_posted_from(arg_set_id LONG)
-RETURNS STRING AS
-WITH posted_from as (
-  SELECT
-    EXTRACT_ARG($arg_set_id, "task.posted_from.file_name") AS file_name,
-    EXTRACT_ARG($arg_set_id, "task.posted_from.function_name") AS function_name
+CREATE PERFETTO FUNCTION _get_posted_from(
+    arg_set_id LONG
 )
-SELECT file_name || ":" || function_name as posted_from
+RETURNS STRING AS
+WITH
+  posted_from AS (
+    SELECT
+      extract_arg($arg_set_id, "task.posted_from.file_name") AS file_name,
+      extract_arg($arg_set_id, "task.posted_from.function_name") AS function_name
+  )
+SELECT
+  file_name || ":" || function_name AS posted_from
 FROM posted_from;
 
 -- Selects the BeginMainFrame slices (which as posted from ScheduledActionSendBeginMainFrame),
@@ -316,8 +341,15 @@ FROM posted_from;
 -- @column ts            The timestamp of the slice.
 -- @column name          The name of the slice.
 CREATE PERFETTO FUNCTION _select_begin_main_frame_java_slices(
-  name STRING)
-RETURNS TABLE(id LONG, kind STRING, ts TIMESTAMP, dur DURATION, name STRING) AS
+    name STRING
+)
+RETURNS TABLE (
+  id LONG,
+  kind STRING,
+  ts TIMESTAMP,
+  dur DURATION,
+  name STRING
+) AS
 SELECT
   id,
   "SingleThreadProxy::BeginMainFrame" AS kind,
@@ -326,9 +358,10 @@ SELECT
   name
 FROM slice
 WHERE
-  (name = $name
-    AND _get_posted_from(arg_set_id) =
-        "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame");
+  (
+    name = $name
+    AND _get_posted_from(arg_set_id) = "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame"
+  );
 
 -- A list of Chrome tasks which were performing operations with Java views,
 -- together with the names of these views.
@@ -340,26 +373,35 @@ WITH
   -- Select UI thread BeginMainFrames (which are Chrome scheduler tasks) and
   -- Choreographer frames (which are looper tasks).
   root_slices AS (
-    SELECT id, kind
-    FROM _SELECT_BEGIN_MAIN_FRAME_JAVA_SLICES('ThreadControllerImpl::RunTask')
+    SELECT
+      id,
+      kind
+    FROM _select_begin_main_frame_java_slices('ThreadControllerImpl::RunTask')
     UNION ALL
-    SELECT id, kind FROM _chrome_choreographer_tasks
+    SELECT
+      id,
+      kind
+    FROM _chrome_choreographer_tasks
   ),
   -- Intermediate step to allow us to sort java view names.
   root_slice_and_java_view_not_grouped AS (
     SELECT
-      root.id, root.kind, java_view.name AS java_view_name
-    FROM root_slices root
-    JOIN descendant_slice(root.id) child
-    JOIN _chrome_java_views java_view ON java_view.id = child.id
+      root.id,
+      root.kind,
+      java_view.name AS java_view_name
+    FROM root_slices AS root, descendant_slice(root.id) AS child
+    JOIN _chrome_java_views AS java_view
+      ON java_view.id = child.id
   )
 SELECT
   root.id,
   root.kind,
   GROUP_CONCAT(DISTINCT java_view.java_view_name) AS java_views
-FROM root_slices root
-LEFT JOIN root_slice_and_java_view_not_grouped java_view USING (id)
-GROUP BY root.id;
+FROM root_slices AS root
+LEFT JOIN root_slice_and_java_view_not_grouped AS java_view
+  USING (id)
+GROUP BY
+  root.id;
 
 -- A list of tasks executed by Chrome scheduler.
 CREATE PERFETTO TABLE _chrome_scheduler_tasks AS
@@ -368,11 +410,14 @@ SELECT
 FROM slice
 WHERE
   category GLOB "*toplevel*"
-  AND (name = "ThreadControllerImpl::RunTask" OR name = "ThreadPool_RunTask")
-ORDER BY id;
+  AND (
+    name = "ThreadControllerImpl::RunTask" OR name = "ThreadPool_RunTask"
+  )
+ORDER BY
+  id;
 
 -- A list of tasks executed by Chrome scheduler.
-CREATE PERFETTO VIEW chrome_scheduler_tasks(
+CREATE PERFETTO VIEW chrome_scheduler_tasks (
   -- Slice id.
   id LONG,
   -- Type.
@@ -410,15 +455,14 @@ CREATE PERFETTO VIEW chrome_scheduler_tasks(
 ) AS
 SELECT
   task.id,
-  "chrome_scheduler_tasks" as type,
-  _format_scheduler_task_name(
-    _get_posted_from(slice.arg_set_id)) as name,
+  "chrome_scheduler_tasks" AS type,
+  _format_scheduler_task_name(_get_posted_from(slice.arg_set_id)) AS name,
   slice.ts,
   slice.dur,
   thread.utid,
-  thread.name as thread_name,
+  thread.name AS thread_name,
   process.upid,
-  process.name as process_name,
+  process.name AS process_name,
   slice.track_id,
   slice.category,
   slice.depth,
@@ -426,18 +470,23 @@ SELECT
   slice.arg_set_id,
   slice.thread_ts,
   slice.thread_dur,
-  _get_posted_from(slice.arg_set_id) as posted_from
-FROM _chrome_scheduler_tasks task
-JOIN slice using (id)
-JOIN thread_track ON slice.track_id = thread_track.id
-JOIN thread using (utid)
-JOIN process using (upid)
-ORDER BY task.id;
+  _get_posted_from(slice.arg_set_id) AS posted_from
+FROM _chrome_scheduler_tasks AS task
+JOIN slice
+  USING (id)
+JOIN thread_track
+  ON slice.track_id = thread_track.id
+JOIN thread
+  USING (utid)
+JOIN process
+  USING (upid)
+ORDER BY
+  task.id;
 
 -- Select the slice that might be the descendant mojo slice for the given task
 -- slice if it exists.
 CREATE PERFETTO FUNCTION _get_descendant_mojo_slice_candidate(
-  slice_id LONG
+    slice_id LONG
 )
 RETURNS LONG AS
 SELECT
@@ -451,22 +500,26 @@ WHERE
   -- will fail.
   -- Some events are excluded as they can legimately appear under "RunTask"
   -- before "Receive mojo message".
-  category GLOB "*toplevel*" AND
-  name NOT IN (
-    "SimpleWatcher::OnHandleReady",
-    "MessagePipe peer closed")
-ORDER by depth, ts
+  category GLOB "*toplevel*"
+  AND NOT name IN ("SimpleWatcher::OnHandleReady", "MessagePipe peer closed")
+ORDER BY
+  depth,
+  ts
 LIMIT 1;
 
-CREATE PERFETTO FUNCTION _descendant_mojo_slice(slice_id LONG)
-RETURNS TABLE(task_name STRING) AS
+CREATE PERFETTO FUNCTION _descendant_mojo_slice(
+    slice_id LONG
+)
+RETURNS TABLE (
+  task_name STRING
+) AS
 SELECT
-  printf("%s %s (hash=%d)",
-    mojo.interface_name, mojo.message_type, mojo.ipc_hash) AS task_name
-FROM slice task
-JOIN _chrome_mojo_slices mojo
+  printf("%s %s (hash=%d)", mojo.interface_name, mojo.message_type, mojo.ipc_hash) AS task_name
+FROM slice AS task
+JOIN _chrome_mojo_slices AS mojo
   ON mojo.id = _get_descendant_mojo_slice_candidate($slice_id)
-WHERE task.id = $slice_id;
+WHERE
+  task.id = $slice_id;
 
 -- A list of "Chrome tasks": top-level execution units (e.g. scheduler tasks /
 -- IPCs / system callbacks) run by Chrome. For a given thread, the tasks
@@ -477,121 +530,130 @@ WHERE task.id = $slice_id;
 -- @column scheduling_delay LONG
 CREATE PERFETTO TABLE _chrome_tasks AS
 WITH
--- Select slices from "toplevel" category which do not have another
--- "toplevel" slice as ancestor. The possible cases include sync mojo messages
--- and tasks in nested runloops. Toplevel events may also be logged as with
--- the Java category.
-non_embedded_toplevel_slices AS (
-  SELECT * FROM slice
-  WHERE
-    _any_top_level_category(category)
-    AND (SELECT count() FROM ancestor_slice(slice.id) anc
-      WHERE anc.category GLOB "*toplevel*" or anc.category GLOB "*toplevel.viz*") = 0
-),
--- Select slices from "Java" category which do not have another "Java" or
--- "toplevel" slice as parent. In the longer term they should probably belong
--- to "toplevel" category as well, but for now this will have to do. Ensure
--- that "Java" slices do not include "toplevel" slices as those would be
--- handled elsewhere.
-non_embedded_java_slices AS (
-  SELECT
-    id,
-    name AS task_name,
-    "java" as task_type
-  FROM slice s
-  WHERE
-    _java_not_top_level_category(category)
-    AND (SELECT count()
-      FROM ancestor_slice(s.id) s2
-      WHERE s2.category GLOB "*toplevel*" OR s2.category GLOB "*Java*") = 0
-),
--- Generate full names for tasks with java views.
-java_views_tasks AS (
-  SELECT
-    id,
-    printf('%s(java_views=%s)', kind, java_views) AS task_name,
-    _get_java_views_task_type(kind) AS task_type
-  FROM _chrome_slices_with_java_views
-),
-scheduler_tasks AS (
-  SELECT
-    id,
-    name as task_name,
-    "scheduler" as task_type
-  FROM chrome_scheduler_tasks
-),
--- Select scheduler tasks which are used to run mojo messages and use the mojo names
--- as full names for these slices.
--- We restrict this to specific scheduler tasks which are expected to run mojo
--- tasks due to sync mojo events, which also emit similar events.
-scheduler_tasks_with_mojo AS (
-  SELECT
-    -- We use the "RunTask" as the task, and pick up the name from its child
-    -- "Receive mojo message" event.
-    task.id,
-    receive_message.task_name,
-    "mojo" AS task_type
-  FROM
-    chrome_scheduler_tasks task
-  JOIN _DESCENDANT_MOJO_SLICE(task.id) receive_message
-  WHERE
-    task.posted_from IN (
-      "mojo/public/cpp/system/simple_watcher.cc:Notify",
-      "mojo/public/cpp/system/simple_watcher.cc:ArmOrNotify",
-      "mojo/public/cpp/bindings/lib/connector.cc:PostDispatchNextMessageFromPipe",
-      "ipc/ipc_mojo_bootstrap.cc:Accept")
-),
-navigation_tasks AS (
-  WITH tasks_with_readable_names AS (
+  -- Select slices from "toplevel" category which do not have another
+  -- "toplevel" slice as ancestor. The possible cases include sync mojo messages
+  -- and tasks in nested runloops. Toplevel events may also be logged as with
+  -- the Java category.
+  non_embedded_toplevel_slices AS (
+    SELECT
+      *
+    FROM slice
+    WHERE
+      _any_top_level_category(category)
+      AND (
+        SELECT
+          count()
+        FROM ancestor_slice(slice.id) AS anc
+        WHERE
+          anc.category GLOB "*toplevel*" OR anc.category GLOB "*toplevel.viz*"
+      ) = 0
+  ),
+  -- Select slices from "Java" category which do not have another "Java" or
+  -- "toplevel" slice as parent. In the longer term they should probably belong
+  -- to "toplevel" category as well, but for now this will have to do. Ensure
+  -- that "Java" slices do not include "toplevel" slices as those would be
+  -- handled elsewhere.
+  non_embedded_java_slices AS (
     SELECT
       id,
-      _human_readable_navigation_task_name(task_name) as readable_name,
-      IFNULL(_extract_frame_type(id), 'unknown frame type') as frame_type
-    FROM
-      scheduler_tasks_with_mojo
-  )
-  SELECT
-    id,
-    printf("%s (%s)", readable_name, frame_type) as task_name,
-    'navigation_task' AS task_type
-  FROM tasks_with_readable_names
-  WHERE readable_name IS NOT NULL
-),
--- Add scheduler and mojo full names to non-embedded slices from
--- the "toplevel" category, with mojo ones taking precedence.
-non_embedded_toplevel_slices_with_task_name AS (
-  SELECT
-    task.id AS id,
-    COALESCE(
+      name AS task_name,
+      "java" AS task_type
+    FROM slice AS s
+    WHERE
+      _java_not_top_level_category(category)
+      AND (
+        SELECT
+          count()
+        FROM ancestor_slice(s.id) AS s2
+        WHERE
+          s2.category GLOB "*toplevel*" OR s2.category GLOB "*Java*"
+      ) = 0
+  ),
+  -- Generate full names for tasks with java views.
+  java_views_tasks AS (
+    SELECT
+      id,
+      printf('%s(java_views=%s)', kind, java_views) AS task_name,
+      _get_java_views_task_type(kind) AS task_type
+    FROM _chrome_slices_with_java_views
+  ),
+  scheduler_tasks AS (
+    SELECT
+      id,
+      name AS task_name,
+      "scheduler" AS task_type
+    FROM chrome_scheduler_tasks
+  ),
+  -- Select scheduler tasks which are used to run mojo messages and use the mojo names
+  -- as full names for these slices.
+  -- We restrict this to specific scheduler tasks which are expected to run mojo
+  -- tasks due to sync mojo events, which also emit similar events.
+  scheduler_tasks_with_mojo AS (
+    SELECT
+      -- We use the "RunTask" as the task, and pick up the name from its child
+      -- "Receive mojo message" event.
+      task.id,
+      receive_message.task_name,
+      "mojo" AS task_type
+    FROM chrome_scheduler_tasks AS task, _descendant_mojo_slice(task.id) AS receive_message
+    WHERE
+      task.posted_from IN ("mojo/public/cpp/system/simple_watcher.cc:Notify", "mojo/public/cpp/system/simple_watcher.cc:ArmOrNotify", "mojo/public/cpp/bindings/lib/connector.cc:PostDispatchNextMessageFromPipe", "ipc/ipc_mojo_bootstrap.cc:Accept")
+  ),
+  navigation_tasks AS (
+    WITH
+      tasks_with_readable_names AS (
+        SELECT
+          id,
+          _human_readable_navigation_task_name(task_name) AS readable_name,
+          coalesce(_extract_frame_type(id), 'unknown frame type') AS frame_type
+        FROM scheduler_tasks_with_mojo
+      )
+    SELECT
+      id,
+      printf("%s (%s)", readable_name, frame_type) AS task_name,
+      'navigation_task' AS task_type
+    FROM tasks_with_readable_names
+    WHERE
+      readable_name IS NOT NULL
+  ),
+  -- Add scheduler and mojo full names to non-embedded slices from
+  -- the "toplevel" category, with mojo ones taking precedence.
+  non_embedded_toplevel_slices_with_task_name AS (
+    SELECT
+      task.id AS id,
+      coalesce(
         navigation.task_name,
         java_views.task_name,
         mojo.task_name,
         scheduler.task_name,
         task.name
-    ) AS name,
-    COALESCE(
-        navigation.task_type,
-        java_views.task_type,
-        mojo.task_type,
-        scheduler.task_type,
-        "other"
-    ) AS task_type
-  FROM non_embedded_toplevel_slices task
-  LEFT JOIN scheduler_tasks_with_mojo mojo ON mojo.id = task.id
-  LEFT JOIN scheduler_tasks scheduler ON scheduler.id = task.id
-  LEFT JOIN java_views_tasks java_views ON java_views.id = task.id
-  LEFT JOIN navigation_tasks navigation ON navigation.id = task.id
-)
+      ) AS name,
+      coalesce(navigation.task_type, java_views.task_type, mojo.task_type, scheduler.task_type, "other") AS task_type
+    FROM non_embedded_toplevel_slices AS task
+    LEFT JOIN scheduler_tasks_with_mojo AS mojo
+      ON mojo.id = task.id
+    LEFT JOIN scheduler_tasks AS scheduler
+      ON scheduler.id = task.id
+    LEFT JOIN java_views_tasks AS java_views
+      ON java_views.id = task.id
+    LEFT JOIN navigation_tasks AS navigation
+      ON navigation.id = task.id
+  )
 -- Merge slices from toplevel and Java categories.
-SELECT * FROM non_embedded_toplevel_slices_with_task_name
+SELECT
+  *
+FROM non_embedded_toplevel_slices_with_task_name
 UNION ALL
-SELECT * FROM non_embedded_java_slices
-ORDER BY id;
+SELECT
+  *
+FROM non_embedded_java_slices
+ORDER BY
+  id;
 
 -- A list of "Chrome tasks": top-level execution units (e.g. scheduler tasks /
 -- IPCs / system callbacks) run by Chrome. For a given thread, the slices
 -- corresponding to these tasks will not intersect.
-CREATE PERFETTO VIEW chrome_tasks(
+CREATE PERFETTO VIEW chrome_tasks (
   -- Id for the given task, also the id of the slice this task corresponds to.
   id LONG,
   -- Name for the given task.
@@ -638,9 +700,13 @@ SELECT
   s.arg_set_id,
   s.thread_ts,
   s.thread_dur,
-  cti.name as full_name
-FROM _chrome_tasks cti
-JOIN slice s ON cti.id = s.id
-JOIN thread_track tt ON s.track_id = tt.id
-JOIN thread USING (utid)
-JOIN process USING (upid);
+  cti.name AS full_name
+FROM _chrome_tasks AS cti
+JOIN slice AS s
+  ON cti.id = s.id
+JOIN thread_track AS tt
+  ON s.track_id = tt.id
+JOIN thread
+  USING (utid)
+JOIN process
+  USING (upid);

@@ -14,7 +14,7 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- scrolling); and only occur with the web content itself, as opposed to other
 -- parts of Chrome (e.g. omnibox). Interaction events include taps, clicks,
 -- keyboard input (typing), and drags.
-CREATE PERFETTO TABLE chrome_web_content_interactions(
+CREATE PERFETTO TABLE chrome_web_content_interactions (
   -- Unique id for this interaction.
   id LONG,
   -- Start timestamp of the event. Because multiple events may occur for the
@@ -34,11 +34,9 @@ SELECT
   id,
   ts,
   dur,
-  EXTRACT_ARG(arg_set_id, 'web_content_interaction.type') AS interaction_type,
-  EXTRACT_ARG(
-    arg_set_id,
-    'web_content_interaction.total_duration_ms'
-  ) AS total_duration_ms,
+  extract_arg(arg_set_id, 'web_content_interaction.type') AS interaction_type,
+  extract_arg(arg_set_id, 'web_content_interaction.total_duration_ms') AS total_duration_ms,
   upid AS renderer_upid
 FROM process_slice
-WHERE name = 'Web Interaction';
+WHERE
+  name = 'Web Interaction';

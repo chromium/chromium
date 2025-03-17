@@ -7,7 +7,7 @@
 --
 -- Note: In traces without the "Java" category there will be no VSync
 --       TraceEvents and this table will be empty.
-CREATE PERFETTO TABLE chrome_vsync_intervals(
+CREATE PERFETTO TABLE chrome_vsync_intervals (
   -- Slice id of the vsync slice.
   slice_id LONG,
   -- Timestamp of the vsync slice.
@@ -24,10 +24,13 @@ SELECT
   ts,
   dur,
   track_id,
-  LEAD(ts) OVER(PARTITION BY track_id ORDER BY ts) - ts AS time_to_next_vsync
+  lead(ts) OVER (PARTITION BY track_id ORDER BY ts) - ts AS time_to_next_vsync
 FROM slice
-WHERE name = "VSync"
-ORDER BY track_id, ts;
+WHERE
+  name = "VSync"
+ORDER BY
+  track_id,
+  ts;
 
 -- Function: compute the average Vysnc interval of the
 -- gesture (hopefully this would be either 60 FPS for the whole gesture or 90
@@ -36,21 +39,22 @@ ORDER BY track_id, ts;
 -- assuming its 60 FPS (this is the 1.6e+7 in the COALESCE which
 -- corresponds to 16 ms or 60 FPS).
 CREATE PERFETTO FUNCTION chrome_calculate_avg_vsync_interval(
-  -- Interval start time.
-  begin_ts TIMESTAMP,
-  -- Interval end time.
-  end_ts TIMESTAMP
+    -- Interval start time.
+    begin_ts TIMESTAMP,
+    -- Interval end time.
+    end_ts TIMESTAMP
 )
 -- The average vsync interval on this time segment
 -- or 1.6e+7, if trace doesn't contain the VSync TraceEvent.
 RETURNS DOUBLE AS
 SELECT
-  COALESCE((
-    SELECT
-      cast_double!(AVG(time_to_next_vsync))
-    FROM chrome_vsync_intervals in_query
-    WHERE
-      time_to_next_vsync IS NOT NULL AND
-      in_query.ts > $begin_ts AND
-      in_query.ts < $end_ts
-  ), 1e+9 / 60);
+  coalesce(
+    (
+      SELECT
+        cast_double!(AVG(time_to_next_vsync))
+      FROM chrome_vsync_intervals AS in_query
+      WHERE
+        NOT time_to_next_vsync IS NULL AND in_query.ts > $begin_ts AND in_query.ts < $end_ts
+    ),
+    1e+9 / 60
+  );

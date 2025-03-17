@@ -19,24 +19,26 @@ INCLUDE PERFETTO MODULE chrome.event_latency;
 -- Function : function takes scroll ids of frames to verify it's from
 -- the same scroll, and makes sure the frame ts occurred within the scroll
 -- timestamp of the neighbour and computes whether the frame was janky or not.
-CREATE PERFETTO FUNCTION _is_janky_frame(cur_gesture_id LONG,
-                                      neighbour_gesture_id LONG,
-                                      neighbour_ts TIMESTAMP,
-                                      cur_gesture_begin_ts TIMESTAMP,
-                                      cur_gesture_end_ts TIMESTAMP,
-                                      cur_frame_exact DOUBLE,
-                                      neighbour_frame_exact DOUBLE)
+CREATE PERFETTO FUNCTION _is_janky_frame(
+    cur_gesture_id LONG,
+    neighbour_gesture_id LONG,
+    neighbour_ts TIMESTAMP,
+    cur_gesture_begin_ts TIMESTAMP,
+    cur_gesture_end_ts TIMESTAMP,
+    cur_frame_exact DOUBLE,
+    neighbour_frame_exact DOUBLE
+)
 -- Returns true if the frame was janky, false otherwise
 RETURNS BOOL AS
 SELECT
-    CASE WHEN
-      $cur_gesture_id != $neighbour_gesture_id OR
-      $neighbour_ts IS NULL OR
-      $neighbour_ts < $cur_gesture_begin_ts OR
-      $neighbour_ts > $cur_gesture_end_ts THEN
-        FALSE ELSE
-        $cur_frame_exact > $neighbour_frame_exact + 0.5 + 1e-9
-    END;
+  CASE
+    WHEN $cur_gesture_id != $neighbour_gesture_id
+    OR $neighbour_ts IS NULL
+    OR $neighbour_ts < $cur_gesture_begin_ts
+    OR $neighbour_ts > $cur_gesture_end_ts
+    THEN FALSE
+    ELSE $cur_frame_exact > $neighbour_frame_exact + 0.5 + 1e-9
+  END;
 
 -- Function : function takes the cur_frame_exact, prev_frame_exact and
 -- next_frame_exact and returns the value of the jank budget of the current
@@ -48,9 +50,9 @@ SELECT
 -- Returns the jank budget in percentage (i.e. 0.75) of vsync interval
 -- percentage.
 CREATE PERFETTO FUNCTION _jank_budget(
-  cur_frame_exact DOUBLE,
-  prev_frame_exact DOUBLE,
-  next_frame_exact DOUBLE
+    cur_frame_exact DOUBLE,
+    prev_frame_exact DOUBLE,
+    next_frame_exact DOUBLE
 )
 RETURNS DOUBLE AS
 -- We determine the difference between the frame count of the current frame
@@ -64,16 +66,23 @@ RETURNS DOUBLE AS
 -- difference in frame count for it to be no longer janky. We subtract 1e-9 as
 -- we want to output minimum amount required.
 SELECT
-  COALESCE(
+  coalesce(
     -- Could be null if next or previous is null.
-    MAX(
-      ($cur_frame_exact - $prev_frame_exact),
-      ($cur_frame_exact - $next_frame_exact)
+    max(
+      (
+        $cur_frame_exact - $prev_frame_exact
+      ),
+      (
+        $cur_frame_exact - $next_frame_exact
+      )
     ),
     -- If one of them is null output the first non-null.
-    ($cur_frame_exact - $prev_frame_exact),
-    ($cur_frame_exact - $next_frame_exact)
-    -- Otherwise return null
+    (
+      $cur_frame_exact - $prev_frame_exact
+    ),
+    (
+      $cur_frame_exact - $next_frame_exact
+    )
   ) - 0.5 - 1e-9;
 
 -- Extract mojo information for the long-task-tracking scenario for specific
@@ -81,9 +90,10 @@ SELECT
 -- metadata, or InterestingTask slices for input may have associated IPC to
 -- determine whether the task is fling/etc.
 CREATE PERFETTO FUNCTION chrome_select_long_task_slices(
-  -- The name of slice.
-  name STRING)
-RETURNS TABLE(
+    -- The name of slice.
+    name STRING
+)
+RETURNS TABLE (
   -- Name of the interface of the IPC call.
   interface_name STRING,
   -- Hash of the IPC call.
@@ -94,14 +104,14 @@ RETURNS TABLE(
   id LONG
 ) AS
 SELECT
-  EXTRACT_ARG(s.arg_set_id, "chrome_mojo_event_info.mojo_interface_tag") AS interface_name,
-  EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.ipc_hash") AS ipc_hash,
+  extract_arg(s.arg_set_id, "chrome_mojo_event_info.mojo_interface_tag") AS interface_name,
+  extract_arg(arg_set_id, "chrome_mojo_event_info.ipc_hash") AS ipc_hash,
   CASE
-    WHEN EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.is_reply") THEN "reply"
+    WHEN extract_arg(arg_set_id, "chrome_mojo_event_info.is_reply")
+    THEN "reply"
     ELSE "message"
   END AS message_type,
   s.id
-FROM slice s
+FROM slice AS s
 WHERE
-  category GLOB "*scheduler.long_tasks*"
-  AND name = $name;
+  category GLOB "*scheduler.long_tasks*" AND name = $name;

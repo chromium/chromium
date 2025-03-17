@@ -23,8 +23,8 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- process and sending them to the InputDispatcher (which then sends them
 -- to the browser process).
 
-CREATE PERFETTO TABLE _chrome_android_motion_input_reader_step(
--- Input reader step timestamp.
+CREATE PERFETTO TABLE _chrome_android_motion_input_reader_step (
+  -- Input reader step timestamp.
   ts TIMESTAMP,
   -- Input reader step duration.
   dur DURATION,
@@ -32,22 +32,16 @@ CREATE PERFETTO TABLE _chrome_android_motion_input_reader_step(
   id LONG,
   -- Input id.
   android_input_id STRING,
-   -- Input reader step utid.
+  -- Input reader step utid.
   utid LONG
-)
-AS
+) AS
 SELECT
   ts,
   dur,
   id,
   -- Get the substring that starts with 'id=', remove the 'id=' and remove the trailing ')'.
   -- 'id=0x344bb0f9)' ->  '0x344bb0f9'
-  TRIM(
-    SUBSTR(
-      SUBSTR(name, INSTR(name, 'id='))
-    , 4),
-  ')')
-  AS android_input_id,
+  trim(substr(substr(name, instr(name, 'id=')), 4), ')') AS android_input_id,
   utid
 FROM thread_slice AS slice
 WHERE
@@ -55,7 +49,7 @@ WHERE
 
 -- InputDispatcher is the second step in the input pipeline.
 -- It is responsible for dispatching the input events to the browser process.
-CREATE PERFETTO TABLE _chrome_android_motion_input_dispatcher_step(
+CREATE PERFETTO TABLE _chrome_android_motion_input_dispatcher_step (
   -- Input dispatcher step timestamp.
   ts TIMESTAMP,
   -- Input dispatcher step duration.
@@ -64,19 +58,14 @@ CREATE PERFETTO TABLE _chrome_android_motion_input_dispatcher_step(
   id LONG,
   -- Input id.
   android_input_id STRING,
-   -- Input dispatcher step utid.
+  -- Input dispatcher step utid.
   utid LONG
-)
-AS
+) AS
 SELECT
   ts,
   dur,
   id,
-  TRIM(
-  SUBSTR(
-  SUBSTR(name, INSTR(name, 'id='))
-  , 4), ')')
-  AS android_input_id,
+  trim(substr(substr(name, instr(name, 'id=')), 4), ')') AS android_input_id,
   utid
 FROM thread_slice AS slice
 WHERE
@@ -84,7 +73,7 @@ WHERE
 
 -- DeliverInputEvent is the third step in the input pipeline.
 -- It is responsible for routing the input events within browser process.
-CREATE PERFETTO TABLE chrome_deliver_android_input_event(
+CREATE PERFETTO TABLE chrome_deliver_android_input_event (
   -- Timestamp.
   ts TIMESTAMP,
   -- Touch move processing duration.
@@ -98,15 +87,14 @@ SELECT
   slice.ts,
   slice.dur,
   slice.utid,
-  SUBSTR(SUBSTR(name, INSTR(name, 'id=')), 4) AS android_input_id
-FROM
-  thread_slice AS slice
+  substr(substr(name, instr(name, 'id=')), 4) AS android_input_id
+FROM thread_slice AS slice
 WHERE
   slice.name GLOB 'deliverInputEvent*';
 
 -- Collects information about input reader, input dispatcher and
 -- DeliverInputEvent steps for the given Android input id.
-CREATE PERFETTO TABLE chrome_android_input(
+CREATE PERFETTO TABLE chrome_android_input (
   -- Input id.
   android_input_id STRING,
   -- Input reader step start timestamp.
@@ -131,20 +119,16 @@ CREATE PERFETTO TABLE chrome_android_input(
 SELECT
   _chrome_android_motion_input_reader_step.android_input_id,
   _chrome_android_motion_input_reader_step.ts AS input_reader_processing_start_ts,
-  _chrome_android_motion_input_reader_step.ts +
-  _chrome_android_motion_input_reader_step.dur AS input_reader_processing_end_ts,
+  _chrome_android_motion_input_reader_step.ts + _chrome_android_motion_input_reader_step.dur AS input_reader_processing_end_ts,
   _chrome_android_motion_input_reader_step.utid AS input_reader_utid,
   _chrome_android_motion_input_dispatcher_step.ts AS input_dispatcher_processing_start_ts,
-  _chrome_android_motion_input_dispatcher_step.ts +
-  _chrome_android_motion_input_dispatcher_step.dur AS input_dispatcher_processing_end_ts,
+  _chrome_android_motion_input_dispatcher_step.ts + _chrome_android_motion_input_dispatcher_step.dur AS input_dispatcher_processing_end_ts,
   _chrome_android_motion_input_dispatcher_step.utid AS input_dispatcher_utid,
   chrome_deliver_android_input_event.ts AS deliver_input_event_start_ts,
-  chrome_deliver_android_input_event.ts +
-  chrome_deliver_android_input_event.dur AS deliver_input_event_end_ts,
+  chrome_deliver_android_input_event.ts + chrome_deliver_android_input_event.dur AS deliver_input_event_end_ts,
   chrome_deliver_android_input_event.utid AS deliver_input_event_utid
-FROM
-  _chrome_android_motion_input_reader_step
-LEFT JOIN
-  _chrome_android_motion_input_dispatcher_step USING(android_input_id)
-LEFT JOIN
-  chrome_deliver_android_input_event USING(android_input_id)
+FROM _chrome_android_motion_input_reader_step
+LEFT JOIN _chrome_android_motion_input_dispatcher_step
+  USING (android_input_id)
+LEFT JOIN chrome_deliver_android_input_event
+  USING (android_input_id);
