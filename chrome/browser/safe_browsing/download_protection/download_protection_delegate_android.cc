@@ -14,6 +14,7 @@
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/google/core/common/google_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -32,8 +33,18 @@ const char kDownloadRequestDefaultUrl[] =
 // File suffix for APKs.
 const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 
+bool IsDownloadRequestUrlValid(const GURL& url) {
+  return url.is_valid() && url.SchemeIs(url::kHttpsScheme) &&
+         google_util::IsGoogleAssociatedDomainUrl(url);
+}
+
 GURL ConstructDownloadRequestUrl() {
-  return GURL(kDownloadRequestDefaultUrl);
+  std::string url_override = kMaliciousApkDownloadCheckServiceUrlOverride.Get();
+  GURL url(url_override);
+  if (!IsDownloadRequestUrlValid(url)) {
+    url = GURL(kDownloadRequestDefaultUrl);
+  }
+  return url;
 }
 
 // Determines whether Android download protection should be active.
@@ -90,7 +101,12 @@ bool DownloadProtectionDelegateAndroid::ShouldCheckDownloadUrl(
 
 bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
     download::DownloadItem* item) const {
-  return IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
+  bool is_enabled = IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
+  if (is_enabled && !IsDownloadRequestUrlValid(download_request_url_)) {
+    DownloadProtectionMetricsData::SetOutcome(item, Outcome::kMisconfigured);
+    return false;
+  }
+  return is_enabled;
 }
 
 bool DownloadProtectionDelegateAndroid::IsSupportedDownload(

@@ -237,6 +237,11 @@ BASE_FEATURE(kMaliciousApkDownloadCheck,
 
 constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
     &kMaliciousApkDownloadCheck, "telemetry_only", /*default_value=*/false};
+
+constexpr base::FeatureParam<std::string>
+    kMaliciousApkDownloadCheckServiceUrlOverride{&kMaliciousApkDownloadCheck,
+                                                 "service_url_override",
+                                                 /*default_value=*/""};
 #endif
 
 BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
