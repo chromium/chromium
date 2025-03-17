@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ai/ai_test_utils.h"
+#include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
@@ -438,12 +439,16 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
       AITestUtils::MockModelDownloadProgressMonitor mock_monitor;
       base::RunLoop download_progress_run_loop;
       EXPECT_CALL(mock_monitor, OnDownloadProgressUpdate(_, _))
-          .WillOnce(testing::Invoke(
-              [&](uint64_t downloaded_bytes, uint64_t total_bytes) {
-                EXPECT_EQ(downloaded_bytes, kTestModelDownloadSize);
-                EXPECT_EQ(total_bytes, kTestModelDownloadSize);
-                download_progress_run_loop.Quit();
-              }));
+          .WillOnce(testing::Invoke([&](uint64_t downloaded_bytes,
+                                        uint64_t total_bytes) {
+            EXPECT_EQ(
+                downloaded_bytes,
+                static_cast<uint64_t>(AIUtils::kNormalizedDownloadProgressMax));
+            EXPECT_EQ(
+                total_bytes,
+                static_cast<uint64_t>(AIUtils::kNormalizedDownloadProgressMax));
+            download_progress_run_loop.Quit();
+          }));
 
       mock_remote->AddModelDownloadProgressObserver(
           mock_monitor.BindNewPipeAndPassRemote());
@@ -1293,21 +1298,21 @@ TEST_P(AILanguageModelHackyPrototypeTest, Basic) {
 
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
-                    const std::optional<
-                        optimization_guide::SessionConfigParams>&
-                        config_params) {
-        auto session = std::make_unique<
-            testing::NiceMock<optimization_guide::MockSession>>();
-        SetUpMockSession(*session, IsModelStreamingChunkByChunk());
-        // optimization_guide::Session execution is bypassed for now.
-        EXPECT_CALL(*session, GetContextSizeInTokens(_, _)).Times(0);
-        EXPECT_CALL(*session, AddContext(_)).Times(0);
-        EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
-        EXPECT_CALL(*session, GetSession())
-            .WillRepeatedly(ReturnRef(mock_on_device_vision_session));
-        return session;
-      });
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            auto session = std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>();
+            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+            // optimization_guide::Session execution is bypassed for now.
+            EXPECT_CALL(*session, GetContextSizeInTokens(_, _)).Times(0);
+            EXPECT_CALL(*session, AddContext(_)).Times(0);
+            EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
+            EXPECT_CALL(*session, GetSession())
+                .WillRepeatedly(ReturnRef(mock_on_device_vision_session));
+            return session;
+          });
 
   mojo::Remote<blink::mojom::AILanguageModel> mock_session =
       CreateMockSession();
