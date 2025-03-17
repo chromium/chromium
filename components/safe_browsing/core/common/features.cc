@@ -46,7 +46,7 @@ BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
 
 BASE_FEATURE(kClientSideDetectionAcceptHCAllowlist,
              "ClientSideDetectionAcceptHCAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
              "ClientSideDetectionBrandAndIntentForScamDetection",
