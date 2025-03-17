@@ -199,7 +199,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       file_system_bridge_.reset();
       arc_test_.TearDown();
     }
-    extensions::ExtensionSystem::Get(profile())->Shutdown();
     BrowserWithTestWindowTest::TearDown();
     SessionManagerClient::Shutdown();
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);

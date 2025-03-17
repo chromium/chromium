@@ -623,6 +623,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionSystemShared",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "ExtensionWebUIOverrideRegistrar",
+  #if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ExternalProviderManager",
+  #endif
     "FaviconService",
     "FederatedIdentityPermissionContext",
     "FederatedIdentityAutoReauthnPermissionContext",

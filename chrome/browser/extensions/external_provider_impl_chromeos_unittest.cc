@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -61,6 +62,10 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
   ~ExternalProviderImplChromeOSTest() override = default;
 
+  ExternalProviderManager* external_provider_manager() {
+    return ExternalProviderManager::Get(profile());
+  }
+
   void InitServiceWithExternalProviders(bool standalone) {
     InitServiceWithExternalProvidersAndUserType(standalone,
                                                 false /* is_child */);
@@ -93,11 +98,11 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
-                                                  &providers);
+    ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
+                                                  profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers) {
-      service_->AddProviderForTesting(std::move(provider));
+      external_provider_manager()->AddProviderForTesting(std::move(provider));
     }
   }
 
@@ -134,8 +139,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
 
     ProviderCollection providers;
-    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
-                                                  &providers);
+    ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
+                                                  profile_.get(), &providers);
 
     EXPECT_EQ(providers.size(), expected_count);
   }
