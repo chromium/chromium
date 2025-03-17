@@ -230,6 +230,23 @@ void NetworkStateListDetailedView::Init() {
   }
 }
 
+bool NetworkStateListDetailedView::ResetInfoBubble() {
+  if (!info_bubble_) {
+    return false;
+  }
+
+  info_bubble_->GetWidget()->Close();
+  return true;
+}
+
+void NetworkStateListDetailedView::OnInfoBubbleDestroyed() {
+  info_bubble_ = nullptr;
+
+  // Widget of info bubble is activated while info bubble is shown. To move
+  // focus back to the widget of this view, activate it again here.
+  GetWidget()->Activate();
+}
+
 void NetworkStateListDetailedView::Update() {
   UpdateNetworkList();
   UpdateHeaderButtons();
@@ -396,23 +413,6 @@ void NetworkStateListDetailedView::ToggleInfoBubble() {
   views::BubbleDialogDelegateView::CreateBubble(info_bubble_)->Show();
   info_bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
                                                    false);
-}
-
-bool NetworkStateListDetailedView::ResetInfoBubble() {
-  if (!info_bubble_) {
-    return false;
-  }
-
-  info_bubble_->GetWidget()->Close();
-  return true;
-}
-
-void NetworkStateListDetailedView::OnInfoBubbleDestroyed() {
-  info_bubble_ = nullptr;
-
-  // Widget of info bubble is activated while info bubble is shown. To move
-  // focus back to the widget of this view, activate it again here.
-  GetWidget()->Activate();
 }
 
 std::unique_ptr<views::View>

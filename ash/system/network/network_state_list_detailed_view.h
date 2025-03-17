@@ -48,6 +48,12 @@ class ASH_EXPORT NetworkStateListDetailedView
 
   void Init();
 
+  // Asks the info bubble to close, if it exists. Returns whether it existed.
+  bool ResetInfoBubble();
+
+  // Restores activation to this view's widget.
+  void OnInfoBubbleDestroyed();
+
   void ToggleInfoBubbleForTesting();
 
  protected:
@@ -94,8 +100,6 @@ class ASH_EXPORT NetworkStateListDetailedView
 
   // Create and manage the network info bubble.
   void ToggleInfoBubble();
-  bool ResetInfoBubble();
-  void OnInfoBubbleDestroyed();
   std::unique_ptr<views::View> CreateNetworkInfoView();
 
   // Scan and start timer to periodically request a network scan.
