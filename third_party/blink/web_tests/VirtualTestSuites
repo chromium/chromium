@@ -1269,7 +1269,7 @@
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html",
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html",
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html",
-      "external/wpt/dom/nodes/moveBefore/tentative/mutation-events.html",
+      "external/wpt/dom/nodes/moveBefore/mutation-events.html",
       "external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html",
       "external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html",
       "http/tests/inspector-protocol/console/console-dom-mutation-violations.js",
@@ -1564,8 +1564,8 @@
       "external/wpt/css/css-transitions/render-blocking",
       "external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal",
       "external/wpt/html/dom/render-blocking",
-      "external/wpt/dom/nodes/moveBefore/tentative/preserve-render-blocking-script.html",
-      "external/wpt/dom/nodes/moveBefore/tentative/preserve-render-blocking-style.html"
+      "external/wpt/dom/nodes/moveBefore/preserve-render-blocking-script.html",
+      "external/wpt/dom/nodes/moveBefore/preserve-render-blocking-style.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests",
@@ -4253,7 +4253,7 @@
   {
     "prefix": "atomic-move-range-preservation",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/dom/nodes/moveBefore/tentative/selection-preserve.html"],
+    "bases": ["external/wpt/dom/nodes/moveBefore/selection-preserve.html"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=AtomicMoveRangePreservation"],
     "owners": ["dom@chromium.org", "nrosenthal@chromium.org"],
