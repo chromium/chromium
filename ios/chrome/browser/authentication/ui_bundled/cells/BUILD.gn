@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/version_info",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",

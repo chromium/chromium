@@ -3397,8 +3397,7 @@ template("libmonochrome_apk_or_bundle_tmpl") {
   chrome_common_shared_library(target_name) {
     sources = [ "../browser/android/monochrome_entry_point.cc" ]
     deps = [
-      "//android_webview/lib",
-      "//android_webview/nonembedded",
+      "//android_webview",
       "//components/crash/android:crashpad_main",
     ]
     if (defined(invoker.deps)) {

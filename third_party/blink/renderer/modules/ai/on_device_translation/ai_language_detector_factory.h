@@ -44,31 +44,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   GetLanguageDetectionDriverRemote();
 
  private:
-  class AILanguageDetectorCreateTask
-      : public GarbageCollected<AILanguageDetectorCreateTask> {
-   public:
-    AILanguageDetectorCreateTask(
-        ExecutionContext* execution_context,
-        scoped_refptr<base::SequencedTaskRunner>& task_runner,
-        ScriptPromiseResolver<AILanguageDetector>* resolver,
-        LanguageDetectionModel* model,
-        const AILanguageDetectorCreateOptions* options);
-
-    void CreateDetector(base::File model_file);
-
-    void Trace(Visitor* visitor) const;
-
-   private:
-    void OnModelLoaded(base::expected<LanguageDetectionModel*,
-                                      DetectLanguageError> maybe_model);
-
-    scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-    Member<AICreateMonitor> monitor_;
-    Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
-    Member<LanguageDetectionModel> language_detection_model_;
-  };
-
   static void OnModelFileReceived(LanguageDetectionModel* model,
                                   AICreateMonitor* monitor,
                                   base::OnceClosure on_created_callback,

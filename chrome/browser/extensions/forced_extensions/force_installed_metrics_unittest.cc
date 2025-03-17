@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -902,11 +903,9 @@ TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
       base::WrapUnique(fake_user_manager));
   const AccountId account_id =
       AccountId::FromUserEmail(profile()->GetProfileUserName());
-  user_manager::User* user =
-      fake_user_manager->AddPublicAccountUser(account_id);
-  fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
-                                  false /* browser_restart */,
-                                  false /* is_child */);
+  fake_user_manager->AddPublicAccountUser(account_id);
+  fake_user_manager->UserLoggedIn(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -927,9 +926,9 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   user_manager::User* user = fake_user_manager->AddGuestUser();
-  fake_user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                                  false /* browser_restart */,
-                                  false /* is_child */);
+  fake_user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -953,9 +952,9 @@ TEST_F(ForceInstalledMetricsTest,
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   user_manager::User* user = fake_user_manager->AddGuestUser();
-  fake_user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                                  false /* browser_restart */,
-                                  false /* is_child */);
+  fake_user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   SetupForceList(ExtensionOrigin::kWebStore);
   CreateExtensionService(/*extensions_enabled=*/true);

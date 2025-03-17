@@ -731,7 +731,7 @@ void PinnedToolbarActionsContainer::MovePinnedAction(
   // the toolbar. This is necessary because there might be ids in the model that
   // are not currently available that need to be factored into the index
   // calculation.
-  if (index != pinned_buttons_.size() - 1) {
+  if (index < pinned_buttons_.size()) {
     auto target_index_button = pinned_buttons_[index];
     const auto& pinned_action_ids = model_->PinnedActionIds();
     auto it = find(pinned_action_ids.begin(), pinned_action_ids.end(),

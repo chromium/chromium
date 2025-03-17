@@ -332,6 +332,7 @@ template <class WorkerInterface,
 class CodecWorkerImpl;
 class FileVideoCaptureDeviceFactory;
 class GpuMojoMediaClientWin;
+class MailboxVideoFrameConverter;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
 class V4L2DevicePoller;  // TODO(crbug.com/41486289): remove this.
@@ -859,6 +860,7 @@ class BASE_EXPORT
   friend class gpu::GpuMemoryBufferImplDXGI;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
+  friend class media::MailboxVideoFrameConverter;
   friend class media::PaintCanvasVideoRenderer;
   friend class media::V4L2DevicePoller;  // TODO(crbug.com/41486289): remove
                                          // this.

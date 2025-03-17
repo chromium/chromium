@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,7 +74,7 @@ public class TabGroupLabellerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(ROOT_ID1)).thenReturn(TAB_ID1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID1)).thenReturn(TAB_ID1);
         mTabGroupLabeller =
                 new TabGroupLabeller(
                         mProfile, mTabListNotificationHandler, mTabGroupModelFilterSupplier);
@@ -126,8 +125,7 @@ public class TabGroupLabellerUnitTest {
 
     @Test
     public void testShowAll_WrongTabModel() {
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(anyInt())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
         when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
 

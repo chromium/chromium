@@ -15,11 +15,6 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "media/base/media_switches.h"
-#include "media/mojo/clients/mojo_stable_video_decoder.h"
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
 namespace media {
 
 MojoCodecFactoryMojoDecoder::MojoCodecFactoryMojoDecoder(
@@ -51,23 +46,6 @@ MojoCodecFactoryMojoDecoder::CreateVideoDecoder(
     const gfx::ColorSpace& rendering_color_space) {
   DCHECK(video_decode_accelerator_enabled_);
   DCHECK(interface_factory_.is_bound());
-
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy: {
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          stable_video_decoder_remote;
-      interface_factory_->CreateStableVideoDecoder(
-          stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
-      return std::make_unique<media::MojoStableVideoDecoder>(
-          media_task_runner_, gpu_factories, media_log,
-          std::move(stable_video_decoder_remote));
-    }
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-    case media::OOPVDMode::kDisabled:
-      break;
-  }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   mojo::PendingRemote<media::mojom::VideoDecoder> video_decoder;
   interface_factory_->CreateVideoDecoder(
@@ -101,30 +79,6 @@ void MojoCodecFactoryMojoDecoder::BindOnTaskRunner(
   // Unretained is safe since MojoCodecFactory is never destroyed.
   // It lives until the process shuts down.
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy: {
-      mojo::Remote<media::stable::mojom::StableVideoDecoder>
-          stable_video_decoder;
-      interface_factory_->CreateStableVideoDecoder(
-          stable_video_decoder.BindNewPipeAndPassReceiver());
-      stable_video_decoder.set_disconnect_handler(
-          base::BindOnce(&MojoCodecFactoryMojoDecoder::OnDecoderSupportFailed,
-                         base::Unretained(this)));
-      stable_video_decoder->GetSupportedConfigs(base::BindOnce(
-          &MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs,
-          base::Unretained(this)));
-      video_decoder_
-          .emplace<mojo::Remote<media::stable::mojom::StableVideoDecoder>>(
-              std::move(stable_video_decoder));
-      return;
-    }
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-    case media::OOPVDMode::kDisabled:
-      break;
-  }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
   mojo::Remote<media::mojom::VideoDecoder> video_decoder;
   interface_factory_->CreateVideoDecoder(
       video_decoder.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
@@ -134,8 +88,7 @@ void MojoCodecFactoryMojoDecoder::BindOnTaskRunner(
   video_decoder->GetSupportedConfigs(
       base::BindOnce(&MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs,
                      base::Unretained(this)));
-  video_decoder_.emplace<mojo::Remote<media::mojom::VideoDecoder>>(
-      std::move(video_decoder));
+  video_decoder_ = std::move(video_decoder);
 }
 
 void MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs(
@@ -143,7 +96,7 @@ void MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs(
     media::VideoDecoderType decoder_type) {
   {
     base::AutoLock lock(supported_profiles_lock_);
-    video_decoder_.emplace<mojo::Remote<media::mojom::VideoDecoder>>();
+    video_decoder_.reset();
     supported_decoder_configs_.emplace(supported_configs);
     video_decoder_type_ = decoder_type;
   }

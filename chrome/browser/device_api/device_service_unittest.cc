@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -518,8 +519,9 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceParamTest {
     const user_manager::User* user =
         fake_user_manager()->AddUserWithAffiliation(account_id(),
                                                     is_affiliated);
-    fake_user_manager()->UserLoggedIn(user->GetAccountId(),
-                                      user->username_hash(), false, false);
+    fake_user_manager()->UserLoggedIn(
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   }
 
   ash::FakeChromeUserManager* fake_user_manager() const {

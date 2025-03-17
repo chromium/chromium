@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -207,4 +208,34 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, LaunchOnStartup) {
   testing::Mock::VerifyAndClearExpectations(launch_manager.get());
 }
 #endif
+
+// Test that hotkey is logged when pressed.
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, HotkeyPressed) {
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  base::HistogramTester histogram_tester;
+  GlicBackgroundModeManager* const manager =
+      g_browser_process->GetFeatures()->glic_background_mode_manager();
+
+  ui::Accelerator default_hotkey =
+      GlicLauncherConfiguration::GetDefaultHotkey();
+  EXPECT_EQ(default_hotkey, manager->RegisteredHotkeyForTesting());
+  manager->OnKeyPressed(default_hotkey);
+  histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
+                                     1);
+  histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
+                                     0);
+
+  ui::Accelerator custom_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  RegisterHotkey(custom_hotkey);
+  EXPECT_EQ(custom_hotkey, manager->RegisteredHotkeyForTesting());
+  manager->OnKeyPressed(custom_hotkey);
+  histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
+                                     1);
+  histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
+                                     1);
+}
 }  // namespace glic

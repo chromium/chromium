@@ -308,6 +308,21 @@ class MockAccessibilityPrivate {
         }
       },
     };
+
+    this.onSelectToSpeakKeysPressedChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakMouseChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakContextMenuClicked = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
   }
 
   /**
@@ -789,4 +804,9 @@ class MockAccessibilityPrivate {
     this.scrollAtPointData_.target = target;
     this.scrollAtPointData_.direction = direction;
   }
+
+  /**
+   * No-op to prevent error in testing.
+   */
+  setSelectToSpeakState(state) {}
 }

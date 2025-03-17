@@ -52,18 +52,16 @@ void MediaInterfaceFactory::CreateAudioDecoder(
 
 void MediaInterfaceFactory::CreateVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-        dst_video_decoder) {
+    mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) {
   // The renderer process cannot act as a proxy for video decoding.
   DCHECK(!dst_video_decoder);
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &MediaInterfaceFactory::CreateVideoDecoder, weak_this_,
-            std::move(receiver),
-            /*dst_video_decoder=*/
-            mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>()));
+        base::BindOnce(&MediaInterfaceFactory::CreateVideoDecoder, weak_this_,
+                       std::move(receiver),
+                       /*dst_video_decoder=*/
+                       mojo::PendingRemote<media::mojom::VideoDecoder>()));
     return;
   }
 
@@ -73,20 +71,12 @@ void MediaInterfaceFactory::CreateVideoDecoder(
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void MediaInterfaceFactory::CreateStableVideoDecoder(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-        video_decoder) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaInterfaceFactory::CreateStableVideoDecoder,
-                       weak_this_, std::move(video_decoder)));
-    return;
-  }
-
-  DVLOG(1) << __func__;
-  GetMediaInterfaceFactory()->CreateStableVideoDecoder(
-      std::move(video_decoder));
+void MediaInterfaceFactory::CreateVideoDecoderWithTracker(
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) {
+  // CreateVideoDecoderWithTracker() should not be called by the renderer
+  // process.
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 

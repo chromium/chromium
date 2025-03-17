@@ -71,7 +71,7 @@
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
@@ -2378,7 +2378,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kPriceNotificationsUsed);
   [self dismissMenu];
-  [self.priceNotificationHandler showPriceNotificationsWithCurrentPage];
+  [self.priceNotificationHandler showPriceTrackedItemsWithCurrentPage];
 }
 
 // Dismisses the menu and opens downloads.

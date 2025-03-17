@@ -274,10 +274,10 @@ public class MostVisitedTilesLayoutTest {
         return ntp;
     }
 
-    private ViewGroup getTilesLayout(NewTabPage ntp) {
-        ViewGroup mostVisitedTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        assertNotNull("Unable to retrieve the mv_tiles_layout.", mostVisitedTilesLayout);
-        return mostVisitedTilesLayout;
+    private TilesLinearLayout getTilesLayout(NewTabPage ntp) {
+        TilesLinearLayout mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
+        assertNotNull("Unable to retrieve the mv_tiles_layout.", mvTilesLayout);
+        return mvTilesLayout;
     }
 
     /**
@@ -312,10 +312,10 @@ public class MostVisitedTilesLayoutTest {
                     containerLayout.setVisibility(View.VISIBLE);
                     contentView.addView(containerLayout);
                     initializeCoordinator(containerLayout);
-                    ViewGroup mostVisitedTilesLayout =
+                    TilesLinearLayout mvTilesLayout =
                             containerLayout.findViewById(R.id.mv_tiles_layout);
-                    assertNotNull(mostVisitedTilesLayout);
-                    return mostVisitedTilesLayout;
+                    assertNotNull(mvTilesLayout);
+                    return mvTilesLayout;
                 });
     }
 

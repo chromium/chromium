@@ -55,12 +55,17 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   //
   // This method is async. `callback` will be called when it is done.
   // `bool(reader)` is true iff a matching servable prefetch is found.
-  static void FindPrefetch(PrefetchContainer::Key navigated_key,
-                           bool is_nav_prerender,
-                           PrefetchService& prefetch_service,
-                           base::WeakPtr<PrefetchServingPageMetricsContainer>
-                               serving_page_metrics_container,
-                           Callback callback);
+  //
+  // Matches prefetches only if its final PrefetchServiceWorkerState is
+  // `expected_service_worker_state` (either `kControlled` or `kDisallowed`).
+  static void FindPrefetch(
+      PrefetchContainer::Key navigated_key,
+      PrefetchServiceWorkerState expected_service_worker_state,
+      bool is_nav_prerender,
+      PrefetchService& prefetch_service,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container,
+      Callback callback);
 
  private:
   struct CandidateData final {
@@ -71,9 +76,11 @@ class CONTENT_EXPORT PrefetchMatchResolver final
     std::unique_ptr<base::OneShotTimer> timeout_timer;
   };
 
-  explicit PrefetchMatchResolver(PrefetchContainer::Key navigated_key,
-                                 base::WeakPtr<PrefetchService>,
-                                 Callback callback);
+  explicit PrefetchMatchResolver(
+      PrefetchContainer::Key navigated_key,
+      PrefetchServiceWorkerState expected_service_worker_state,
+      base::WeakPtr<PrefetchService>,
+      Callback callback);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
   std::optional<base::TimeDelta> GetBlockedDuration() const;
@@ -138,6 +145,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   std::unique_ptr<PrefetchMatchResolver> self_;
 
   const PrefetchContainer::Key navigated_key_;
+  const PrefetchServiceWorkerState expected_service_worker_state_;
   base::WeakPtr<PrefetchService> prefetch_service_;
   Callback callback_;
   std::map<PrefetchContainer::Key, std::unique_ptr<CandidateData>> candidates_;

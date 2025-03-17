@@ -73,6 +73,9 @@ std::string FindTitleForSimilarProducts(
     }
 
     base::flat_set<std::string> counted_labels;
+    if (!entry.second.has_value()) {
+      continue;
+    }
     for (const auto& product_category :
          entry.second->category_data.product_categories()) {
       std::optional<std::string> bottom_label =
@@ -526,7 +529,8 @@ void ClusterManager::OnProductInfoFetchedForSimilarUrls(
     const std::map<GURL, std::optional<ProductInfo>> product_infos) {
   std::map<GURL, uint64_t> map;
   for (auto entry : product_infos) {
-    if (entry.second->product_cluster_id.has_value()) {
+    if (entry.second.has_value() &&
+        entry.second->product_cluster_id.has_value()) {
       map[entry.first] = entry.second->product_cluster_id.value();
     }
   }

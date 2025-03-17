@@ -417,6 +417,11 @@ BASE_FEATURE(kGlicUserResize,
              "GlicUserResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the web client should resize itself to fit the window.
+BASE_FEATURE(kGlicSizingFitWindow,
+             "GlicSizingFitWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -897,7 +902,7 @@ BASE_FEATURE(kListWebAppsSwitch,
 // extension system. Speculative fix for https://crbug.com/356643975.
 BASE_FEATURE(kMacDirectEmailShare,
              "DirectEmailShare",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

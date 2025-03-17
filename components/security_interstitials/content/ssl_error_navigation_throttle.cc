@@ -23,21 +23,18 @@ namespace {
 // that uses SSL interstitials. Returns false if a plain error page should be
 // used instead.
 bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
-  if (web_contents == web_contents->GetResponsibleWebContents()) {
-    // Outermost contents (e.g. regular tabs) use interstitials.
-    return true;
-  }
-
 #if !BUILDFLAG(ENABLE_GUEST_VIEW)
-  return false;
+  // Guests are the only remaining use of inner WebContents, so without them
+  // `handle`'s WebContents is always the outermost one, and should use
+  // interstitials.
+  return true;
 #else
   guest_view::GuestViewBase* guest =
       guest_view::GuestViewBase::FromNavigationHandle(handle);
   if (!guest) {
-    // Non-guest view inner WebContents should always show error pages instead
-    // of interstitials.
-    return false;
+    // GuestViews are the only remaining inner WebContents, so show an
+    // interstitial if this isn't a guest.
+    return true;
   }
 
   // Some guest view types still show SSL interstitials.
@@ -79,8 +76,9 @@ SSLErrorNavigationThrottle::WillFailRequest() {
 
   // Do not set special error page HTML for non-primary pages (e.g. regular
   // subframe, prerendering, fenced-frame). Those are handled as normal
-  // network errors.
-  if (!handle->IsInPrimaryMainFrame() ||
+  // network errors. Some guest views are an exception if kGuestViewMPArch is
+  // enabled, as their main frame won't be a primary main frame.
+  if (!(handle->IsInPrimaryMainFrame() || handle->IsGuestViewMainFrame()) ||
       !WebContentsUsesInterstitials(handle)) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -117,7 +115,7 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   // Do not set special error page HTML for non-primary pages (e.g. regular
   // subframe, prerendering, fenced-frame). Those are handled as normal
   // network errors.
-  if (!handle->IsInPrimaryMainFrame() ||
+  if (!(handle->IsInPrimaryMainFrame() || handle->IsGuestViewMainFrame()) ||
       !WebContentsUsesInterstitials(handle)) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -176,7 +174,7 @@ void SSLErrorNavigationThrottle::ShowInterstitial(
   // prerendering, fenced-frame). For prerendering specifically, we
   // should already have canceled the prerender from OnSSLCertificateError
   // before the throttle runs.
-  DCHECK(handle->IsInPrimaryMainFrame());
+  DCHECK(handle->IsInPrimaryMainFrame() || handle->IsGuestViewMainFrame());
 
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
       handle, std::move(blocking_page));

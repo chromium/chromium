@@ -10,6 +10,7 @@ import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojo
 import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
+import type {DataSharingSdkSitePreview} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -26,6 +27,11 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
     super([
       'showUi',
       'closeUi',
+      'makeTabGroupShared',
+      'aboutToUnShareTabGroup',
+      'onTabGroupUnShareComplete',
+      'getShareLink',
+      'getTabGroupPreview',
     ]);
     this.callbackRouter = new PageCallbackRouter();
     this.callbackRouterRemote =
@@ -38,6 +44,29 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
 
   closeUi(status: Code) {
     this.methodCalled('closeUi', status);
+  }
+
+  makeTabGroupShared(tabGroupId: string, groupId: string) {
+    this.methodCalled('makeTabGroupShared', [tabGroupId, groupId]);
+  }
+
+  aboutToUnShareTabGroup(tabGroupId: string) {
+    this.methodCalled('aboutToUnShareTabGroup', tabGroupId);
+  }
+
+  onTabGroupUnShareComplete(tabGroupId: string) {
+    this.methodCalled('onTabGroupUnShareComplete', tabGroupId);
+  }
+
+  getShareLink(groupId: string, tokenSecret: string): Promise<string> {
+    this.methodCalled('getShareLink', [groupId, tokenSecret]);
+    return Promise.resolve('');
+  }
+
+  getTabGroupPreview(groupId: string, tokenSecret: string):
+      Promise<DataSharingSdkSitePreview[]> {
+    this.methodCalled('getTabGroupPreview', [groupId, tokenSecret]);
+    return Promise.resolve([]);
   }
 }
 

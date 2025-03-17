@@ -37,6 +37,39 @@ mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
 AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
+AITestUtils::FakeComponent::FakeComponent(std::string id, uint64_t total_bytes)
+    : id_(std::move(id)), total_bytes_(total_bytes) {}
+
+component_updater::CrxUpdateItem AITestUtils::FakeComponent::CreateUpdateItem(
+    update_client::ComponentState state,
+    uint64_t downloaded_bytes) const {
+  component_updater::CrxUpdateItem update_item;
+  update_item.state = state;
+  update_item.id = id_;
+  update_item.downloaded_bytes = downloaded_bytes;
+  update_item.total_bytes = total_bytes_;
+  return update_item;
+}
+
+AITestUtils::MockComponentUpdateService::MockComponentUpdateService() = default;
+AITestUtils::MockComponentUpdateService::~MockComponentUpdateService() =
+    default;
+
+void AITestUtils::MockComponentUpdateService::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AITestUtils::MockComponentUpdateService::RemoveObserver(
+    Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void AITestUtils::MockComponentUpdateService::SendUpdate(
+    const component_updater::CrxUpdateItem& item) {
+  for (Observer& observer : observer_list_) {
+    observer.OnEvent(item);
+  }
+}
 
 AITestUtils::AITestBase::AITestBase() = default;
 AITestUtils::AITestBase::~AITestBase() = default;

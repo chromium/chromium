@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -20,9 +22,10 @@ import android.view.Window;
 import android.widget.LinearLayout;
 
 import androidx.annotation.GravityInt;
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -32,24 +35,24 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Represents the dialog containing the page info view. */
+@NullMarked
 public class PageInfoDialog {
     private static final int ENTER_START_DELAY_MS = 100;
     private static final int ENTER_EXIT_DURATION_MS = 200;
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
-    @NonNull private final PageInfoContainer mPageInfoContainer;
-    @NonNull private final ViewGroup mScrollView;
+    private final PageInfoContainer mPageInfoContainer;
+    private final ViewGroup mScrollView;
 
-    private final boolean mIsSheet;
     // The dialog implementation.
     // mSheetDialog is set if the dialog appears as a sheet. Otherwise, mModalDialog is set.
-    private final Dialog mSheetDialog;
-    private final PropertyModel mModalDialogModel;
-    @NonNull private final ModalDialogManager mManager;
-    @NonNull private final ModalDialogProperties.Controller mController;
+    private final @Nullable Dialog mSheetDialog;
+    private final @Nullable PropertyModel mModalDialogModel;
+    private final ModalDialogManager mManager;
+    private final ModalDialogProperties.Controller mController;
 
     // Animation which is currently running, if there is one.
-    private Animator mCurrentAnimation;
+    private @Nullable Animator mCurrentAnimation;
 
     private boolean mDismissWithoutAnimation;
     private @GravityInt int mDialogPosition;
@@ -67,14 +70,13 @@ public class PageInfoDialog {
      */
     public PageInfoDialog(
             Context context,
-            @NonNull PageInfoContainer pageInfoContainer,
+            PageInfoContainer pageInfoContainer,
             View containerView,
             boolean isSheet,
-            @NonNull ModalDialogManager manager,
-            @NonNull Controller controller,
+            ModalDialogManager manager,
+            Controller controller,
             @GravityInt int dialogPosition) {
         mPageInfoContainer = pageInfoContainer;
-        mIsSheet = isSheet;
         mManager = manager;
         mController = controller;
         mDialogPosition = dialogPosition;
@@ -118,9 +120,10 @@ public class PageInfoDialog {
 
     /** Shows the dialogs. */
     public void show() {
-        if (mIsSheet) {
+        if (mSheetDialog != null) {
             mSheetDialog.show();
         } else {
+            assumeNonNull(mModalDialogModel);
             mManager.showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.APP);
         }
     }
@@ -132,9 +135,10 @@ public class PageInfoDialog {
      */
     public void dismiss(boolean animated) {
         mDismissWithoutAnimation = !animated;
-        if (mIsSheet) {
+        if (mSheetDialog != null) {
             mSheetDialog.dismiss();
         } else {
+            assumeNonNull(mModalDialogModel);
             mManager.dismissDialog(mModalDialogModel, DialogDismissalCause.UNKNOWN);
         }
     }
@@ -180,11 +184,14 @@ public class PageInfoDialog {
         sheetDialog.setCanceledOnTouchOutside(true);
 
         Window window = sheetDialog.getWindow();
+        assumeNonNull(window);
         window.setGravity(mDialogPosition);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        // TODO(agrieve): The assumeNonNull(null) should probably be replaced by making
+        // ModalDialogProperties.Controller encode nullity via a generic type argument.
         sheetDialog.setOnDismissListener(
-                dialog -> mController.onDismiss(null, DialogDismissalCause.UNKNOWN));
+                dialog -> mController.onDismiss(assumeNonNull(null), DialogDismissalCause.UNKNOWN));
 
         sheetDialog.addContentView(
                 container,
@@ -265,12 +272,12 @@ public class PageInfoDialog {
     }
 
     /**
-     * Create an animator to show/hide the entire dialog as a slide animation.
-     * On phones the dialog is slid in as a sheet. Otherwise, the default fade-in is used.
+     * Create an animator to show/hide the entire dialog as a slide animation. On phones the dialog
+     * is slid in as a sheet. Otherwise, the default fade-in is used.
      */
-    private Animator createDialogSlideAnimaton(boolean isEnter, Runnable onAnimationEnd) {
+    private Animator createDialogSlideAnimaton(boolean isEnter, @Nullable Runnable onAnimationEnd) {
         Animator dialogAnimation;
-        if (mIsSheet) {
+        if (mSheetDialog != null) {
             final float animHeight =
                     mDialogPosition == Gravity.TOP
                             ? -mScrollView.getHeight()

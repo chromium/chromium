@@ -183,6 +183,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/test_helper.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1577,10 +1578,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     // Add a user to the fake user manager.
     user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

@@ -3,12 +3,12 @@
 <title>HTML5 Canvas Test Reference: The lang attribute in an offscreen canvas</title>
 <link rel="author" href="mailto:schenney@chromium.org"/>
 <style>
-  #canvas-en {
+  #canvas-tr {
     position: absolute;
     top: 10px;
     left: 10px;
   }
-  #canvas-tr {
+  #canvas-en {
     position: absolute;
     top: 120px;
     left: 10px;
@@ -26,7 +26,7 @@
     let test_font = new FontFace(
       // Lato-Medium is a font with language specific ligatures.
       "Lato-Medium",
-      "url(/css/css-fonts/support/fonts/Lato-Medium.ttf)"
+      "url(/fonts/Lato-Medium.ttf)"
     );
 
     test_font.load().then((font) => {
@@ -37,10 +37,10 @@
   }
 </script>
 <body onload="generateReference()">
-  <canvas lang="en" id="canvas-tr" width="300" height="100">
+  <canvas lang="tr" id="canvas-tr" width="300" height="100">
     Browser does not support HTML5 Canvas.
   </canvas>
-  <canvas lang="tr" id="canvas-en" width="300" height="100">
+  <canvas lang="en" id="canvas-en" width="300" height="100">
     Browser does not support HTML5 Canvas.
   </canvas>
 </body>

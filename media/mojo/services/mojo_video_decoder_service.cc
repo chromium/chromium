@@ -124,8 +124,7 @@ class VideoFrameHandleReleaserImpl final
 MojoVideoDecoderService::MojoVideoDecoderService(
     MojoMediaClient* mojo_media_client,
     MojoCdmServiceContext* mojo_cdm_service_context,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-        oop_video_decoder_pending_remote)
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder_pending_remote)
     : mojo_media_client_(mojo_media_client),
       mojo_cdm_service_context_(mojo_cdm_service_context),
       oop_video_decoder_pending_remote_(
@@ -480,6 +479,31 @@ void MojoVideoDecoderService::OnOverlayInfoChanged(
   TRACE_EVENT0("media", "MojoVideoDecoderService::OnOverlayInfoChanged");
   provide_overlay_info_cb_.Run(overlay_info);
 }
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void MojoVideoDecoderService::InitializeWithCdmContext(
+    const VideoDecoderConfig& config,
+    bool low_delay,
+    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
+    InitializeWithCdmContextCallback callback) {
+  // There are two cases:
+  //
+  // a) This MojoVideoDecoderService lives in the GPU process, in which case, it
+  //    receives messages from renderer processes. Such processes are not
+  //    supposed to use InitializeWithCdmContext(). They should use
+  //    Initialize().
+  //
+  // b) This MojoVideoDecoderService lives in the utility process, in which
+  //    case, it receives messages from the in-process OOPVideoDecoderService.
+  //    The latter handles the InitializeWithCdmContext() calls and transforms
+  //    them into Initialize() calls.
+  //
+  // In either case, MojoVideoDecoderService is not supposed to handle
+  // InitializeWithCdmContext() calls.
+  CHECK(mojo::IsInMessageDispatch());
+  mojo::ReportBadMessage("Unexpected call to InitializeWithCdmContext()");
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
     bool restart_for_transitions,

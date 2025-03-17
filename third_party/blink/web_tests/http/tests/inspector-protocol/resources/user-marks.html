@@ -4,8 +4,14 @@
     <script>
         function dispatchConsoleTimings() {
             console.time("console time");
-            console.timeStamp("console timestamp");
             console.timeEnd("console time");
+        }
+        function dispatchConsoleTimeStamps() {
+            console.timeStamp("Timestamp with labels", "start", "end", "track", "trackGroup", "color");
+            const then = performance.now();
+            performance.mark("Timestamp reference", {startTime: then});
+            console.timeStamp("Timestamp with numeric values", then, then + 100, "track", "trackGroup", "color")
+
         }
         async function dispatchUserTimings() {
             let userTimingCallback;

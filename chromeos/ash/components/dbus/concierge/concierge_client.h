@@ -325,6 +325,12 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
           callback) = 0;
 
+  // Returns Baguette image URL information.
+  // |callback| is called after the method call finishes.
+  virtual void GetBaguetteImageUrl(
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::GetBaguetteImageUrlResponse> callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 

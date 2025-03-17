@@ -33,7 +33,7 @@
     assert_equals(alternate_auth_response.status, 401);
 
     // Configure server to change the cookie in the session config on next refresh.
-    configureServer({ cookieNameAndValue: expectedCookieAndValue2 });
+    configureServer({ cookieDetails: [{ nameAndValue: expectedCookieAndValue2 }] });
 
     // Expire the first cookie and send a request, which triggers the refresh with the new session config.
     expireCookie(expectedCookieAndAttributes1);

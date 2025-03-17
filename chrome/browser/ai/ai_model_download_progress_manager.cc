@@ -136,20 +136,22 @@ void AIModelDownloadProgressManager::Reporter::ProcessEvent(
   // ready to start reporting.
   ready_to_report_ = observed_downloaded_bytes_.size() == component_ids_.size();
 
-  if (ready_to_report_) {
-    last_reported_progress_ = 0;
-    last_progress_time_ = base::TimeTicks::Now();
-
-    // We don't want to include already downloaded bytes in our progress
-    // calculation, so determine it for later calculations and remove it now
-    // from components_total_bytes_.
-    already_downloaded_bytes_ = GetDownloadedBytes();
-    components_total_bytes_ -= already_downloaded_bytes_;
-
-    // Must always fire the zero progress event first.
-    observer_remote_->OnDownloadProgressUpdate(
-        0, AIUtils::kNormalizedDownloadProgressMax);
+  if (!ready_to_report_) {
+    return;
   }
+
+  last_reported_progress_ = 0;
+  last_progress_time_ = base::TimeTicks::Now();
+
+  // We don't want to include already downloaded bytes in our progress
+  // calculation, so determine it for later calculations and remove it now
+  // from components_total_bytes_.
+  already_downloaded_bytes_ = GetDownloadedBytes();
+  components_total_bytes_ -= already_downloaded_bytes_;
+
+  // Must always fire the zero progress event first.
+  observer_remote_->OnDownloadProgressUpdate(
+      0, AIUtils::kNormalizedDownloadProgressMax);
 }
 
 void AIModelDownloadProgressManager::Reporter::OnEvent(
@@ -179,6 +181,7 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
     if (current_time - last_progress_time_ <= base::Milliseconds(50)) {
       return;
     }
+    last_progress_time_ = current_time;
   }
 
   // Determine the normalized progress.

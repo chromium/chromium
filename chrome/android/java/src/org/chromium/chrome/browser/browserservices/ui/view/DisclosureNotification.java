@@ -27,7 +27,8 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -43,6 +44,9 @@ public class DisclosureNotification
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
     private final TrustedWebActivityModel mModel;
+    private final BaseNotificationManagerProxy mNotificationManagerProxy =
+            BaseNotificationManagerProxyFactory.create();
+
     private String mCurrentScope;
 
     public DisclosureNotification(
@@ -63,7 +67,8 @@ public class DisclosureNotification
 
         NotificationWrapper notification =
                 createNotification(firstTime, mCurrentScope, packageName);
-        NotificationManagerProxyImpl.getInstance().notify(notification);
+
+        mNotificationManagerProxy.notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         firstTime
@@ -77,10 +82,8 @@ public class DisclosureNotification
     }
 
     private void dismiss() {
-        NotificationManagerProxyImpl.getInstance()
-                .cancel(mCurrentScope, NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL);
-        NotificationManagerProxyImpl.getInstance()
-                .cancel(mCurrentScope, NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT);
+        mNotificationManagerProxy.cancel(mCurrentScope, NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL);
+        mNotificationManagerProxy.cancel(mCurrentScope, NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT);
         mCurrentScope = null;
     }
 

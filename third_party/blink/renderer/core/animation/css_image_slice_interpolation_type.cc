@@ -71,18 +71,14 @@ struct SliceTypes {
 
 class CSSImageSliceNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSImageSliceNonInterpolableValue> Create(
-      const SliceTypes& types) {
-    return base::AdoptRef(new CSSImageSliceNonInterpolableValue(types));
-  }
+  explicit CSSImageSliceNonInterpolableValue(const SliceTypes& types)
+      : types_(types) {}
 
   const SliceTypes& Types() const { return types_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSImageSliceNonInterpolableValue(const SliceTypes& types) : types_(types) {}
-
   const SliceTypes types_;
 };
 
@@ -158,8 +154,8 @@ InterpolationValue ConvertImageSlice(const ImageSlice& slice, double zoom) {
   }
 
   return InterpolationValue(
-      std::move(list),
-      CSSImageSliceNonInterpolableValue::Create(SliceTypes(slice)));
+      std::move(list), MakeGarbageCollected<CSSImageSliceNonInterpolableValue>(
+                           SliceTypes(slice)));
 }
 
 }  // namespace
@@ -241,7 +237,8 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
   }
 
   return InterpolationValue(
-      list, CSSImageSliceNonInterpolableValue::Create(SliceTypes(slice)));
+      list, MakeGarbageCollected<CSSImageSliceNonInterpolableValue>(
+                SliceTypes(slice)));
 }
 
 InterpolationValue

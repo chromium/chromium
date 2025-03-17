@@ -151,9 +151,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   const AccountId& GetLastSessionActiveAccountId() const override;
   void UserLoggedIn(const AccountId& account_id,
-                    const std::string& user_id_hash,
-                    bool browser_restart,
-                    bool is_child) override;
+                    const std::string& user_id_hash) override;
   bool EnsureUser(const AccountId& account_id,
                   UserType user_type,
                   bool is_ephemeral) override;

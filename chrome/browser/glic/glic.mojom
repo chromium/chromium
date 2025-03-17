@@ -190,6 +190,7 @@ struct WebClientInitialState {
   bool can_attach;
   // Whether the panel is active. See `NotifyPanelActiveChange`.
   bool panel_is_active;
+  WebClientSizingMode sizing_mode;
 };
 
 // Options for getting tab context.
@@ -664,4 +665,14 @@ struct Screenshot {
   string mime_type;
   // Image annotations for this screenshot.
   ImageOriginAnnotations origin_annotations;
+};
+
+// The sizing mode of web client.
+enum WebClientSizingMode {
+  // The web client uses natural (aka. intrinsic) sizing.
+  // This is the default mode.
+  kNatural,
+  // The web client resizes its content to fit the window size.
+  // This can be tested using "--glic-sizing-fit-window".
+  kFitWindow,
 };

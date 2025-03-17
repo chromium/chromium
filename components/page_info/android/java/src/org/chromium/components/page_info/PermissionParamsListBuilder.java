@@ -9,6 +9,10 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.TextAppearanceSpan;
 
+import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
@@ -23,11 +27,11 @@ import java.util.List;
 /**
  * This class is a helper for PageInfoController. It contains the logic required to turn a set of
  * permission values into PermissionParams suitable for PageInfoView to display.
- *
  */
+@NullMarked
 public class PermissionParamsListBuilder {
     private final List<PageInfoPermissionEntry> mEntries;
-    private final Context mContext;
+    private final @Nullable Context mContext;
     private final AndroidPermissionDelegate mPermissionDelegate;
 
     /**
@@ -37,7 +41,7 @@ public class PermissionParamsListBuilder {
      * @param permissionDelegate Delegate for checking system permissions.
      */
     public PermissionParamsListBuilder(
-            Context context, AndroidPermissionDelegate permissionDelegate) {
+            @Nullable Context context, AndroidPermissionDelegate permissionDelegate) {
         mContext = context;
         mPermissionDelegate = permissionDelegate;
         mEntries = new ArrayList<>();
@@ -62,31 +66,33 @@ public class PermissionParamsListBuilder {
 
     private PermissionObject createPermissionParams(
             PermissionParamsListBuilder.PageInfoPermissionEntry permission) {
-        PermissionObject permissionParams = new PermissionObject();
-        permissionParams.type = permission.type;
-
+        @StringRes int warningTextResource = 0;
         if (permission.setting == ContentSettingValues.ALLOW) {
             LocationUtils locationUtils = LocationUtils.getInstance();
             if (permission.type == ContentSettingsType.GEOLOCATION
                     && !locationUtils.isSystemLocationSettingEnabled()) {
-                permissionParams.warningTextResource = R.string.page_info_android_location_blocked;
+                warningTextResource = R.string.page_info_android_location_blocked;
             } else if (permission.type == ContentSettingsType.NFC
                     && !NfcSystemLevelSetting.isNfcAccessPossible()) {
-                permissionParams.warningTextResource = R.string.page_info_android_nfc_unsupported;
+                warningTextResource = R.string.page_info_android_nfc_unsupported;
             } else if (permission.type == ContentSettingsType.NFC
                     && !NfcSystemLevelSetting.isNfcSystemLevelSettingEnabled()) {
-                permissionParams.warningTextResource =
-                        R.string.page_info_android_permission_blocked;
+                warningTextResource = R.string.page_info_android_permission_blocked;
             } else if (!AndroidPermissionRequester.hasRequiredAndroidPermissionsForContentSetting(
                     mPermissionDelegate, permission.type)) {
                 if (permission.type == ContentSettingsType.AR) {
-                    permissionParams.warningTextResource =
-                            R.string.page_info_android_ar_camera_blocked;
+                    warningTextResource = R.string.page_info_android_ar_camera_blocked;
                 } else {
-                    permissionParams.warningTextResource =
-                            R.string.page_info_android_permission_blocked;
+                    warningTextResource = R.string.page_info_android_permission_blocked;
                 }
             }
+        } else {
+            assert permission.setting == ContentSettingValues.ASK
+                            || permission.setting == ContentSettingValues.BLOCK
+                    : "Invalid setting "
+                            + permission.setting
+                            + " for permission "
+                            + permission.type;
         }
 
         SpannableString nameString = new SpannableString(permission.name);
@@ -94,28 +100,16 @@ public class PermissionParamsListBuilder {
         final TextAppearanceSpan span =
                 new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMediumThick_Primary);
         nameString.setSpan(span, 0, nameString.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        permissionParams.name = nameString;
         nameStringMidSentence.setSpan(
                 span, 0, nameStringMidSentence.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        permissionParams.nameMidSentence = nameStringMidSentence;
 
-        switch (permission.setting) {
-            case ContentSettingValues.ALLOW:
-            case ContentSettingValues.ASK:
-                permissionParams.allowed = true;
-                break;
-            case ContentSettingValues.BLOCK:
-                permissionParams.allowed = false;
-                break;
-            default:
-                assert false
-                        : "Invalid setting "
-                                + permission.setting
-                                + " for permission "
-                                + permission.type;
-        }
-
-        return permissionParams;
+        boolean allowed = permission.setting != ContentSettingValues.BLOCK;
+        return new PermissionObject(
+                /* type= */ permission.type,
+                /* name= */ nameString,
+                /* nameMidSentence= */ nameStringMidSentence,
+                /* allowed= */ allowed,
+                /* warningTextResource= */ warningTextResource);
     }
 
     /**

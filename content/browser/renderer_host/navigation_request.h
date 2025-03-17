@@ -348,6 +348,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsInPrerenderedMainFrame() const override;
   bool IsPrerenderedPageActivation() const override;
   bool IsInFencedFrameTree() const override;
+  bool IsGuestViewMainFrame() const override;
   FrameType GetNavigatingFrameType() const override;
   bool IsRendererInitiated() override;
   blink::mojom::NavigationInitiatorActivationAndAdStatus

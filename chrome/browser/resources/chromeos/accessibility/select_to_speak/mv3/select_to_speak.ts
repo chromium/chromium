@@ -5,7 +5,6 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
-import {FlagName, Flags} from '/common/flags.js';
 import {NodeNavigationUtils} from '/common/node_navigation_utils.js';
 import {NodeUtils} from '/common/node_utils.js';
 import {ParagraphUtils} from '/common/paragraph_utils.js';
@@ -63,10 +62,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   private currentNodeGroupItemIndex_: number;
   private currentNodeGroups_: ParagraphUtils.NodeGroup[];
   private currentNodeWord_: {start: number, end: number}|null;
+  private createdOffscreenDocument_: Promise<void>|null = null;
   private desktop_: AutomationNode|undefined;
   private inputHandler_: InputHandler|null;
   private intervalId_: number|undefined;
-  private nullSelectionTone_: HTMLAudioElement;
   private onStateChangeRequestedCallbackForTest_: (() => void)|null;
   private prefsManager_: PrefsManager;
   private scrollToSpokenNode_: boolean;
@@ -76,6 +75,9 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   private ttsManager_: TtsManager;
   private uiManager_: UiManager;
   private onLoadDesktopCallbackForTest_: (() => void)|null;
+  declare private readyForTestingCallback_?: VoidFunction;
+  readyForTestingPromise: Promise<void> =
+      new Promise(resolve => this.readyForTestingCallback_ = resolve);
 
   /** Please keep fields in alphabetical order. */
   constructor() {
@@ -132,8 +134,6 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
      * speech is in progress.
      */
     this.intervalId_;
-
-    this.nullSelectionTone_ = new Audio('earcons/null_selection.ogg');
 
     /**
      * Function to be called when a state change request is received from the
@@ -193,24 +193,17 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     this.prefsManager_.initPreferences();
 
     this.runContentScripts_();
-    this.setUpEventListeners_();
-
-    await Flags.init();
+    await this.setUpEventListeners_();
     const createArgs: chrome.contextMenus.CreateProperties = {
       title: chrome.i18n.getMessage(
           'select_to_speak_listen_context_menu_option_text'),
       contexts: [chrome.contextMenus.ContextType.SELECTION],
       id: 'select_to_speak',
     };
-    if (Flags.isEnabled(FlagName.MANIFEST_V3)) {
-      chrome.contextMenus.onClicked.addListener(() => {
-        this.getFocusedNodeAndSpeakSelectedText_();
-      });
-    } else {
-      createArgs['onclick'] = () => {
-        this.getFocusedNodeAndSpeakSelectedText_();
-      };
-    }
+    chrome.contextMenus.onClicked.addListener(() => {
+      this.getFocusedNodeAndSpeakSelectedText_();
+    });
+
     // Install the context menu in the Ash browser.
     await chrome.contextMenus.create(createArgs);
 
@@ -219,6 +212,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
         () => {
           this.getFocusedNodeAndSpeakSelectedText_();
         });
+
+    this.readyForTestingCallback_!();
   }
 
   /**
@@ -345,8 +340,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       // that a node is in ARC++.
       if (!NodeUtils.findAllMatching(root, rect, nodes) && focusedNode &&
           focusedNode.root!.role !== RoleType.DESKTOP) {
-        // TODO(b/314203187): Determine if not null assertion is appropriate
-        // here.
+        // TODO(crbug.com/314203187): Determine if not null assertion is
+        // appropriate here.
         NodeUtils.findAllMatching(focusedNode.root!, rect, nodes);
       }
       if (nodes.length === 1 && UiManager.isTrayButton(nodes[0])) {
@@ -486,7 +481,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       method: MetricsUtils.StartSpeechMethod|null,
       focusedNode: AutomationNode|undefined): void {
     const nodes = [];
-    // TODO(b/314204374): AutomationUtil.findNextNode may return null.
+    // TODO(crbug.com/314204374): AutomationUtil.findNextNode may return null.
     let selectedNode: AutomationNode|null = firstPosition.node;
     // If the method is set, a user requested the speech.
     const userRequested = method !== null;
@@ -579,11 +574,14 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
           return;
         }
         const tab = tabs[0];
-        chrome.tabs.executeScript(tab.id, {
-          allFrames: true,
-          matchAboutBlank: true,
-          code: 'document.execCommand("copy");',
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id!,
+            allFrames: true,
+          },
+          func: () => document.execCommand('copy'),
         });
+
         if (userRequested) {
           MetricsUtils.recordStartEvent(methodNumber, this.prefsManager_);
         }
@@ -631,8 +629,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    * keystroke but nothing was selected.
    */
   private onNullSelection_(): void {
+    this.maybeCreateOffscreenDocument_();
+
     if (!this.shouldShowNavigationControls_()) {
-      this.nullSelectionTone_.play();
+      chrome.runtime.sendMessage(undefined, {command: 'playNullSelectionTone'});
       return;
     }
 
@@ -802,7 +802,11 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
         },
         tabs => {
           tabs.forEach(tab => {
-            chrome.tabs.executeScript(tab.id, {file: script});
+            chrome.scripting.executeScript({
+              target: {tabId: tab.id!},
+              files: [script],
+              world: chrome.scripting.ExecutionWorld.MAIN,
+            });
           });
         });
   }
@@ -810,7 +814,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   /**
    * Set up event listeners user input.
    */
-  private setUpEventListeners_(): void {
+  private async setUpEventListeners_(): Promise<void> {
+    // Offscreen documented necessary for InputHandler.
+    await this.maybeCreateOffscreenDocument_();
+
     this.inputHandler_ = new InputHandler({
       // canStartSelecting: Whether mouse selection can begin.
       canStartSelecting: () => {
@@ -1207,7 +1214,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
 
     MetricsUtils.recordTtsEngineUsed(voiceName, this.prefsManager_);
     this.ttsManager_.speak(
-        // TODO(b/314203187): Options may be undefined.
+        // TODO(crbug.com/314203187): Options may be undefined.
         nodeGroup.text, options!, this.prefsManager_.isNetworkVoice(voiceName),
         fallbackVoiceName);
   }
@@ -1814,6 +1821,43 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     }
     // Desktop already loaded.
     callback();
+  }
+
+  /**
+   * Creates an offscreen document if it does not yet exist.
+   * The offscreen document is used to play sounds (the null tone)
+   * and listen to copy/paste document events in InputHandler.
+   */
+  async maybeCreateOffscreenDocument_() {
+    const offscreenUrl =
+        chrome.runtime.getURL('select_to_speak/offscreen.html');
+
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [offscreenUrl]
+    });
+
+    if (existingContexts.length > 0) {
+      return;
+    }
+
+    if (!this.createdOffscreenDocument_) {
+      this.createdOffscreenDocument_ = chrome.offscreen.createDocument({
+        url: offscreenUrl,
+        reasons: [
+          chrome.offscreen.Reason.AUDIO_PLAYBACK,
+          chrome.offscreen.Reason.DOM_PARSER
+        ],
+        justification: 'Use the audio element and monitor clipboard',
+      });
+    }
+    try {
+      await this.createdOffscreenDocument_;
+    } catch (error) {
+      console.error('Failed to create offscreen document: ', error);
+      throw error;
+    }
+    this.createdOffscreenDocument_ = null;
   }
 }
 

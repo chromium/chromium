@@ -17,14 +17,10 @@ namespace blink {
 class CSSContentVisibilityNonInterpolableValue final
     : public NonInterpolableValue {
  public:
+  CSSContentVisibilityNonInterpolableValue(EContentVisibility start,
+                                           EContentVisibility end)
+      : start_(start), end_(end) {}
   ~CSSContentVisibilityNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSContentVisibilityNonInterpolableValue> Create(
-      EContentVisibility start,
-      EContentVisibility end) {
-    return base::AdoptRef(
-        new CSSContentVisibilityNonInterpolableValue(start, end));
-  }
 
   EContentVisibility ContentVisibility() const {
     DCHECK_EQ(start_, end_);
@@ -49,10 +45,6 @@ class CSSContentVisibilityNonInterpolableValue final
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSContentVisibilityNonInterpolableValue(EContentVisibility start,
-                                           EContentVisibility end)
-      : start_(start), end_(end) {}
-
   const EContentVisibility start_;
   const EContentVisibility end_;
 };
@@ -113,9 +105,10 @@ class InheritedContentVisibilityChecker
 InterpolationValue
 CSSContentVisibilityInterpolationType::CreateContentVisibilityValue(
     EContentVisibility content_visibility) const {
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
-                            CSSContentVisibilityNonInterpolableValue::Create(
-                                content_visibility, content_visibility));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<CSSContentVisibilityNonInterpolableValue>(
+          content_visibility, content_visibility));
 }
 
 InterpolationValue CSSContentVisibilityInterpolationType::MaybeConvertNeutral(
@@ -199,8 +192,8 @@ CSSContentVisibilityInterpolationType::MaybeMergeSingles(
   return PairwiseInterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
       MakeGarbageCollected<InterpolableNumber>(1),
-      CSSContentVisibilityNonInterpolableValue::Create(start_content_visibility,
-                                                       end_content_visibility));
+      MakeGarbageCollected<CSSContentVisibilityNonInterpolableValue>(
+          start_content_visibility, end_content_visibility));
 }
 
 void CSSContentVisibilityInterpolationType::Composite(

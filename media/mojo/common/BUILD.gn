@@ -16,6 +16,8 @@ source_set("common") {
     "mojo_decoder_buffer_converter.h",
     "mojo_pipe_read_write_util.cc",
     "mojo_pipe_read_write_util.h",
+    "validation_utils.cc",
+    "validation_utils.h",
   ]
 
   deps = [

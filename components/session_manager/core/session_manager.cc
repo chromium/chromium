@@ -192,9 +192,7 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
   observers_.Notify(&SessionManagerObserver::OnSessionCreationStarted,
                     user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
-  user_manager_->UserLoggedIn(user_account_id, username_hash,
-                              /*browser_restart=*/false,  // unused
-                              /*is_child=*/false);        // unused
+  user_manager_->UserLoggedIn(user_account_id, username_hash);
   OnSessionCreated(browser_restart);
   observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }

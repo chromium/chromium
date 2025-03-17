@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ParagraphUtils} from './paragraph_utils.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 // Utilities for processing words within strings and nodes.
 
@@ -145,3 +146,5 @@ export namespace WordUtils {
    */
   export const WORD_END_REGEXP: RegExp = /\S\s/;
 }
+
+TestImportManager.exportForTesting(WordUtils);

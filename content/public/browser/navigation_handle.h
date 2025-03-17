@@ -165,6 +165,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // tree.
   virtual bool IsInFencedFrameTree() const = 0;
 
+  // Returns true if the navigation is taking place in a GuestView main frame.
+  virtual bool IsGuestViewMainFrame() const = 0;
+
   // Returns the type of the frame in which this navigation is taking place.
   virtual FrameType GetNavigatingFrameType() const = 0;
 

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "base/compiler_specific.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -71,7 +72,7 @@ bool EnableInProcessStackDumping() {
   // with SIGPIPE ignored as well.
   // TODO(phajdan.jr): De-duplicate this SIGPIPE code.
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   action.sa_handler = SIG_IGN;
   sigemptyset(&action.sa_mask);
   return (sigaction(SIGPIPE, &action, NULL) == 0);

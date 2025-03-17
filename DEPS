@@ -291,19 +291,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '71e0ea3dfc6c283df7951dc09634abd328ae8a11',
+  'src_internal_revision': '2a0cf61520deab4d0331093663c3f1df4eefae98',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a2782c16e4b10e33cdc3fbbd69de8ccb034d8377',
+  'skia_revision': 'ce87cb08da818239459e69af63b34e2504f0037f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '22922df603b9d4a1b51143acabb5d5c140a2a490',
+  'v8_revision': '1459266e28bcdc9ab40b4e6e79a55320384d293d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'f64a954700f12730246b05d4261cf5d0395ec676',
+  'angle_revision': '6c26ea1540d71184a1cd45ade3840ac934e9e199',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -367,7 +367,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '828df14a606d2bcd5498906e5f1efc2b58c7589b',
+  'catapult_revision': '52b03c74767c6f1a01f9904ef897997f3e2787a6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -387,7 +387,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a418efec9d90db552debf2906b36157cbd6c8b28',
+  'devtools_frontend_revision': '6a523a73524021f1d1b1649f32311adbc04dda69',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -419,7 +419,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
-  'ink_revision': 'bf387a71d7def4b48bf24c8e09d412dfb9962746',
+  'ink_revision': 'c542d619a8959415beda5a76fe89ffa2f83df886',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink_stroke_modeler
   # and whatever else without interference from each other.
@@ -1474,7 +1474,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
-        'version': 'PO2OXLhKJCgP_GRT1nuN6zJOvW0b1w2fOFKtyPJu7zgC',
+        'version': 'B5M4KiJKK6RjBryoQvMsATx4spELcDV0qc3Aeo3cmPoC',
       },
     ],
     'dep_type': 'cipd',
@@ -1485,7 +1485,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'adea86239f728995ce89be64e284e3970cbc21de',
+    '921f002e5ddd4d8f383bcad6af794dddc5392eed',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1968,7 +1968,7 @@ deps = {
 
   # For Linux and Chromium OS.
   'src/third_party/cros_system_api': {
-      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + '660d8fd8a092ad609dde4114ae11d0f9d43431fb',
+      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + '9743bdc2c3362401950b6edbe5fae61783373105',
       'condition': 'checkout_linux or checkout_chromeos',
   },
 
@@ -2376,7 +2376,7 @@ deps = {
     Var('chromium_git') + '/chromiumos/platform/libva-fake-driver.git' + '@' + 'a9bcab9cd6b15d4e3634ca44d5e5f7652c612194',
 
   'src/third_party/libvpx/source/libvpx':
-    Var('chromium_git') + '/webm/libvpx.git' + '@' +  '95afae324986797afb19a606f3d95ecdf21e99a7',
+    Var('chromium_git') + '/webm/libvpx.git' + '@' +  '349820a50dd2c0afbfb26f7b12fc1a83588a52c0',
 
   'src/third_party/libwebm/source':
     Var('chromium_git') + '/webm/libwebm.git' + '@' + 'e79a98159fdf6d1aa37b3500e32c6410a2cbe268',
@@ -2525,7 +2525,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'ab7b86e7baaee04b9820b45f4612f0aaa3acaaa9',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'a876ec9c6b6e8e2ab088702c0a4d3d19dcf8f545',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2666,7 +2666,7 @@ deps = {
   },
 
   'src/third_party/protobuf-javascript/src':
-    Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + '426b2e025aa59c23a1b6e19fbacd6b4a11bfad16',
+    Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'eb785a9363664a402b6336dfe96aad27fb33ffa8',
 
   'src/third_party/pthreadpool/src':
     Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'b1aee199d54003fb557076a201bcac3398af580b',
@@ -2893,7 +2893,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '340d7e10bfaade3bbef36012420eb7532ed36037',
+    Var('webrtc_git') + '/src.git' + '@' + 'd68dd9266ad44a86f51579ad4abdfc66203a8e21',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4682,7 +4682,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'd42f9eff49e718acc75a68bb3798ab1c293b0b05',
+        '386d60a2a9c6f4deafddd3112ccbb65ce37abb5d',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

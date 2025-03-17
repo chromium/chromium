@@ -437,7 +437,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
       shared_meta()->name = Allocate(name_length, 0);
       char* name_cstr = GetAsArray<char>(shared_meta()->name, 0, name_length);
       if (name_cstr) {
-        memcpy(name_cstr, name.data(), name.length());
+        UNSAFE_TODO(memcpy(name_cstr, name.data(), name.length()));
       }
     }
 
@@ -626,7 +626,8 @@ std::string_view PersistentMemoryAllocator::StringViewAt(const void* object,
   }
   const char* const cstr =
       UNSAFE_TODO(static_cast<const char*>(object) + offset);
-  return std::string_view(cstr, strnlen(cstr, alloc_size - offset - 1));
+  return std::string_view(cstr,
+                          UNSAFE_TODO(strnlen(cstr, alloc_size - offset - 1)));
 }
 
 PersistentMemoryAllocator::Reference PersistentMemoryAllocator::Allocate(
@@ -1115,7 +1116,7 @@ LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size,
   // added to the process now istead of only when first accessed).
   address = malloc(size);
   DPCHECK(address);
-  memset(address, 0, size);
+  UNSAFE_TODO(memset(address, 0, size));
   return Memory(address, MEM_MALLOC);
 }
 

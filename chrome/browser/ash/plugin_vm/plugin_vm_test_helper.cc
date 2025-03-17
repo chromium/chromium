@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -162,9 +163,9 @@ void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id, true, user_manager::UserType::kRegular, testing_profile_);
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(user_manager));
   running_on_chromeos_ =

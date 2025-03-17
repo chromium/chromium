@@ -59,6 +59,7 @@ const char* const STRING_ATTRIBUTES[] = {
     "name",
     "hint",
     "state_description",
+    "container_title",
 };
 
 const char* const INT_ATTRIBUTES[] = {
@@ -195,6 +196,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("hint", android_node->GetHint());
   dict->Set("role_description", android_node->GetRoleDescription());
   dict->Set("state_description", android_node->GetStateDescription());
+  dict->Set("container_title", android_node->GetContainerTitle());
 
   // Int attributes.
   dict->Set("item_index", android_node->GetItemIndex());

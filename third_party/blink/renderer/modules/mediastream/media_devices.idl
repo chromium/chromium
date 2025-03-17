@@ -11,7 +11,7 @@
     ActiveScriptWrappable,
     SecureContext
 ] interface MediaDevices : EventTarget {
-    [RuntimeEnabled=OnDeviceChange] attribute EventHandler ondevicechange;
+    attribute EventHandler ondevicechange;
     [
       CallWith = ScriptState, RaisesException, HighEntropy, MeasureAs = MediaDevicesEnumerateDevices
     ] Promise<sequence<MediaDeviceInfo>>

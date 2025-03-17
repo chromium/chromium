@@ -68,13 +68,6 @@ source_set("clients") {
     "mojo_video_encoder_metrics_provider.h",
   ]
 
-  if (allow_oop_video_decoder) {
-    sources += [
-      "mojo_stable_video_decoder.cc",
-      "mojo_stable_video_decoder.h",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "mojo_android_overlay.cc",
@@ -156,10 +149,6 @@ source_set("unit_tests") {
     "mojo_video_encode_accelerator_unittest.cc",
     "mojo_video_encoder_metrics_provider_unittest.cc",
   ]
-
-  if (allow_oop_video_decoder) {
-    sources += [ "mojo_stable_video_decoder_unittest.cc" ]
-  }
 
   deps = [
     "//base",

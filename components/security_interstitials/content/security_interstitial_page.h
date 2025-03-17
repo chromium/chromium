@@ -66,6 +66,9 @@ class SecurityInterstitialPage {
   virtual void CreatedPostCommitErrorPageNavigation(
       content::NavigationHandle* error_page_navigation_handle) {}
 
+  // Returns the controller client handling this page.
+  SecurityInterstitialControllerClient* controller() const;
+
   // Return the interstitial type for testing.
   virtual TypeID GetTypeForTesting();
 
@@ -81,8 +84,6 @@ class SecurityInterstitialPage {
 
   content::WebContents* web_contents() const;
   GURL request_url() const;
-
-  SecurityInterstitialControllerClient* controller() const;
 
   // Update metrics when the interstitial is closed.
   void UpdateMetricsAfterSecurityInterstitial();

@@ -247,8 +247,11 @@ enum class PrefetchStatus {
   // this will be still used for ServiceWorker-ineligible prefetches.
   kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler = 54,
 
+  // The prefetch canceled by clearing cache from browsing data removal.
+  kPrefetchEvictedAfterBrowsingDataRemoved = 55,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler,
+  kMaxValue = kPrefetchEvictedAfterBrowsingDataRemoved,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 

@@ -63,7 +63,7 @@ class InheritedClipChecker : public CSSInterpolationType::CSSConversionChecker {
         std::move(inherited_length_list));
   }
 
-  InheritedClipChecker(const Vector<Length>&& inherited_length_list)
+  explicit InheritedClipChecker(const Vector<Length>&& inherited_length_list)
       : inherited_length_list_(std::move(inherited_length_list)) {}
 
  private:
@@ -89,23 +89,17 @@ class InheritedClipChecker : public CSSInterpolationType::CSSConversionChecker {
 
 class CSSClipNonInterpolableValue final : public NonInterpolableValue {
  public:
-  ~CSSClipNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSClipNonInterpolableValue> Create(
-      const ClipAutos& clip_autos) {
-    return base::AdoptRef(new CSSClipNonInterpolableValue(clip_autos));
+  explicit CSSClipNonInterpolableValue(const ClipAutos& clip_autos)
+      : clip_autos_(clip_autos) {
+    DCHECK(!clip_autos_.is_auto);
   }
+  ~CSSClipNonInterpolableValue() final = default;
 
   const ClipAutos& GetClipAutos() const { return clip_autos_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSClipNonInterpolableValue(const ClipAutos& clip_autos)
-      : clip_autos_(clip_autos) {
-    DCHECK(!clip_autos_.is_auto);
-  }
-
   const ClipAutos clip_autos_;
 };
 
@@ -171,7 +165,7 @@ static InterpolationValue CreateClipValue(const LengthBox& clip,
   list->Set(kClipBottom, ConvertClipComponent(clip.Bottom(), property, zoom));
   list->Set(kClipLeft, ConvertClipComponent(clip.Left(), property, zoom));
   return InterpolationValue(
-      list, CSSClipNonInterpolableValue::Create(ClipAutos(clip)));
+      list, MakeGarbageCollected<CSSClipNonInterpolableValue>(ClipAutos(clip)));
 }
 
 InterpolationValue CSSClipInterpolationType::MaybeConvertNeutral(
@@ -234,7 +228,8 @@ InterpolationValue CSSClipInterpolationType::MaybeConvertValue(
   list->Set(kClipLeft, ConvertClipComponent(*quad->Left()));
   ClipAutos autos(IsCSSAuto(*quad->Top()), IsCSSAuto(*quad->Right()),
                   IsCSSAuto(*quad->Bottom()), IsCSSAuto(*quad->Left()));
-  return InterpolationValue(list, CSSClipNonInterpolableValue::Create(autos));
+  return InterpolationValue(
+      list, MakeGarbageCollected<CSSClipNonInterpolableValue>(autos));
 }
 
 InterpolationValue

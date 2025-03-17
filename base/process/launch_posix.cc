@@ -266,7 +266,7 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
 
     char* endptr;
     errno = 0;
-    const long int fd = strtol(fd_dir.name(), &endptr, 10);
+    const long int fd = UNSAFE_TODO(strtol(fd_dir.name(), &endptr, 10));
     if (fd_dir.name()[0] == 0 || *endptr || fd < 0 || errno ||
         !IsValueInRangeForNumericType<int>(fd)) {
       continue;

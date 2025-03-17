@@ -54,12 +54,11 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) final;
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) final;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) final;
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) final;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   void CreateAudioEncoder(
@@ -128,8 +127,7 @@ class InterfaceFactoryImpl final
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void FinishCreatingVideoDecoder(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder);
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Must be declared before the receivers below because the bound objects might

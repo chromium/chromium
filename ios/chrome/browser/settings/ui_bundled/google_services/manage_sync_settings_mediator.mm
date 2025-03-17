@@ -238,13 +238,16 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (!self.accountStateSignedIn) {
     return;
   }
-      [self.consumer
-          updatePrimaryAccountWithAvatarImage:
-              _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
-                  _signedInIdentity, IdentityAvatarSize::Large)
-                                         name:_signedInIdentity.userFullName
-                                        email:_signedInIdentity.userEmail
-                              managementState:self.managementState];
+  UIImage* avatarImage =
+      _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+          _signedInIdentity, IdentityAvatarSize::Large);
+  NSString* managementDescription =
+      GetManagementDescription([self managementState]);
+  [self.consumer
+      updatePrimaryAccountWithAvatarImage:avatarImage
+                                     name:_signedInIdentity.userFullName
+                                    email:_signedInIdentity.userEmail
+                    managementDescription:managementDescription];
 }
 
 // Updates all the sync data type items, and notify the consumer if

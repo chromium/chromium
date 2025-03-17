@@ -32,9 +32,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
 
   // UserManager overrides.
   void UserLoggedIn(const AccountId& account_id,
-                    const std::string& username_hash,
-                    bool browser_restart,
-                    bool is_child) override;
+                    const std::string& username_hash) override;
   bool EnsureUser(const AccountId& account_id,
                   UserType user_type,
                   bool is_ephemeral) override;

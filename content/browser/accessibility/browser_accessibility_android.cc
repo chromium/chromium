@@ -461,8 +461,10 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   }
 
   // Otherwise, the interesting nodes are leaf nodes with non-whitespace text.
-  return IsLeaf() && !base::ContainsOnlyChars(GetTextContentUTF16(),
-                                              base::kWhitespaceUTF16);
+  return IsLeaf() && (!base::ContainsOnlyChars(GetTextContentUTF16(),
+                                               base::kWhitespaceUTF16) ||
+                      !base::ContainsOnlyChars(GetContainerTitle(),
+                                               base::kWhitespaceUTF16));
 }
 
 bool BrowserAccessibilityAndroid::IsHeadingLink() const {
@@ -757,7 +759,9 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     return base::UTF8ToUTF16(skia::SkColorToHexString(color));
   }
 
-  std::u16string text = GetNameAsString16();
+  // If the aria-label is already mapped to the container title, we should
+  // exclude aria-label from mapping to text.
+  std::u16string text = GetContainerTitle().empty() ? GetNameAsString16() : u"";
   if (ui::IsRangeValueSupported(GetRole())) {
     // For controls that support range values such as sliders, when a non-empty
     // name is present (e.g. a label), append this to the value so both the
@@ -824,8 +828,11 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
   std::vector<std::u16string> inner_text({std::move(text)});
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  if (text_length == 0 && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
-                           (IsFocusable() && HasOnlyTextAndImageChildren()))) {
+  // Only if the aria-label is not already mapped to the container title
+  // (in other words, container title is empty), we loop through the children.
+  if (text_length == 0 && GetContainerTitle().empty() &&
+      ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
+       (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       std::u16string child_text =
           static_cast<BrowserAccessibilityAndroid*>(it.get())
@@ -976,6 +983,18 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
   // Concatenate all state descriptions and return.
   return base::JoinString(state_descs, u" ");
+}
+
+std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
+  if (ui::IsContainerOnAndroid(GetRole()) && IsAccessibleNameFromAttribute()) {
+    return GetNameAsString16();
+  }
+  return u"";
+}
+
+bool BrowserAccessibilityAndroid::IsAccessibleNameFromAttribute() const {
+  return HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
+         GetNameFrom() == ax::mojom::NameFrom::kAttribute;
 }
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()

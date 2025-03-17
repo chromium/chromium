@@ -108,6 +108,10 @@ const char kAutoSelectTabCaptureSourceByTitle[] =
 const char kAutoSelectWindowCaptureSourceByTitle[] =
     "auto-select-window-capture-source-by-title";
 
+// Automatically signs the user into Chrome when signing in to other Google
+// services on the web. This makes it easier for automated browsers to sign in.
+const char kBrowserSigninAutoAccept[] = "auto-accept-browser-signin-for-tests";
+
 // If specified, allows syncing multiple profiles to the same account. Used for
 // multi-client E2E tests.
 constexpr char kBypassAccountAlreadyUsedByAnotherProfileCheck[] =

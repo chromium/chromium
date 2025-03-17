@@ -939,7 +939,6 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.searchwidget") {
     sources = [
       "src/org/chromium/chrome/browser/searchwidget/SearchActivityClientImplUnitTest.java",
-      "src/org/chromium/chrome/browser/searchwidget/SearchActivityTabDelegateFactoryUnitTest.java",
       "src/org/chromium/chrome/browser/searchwidget/SearchActivityUnitTest.java",
       "src/org/chromium/chrome/browser/searchwidget/SearchActivityUtilsUnitTest.java",
     ]

@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -171,11 +171,11 @@ using PriceNotificationItems =
   DCHECK(item.tracking);
   [self navigateToWebpageForURL:item.entryURL
                     disposition:WindowOpenDisposition::CURRENT_TAB];
-  [self.handler hidePriceNotifications];
+  [self.handler hidePriceTrackedItems];
 }
 
 - (void)navigateToBookmarks {
-  [self.handler hidePriceNotifications];
+  [self.handler hidePriceTrackedItems];
   GURL URL = _webState->GetLastCommittedURL();
   [self.bookmarksHandler showBookmarkInBookmarksUI:URL];
 }

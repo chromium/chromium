@@ -109,6 +109,8 @@ void AddSharedGroup() {
 // Tests that deleting a shared tab group from tab strip works.
 - (void)testTabStripSharedGroupDeleteSharedGroup {
   if (@available(iOS 17, *)) {
+    // TODO(crbug.com/404239595): Test fails on iPad iOS 17.5 simulator.
+    EARL_GREY_TEST_DISABLED(@"This test fails on iPad devices.");
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }

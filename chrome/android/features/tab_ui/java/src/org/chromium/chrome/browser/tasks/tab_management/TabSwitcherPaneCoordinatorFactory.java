@@ -16,12 +16,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -60,6 +62,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final @NonNull BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final @NonNull ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final @NonNull ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
@@ -81,6 +85,8 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
+     *     the tab's URL when the user selects the "Share" option.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -98,7 +104,9 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull BackPressManager backPressManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -119,6 +127,8 @@ public class TabSwitcherPaneCoordinatorFactory {
         mBackPressManager = backPressManager;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
     }
 
     /**
@@ -170,7 +180,9 @@ public class TabSwitcherPaneCoordinatorFactory {
                 onTabGroupCreation,
                 () -> mMessageManagerTokenHolder.releaseToken(token),
                 edgeToEdgeSupplier,
-                mDesktopWindowStateManager);
+                mDesktopWindowStateManager,
+                mShareDelegateSupplier,
+                mTabBookmarkerSupplier);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */

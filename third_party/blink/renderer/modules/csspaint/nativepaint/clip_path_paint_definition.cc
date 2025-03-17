@@ -257,7 +257,7 @@ std::optional<scoped_refptr<BasicShape>> GetAnimatedShapeFromKeyframe(
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     const NonInterpolableValue* non_interpolable_value =
-        keyframe->GetValue()->Value().non_interpolable_value.get();
+        keyframe->GetValue()->Value().non_interpolable_value.Get();
     BasicShape::ShapeType type =
         PathInterpolationFunctions::IsPathNonInterpolableValue(
             *non_interpolable_value)

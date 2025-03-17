@@ -79,22 +79,49 @@ found in the LICENSE file.
     font-size: smaller;
   }
   #successUI, #localDenialUI, #osDenialUI {
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
-}
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
 
-#localDenialUI {
-  border-color: orange;
-}
+  #localDenialUI {
+    border-color: orange;
+  }
 
-#osDenialUI {
-  border-color: red;
-}
+  #osDenialUI {
+    border-color: red;
+  }
 
-#successUI {
-    border-color: green;
-}
+  #successUI {
+      border-color: green;
+  }
+
+  .fitWindow html {
+    height: unset;
+  }
+
+  .fitWindow body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fitWindow #contentSizingTest {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .fitWindow #contentSizingTest .section {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .fitWindow #dump {
+    overflow-y: scroll;
+    flex-grow: 1;
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -357,12 +384,12 @@ found in the LICENSE file.
     <fieldset>
       <legend>Sizing mode:</legend>
       <div>
-        <input type="radio" id="fitWindow" name="resizeOption" value="fitWindow" checked>
+        <input type="radio" id="fitWindow" name="resizeOption" value="fitWindow" checked disabled>
         <label for="fitWindow">Content fits window</label>
       </div>
       <div>
-        <input type="radio" id="fitContent" name="resizeOption" value="fitContent">
-        <label for="fitContent">Window fits content</label>
+        <input type="radio" id="naturalSizing" name="resizeOption" value="naturalSizing" disabled>
+        <label for="naturalSize">Content uses natural size</label>
       </div>
     </fieldset>
   </form>

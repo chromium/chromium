@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_MANAGEMENT_UTIL_H_
 #define IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_MANAGEMENT_UTIL_H_
 
+#import <UIKit/UIKit.h>
+
 #import <optional>
 #import <string>
 
@@ -21,5 +23,8 @@ class IdentityManager;
 ManagementState GetManagementState(signin::IdentityManager* identity_manager,
                                    AuthenticationService* auth_service,
                                    PrefService* prefs);
+
+// Returns a string representing the management state.
+NSString* GetManagementDescription(ManagementState management_state);
 
 #endif  // IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_MANAGEMENT_UTIL_H_

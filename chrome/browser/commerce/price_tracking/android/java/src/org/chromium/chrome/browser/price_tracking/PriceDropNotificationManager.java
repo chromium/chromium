@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -25,14 +26,18 @@ public interface PriceDropNotificationManager {
     boolean isEnabled();
 
     /**
-     * @return Whether price drop notifications can be posted.
+     * Check whether price drop notifications can be posted.
+     *
+     * @param callback Callback to be invoked on whether notification can be posted.
      */
-    boolean canPostNotification();
+    void canPostNotification(Callback<Boolean> callback);
 
     /**
-     * @return Whether price drop notifications can be posted and record user opt-in metrics.
+     * Check whether price drop notifications can be posted and record user opt-in metrics.
+     *
+     * @param callback Callback to be invoked on the result of the check.
      */
-    boolean canPostNotificationWithMetricsRecorded();
+    void canPostNotificationWithMetricsRecorded(Callback<Boolean> callback);
 
     /**
      * Record UMAs after posting price drop notifications.
@@ -127,10 +132,13 @@ public interface PriceDropNotificationManager {
     Intent getNotificationSettingsIntent();
 
     /**
-     * @return The price drop notification channel.
+     * Gets the price drop notification channel.
+     *
+     * @param callback Callback to be invoked with the notification channel if available, or null
+     *     otherwise.
      */
     @VisibleForTesting
-    NotificationChannel getNotificationChannel();
+    void getNotificationChannel(Callback<NotificationChannel> callback);
 
     /** Delete price drop notification channel for testing. */
     void deleteChannelForTesting();

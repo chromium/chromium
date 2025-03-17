@@ -76,6 +76,9 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   private ttsManager_: TtsManager;
   private uiManager_: UiManager;
   private onLoadDesktopCallbackForTest_: (() => void)|null;
+  declare private readyForTestingCallback_?: VoidFunction;
+  readyForTestingPromise: Promise<void> =
+      new Promise(resolve => this.readyForTestingCallback_ = resolve);
 
   /** Please keep fields in alphabetical order. */
   constructor() {
@@ -219,6 +222,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
         () => {
           this.getFocusedNodeAndSpeakSelectedText_();
         });
+
+    this.readyForTestingCallback_!();
   }
 
   /**

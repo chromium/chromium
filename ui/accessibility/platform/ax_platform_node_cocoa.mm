@@ -438,8 +438,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
-  static base::NoDestructor<std::unordered_set<SEL>> methodSelectorsForActions(
-      { @selector(accessibilityPerformPress), });
+  static base::NoDestructor<std::unordered_set<SEL>> methodSelectorsForActions({
+    @selector(accessibilityPerformPress),
+        @selector(accessibilityPerformDecrement),
+        @selector(accessibilityPerformIncrement),
+        @selector(accessibilityPerformShowMenu),
+        @selector(accessibilityPerformConfirm)
+  });
 
   static base::NoDestructor<std::unordered_set<SEL>>
       methodSelectorsForParameterizedAttributes({
@@ -1384,6 +1389,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
               containsObject:evaluatedObject];
         }]];
   }
+
   return actions;
 }
 

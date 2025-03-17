@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -153,7 +154,7 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   in_process_data_decoder_ =
       std::make_unique<data_decoder::test::InProcessDataDecoder>();
 
-  extension_service_->ClearProvidersForTesting();
+  ExternalProviderManager::Get(profile_)->ClearProvidersForTesting();
   return extension_service_.get();
 }
 

@@ -412,11 +412,9 @@ scoped_refptr<Extension> SyncExtensionHelper::GetExtension(
     return it2->second;
   }
 
-  scoped_refptr<Extension> extension =
-      CreateExtension(extensions::ExtensionSystem::Get(profile)
-                          ->extension_service()
-                          ->install_directory(),
-                      name, type);
+  scoped_refptr<Extension> extension = CreateExtension(
+      extensions::ExtensionRegistrar::Get(profile)->install_directory(), name,
+      type);
   if (!extension.get()) {
     ADD_FAILURE();
     return nullptr;

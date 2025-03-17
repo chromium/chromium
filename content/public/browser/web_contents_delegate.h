@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-forward.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -862,6 +863,16 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig();
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Returns the saved related_applications web app manifest field associated
+  // with the given `web_contents`. The information is saved via the
+  // installation of a web app, where the url of the `web_contents` is in-scope
+  // of an installed web app. Returns an empty vector if `web_contents` is not
+  // associated with an installed web app or `related_applications` is empty.
+  // See:
+  // https://wicg.github.io/manifest-incubations/index.html#related_applications-member
+  virtual std::vector<blink::mojom::RelatedApplicationPtr>
+  GetSavedRelatedApplications(WebContents* web_contents);
 
  protected:
   virtual ~WebContentsDelegate();

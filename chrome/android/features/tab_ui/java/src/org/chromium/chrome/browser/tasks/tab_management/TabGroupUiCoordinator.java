@@ -168,7 +168,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     /** Handle any initialization that occurs once native has been loaded. */
     @Override
     public void initializeWithNative(
-            Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onSnapshotTokenChange) {
         ObservableSupplierImpl<Object> tabStripTokenSupplier = new ObservableSupplierImpl<>();
@@ -232,11 +231,11 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(profile);
                 sharedImageTilesConfigBuilder =
-                        new SharedImageTilesConfig.Builder(activity)
+                        new SharedImageTilesConfig.Builder(mActivity)
                                 .setIconSizeDp(R.dimen.tab_strip_shared_image_tiles_size);
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                activity,
+                                mActivity,
                                 sharedImageTilesConfigBuilder.build(),
                                 dataSharingService,
                                 collaborationService);
@@ -250,7 +249,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     new TabGroupUiMediator(
                             visibilityController,
                             mHandleBackPressChangedSupplier,
-                            this,
+                            /* resetHandler= */ this,
                             mModel,
                             mTabModelSelector,
                             mTabContentManager,

@@ -79,6 +79,10 @@ AX_BASE_EXPORT bool IsControl(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsControlOnAndroid(const ax::mojom::Role role,
                                        bool isFocusable);
 
+// Returns true if the provided role is a container on the Android platform,
+// which include aria landmark roles, and iframe roles.
+AX_BASE_EXPORT bool IsContainerOnAndroid(const ax::mojom::Role role);
+
 // Returns true for an <input> used for a date or time.
 AX_BASE_EXPORT bool IsDateOrTimeInput(const ax::mojom::Role role);
 

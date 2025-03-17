@@ -960,8 +960,9 @@ TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   const std::string intermediate_pin = "intermediate_pin";
   const std::string new_pin = "newpin";
 
+  const TempDir temp_dir_2;
   EnclaveManager second_manager(
-      temp_dir_.GetPath(), identity_test_env_.identity_manager(),
+      temp_dir_2.GetPath(), identity_test_env_.identity_manager(),
       base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
         return network_context_.get();
       }),
@@ -1102,6 +1103,70 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
   EXPECT_TRUE(*LastPINRenewalTime() > *initial_time);
+}
+
+// Regression test for crbug.com/403218779.
+// Simulates two chrome clients by standing up a second Enclave Manager. The
+// second Enclave Manager will renew a PIN. This invalidates the data from the
+// first manager. Then, the first manager will attempt renewing the PIN. This
+// used to be broken because the first manager would not download the updated
+// PIN data, causing a public key mismatch on the join security domain query.
+TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
+  const std::string kPin = "123456";
+
+  // Set up the first manager with the PIN.
+  ASSERT_TRUE(Register());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+  std::optional<std::pair<int32_t, std::vector<uint8_t>>> secret =
+      manager_.TakeSecret();
+  ASSERT_TRUE(secret);
+  const std::string initial_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+
+  // Set up the second manager.
+  const TempDir temp_dir_2;
+  EnclaveManager second_manager(
+      temp_dir_2.GetPath(), identity_test_env_.identity_manager(),
+      base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+        return network_context_.get();
+      }),
+      url_loader_factory_.GetSafeWeakWrapper());
+  second_manager.StoreKeys(gaia_id_, {secret->second}, secret->first);
+  BoolFuture add_future;
+  second_manager.AddDeviceToAccount(security_domain_service_->GetPinMetadata(),
+                                    add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+  ASSERT_TRUE(add_future.Get());
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 2u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  // Renew the PIN with the second manager.
+  {
+    BoolFuture renew_future;
+    second_manager.RenewPIN(renew_future.GetCallback());
+    ASSERT_TRUE(renew_future.Wait());
+    ASSERT_TRUE(renew_future.Get());
+  }
+  const std::string second_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+  ASSERT_NE(initial_pin_key, second_pin_key);
+
+  // Attempt renewing the PIN with the first enclave.
+  {
+    BoolFuture renew_future;
+    manager_.RenewPIN(renew_future.GetCallback());
+    ASSERT_TRUE(renew_future.Wait());
+    ASSERT_TRUE(renew_future.Get());
+  }
+  const std::string third_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+  EXPECT_NE(second_pin_key, third_pin_key);
 }
 
 TEST_F(EnclaveManagerTest, EpochChanged) {

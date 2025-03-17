@@ -29,6 +29,11 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon('kSelectToSpeakExtensionId');
   }
 
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await selectToSpeak.readyForTestingPromise;
+  }
+
   /**
    * Asserts that two strings are equal, collapsing repeated spaces and
    * removing leading / trailing whitespace.

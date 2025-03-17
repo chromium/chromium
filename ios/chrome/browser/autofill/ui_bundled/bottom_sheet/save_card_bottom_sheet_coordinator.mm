@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_coordinator.h"
 
 #import <memory>
+#import <utility>
 
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -15,6 +17,10 @@
 @implementation SaveCardBottomSheetCoordinator {
   // The model providing resources and callbacks for save card bottomsheet.
   std::unique_ptr<autofill::SaveCardBottomSheetModel> _saveCardBottomSheetModel;
+
+  // The mediator for save card bottomsheet created and owned by the
+  // coordinator.
+  SaveCardBottomSheetMediator* _mediator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -28,6 +34,18 @@
     CHECK(_saveCardBottomSheetModel);
   }
   return self;
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)start {
+  _mediator = [[SaveCardBottomSheetMediator alloc]
+      initWithUIModel:std::move(_saveCardBottomSheetModel)];
+}
+
+- (void)stop {
+  [_mediator disconnect];
+  _mediator = nil;
 }
 
 @end

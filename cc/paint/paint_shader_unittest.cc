@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_shader.h"
 
+#include <limits>
+
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
@@ -142,6 +144,21 @@ TEST(PaintShaderTest, GradientSingleStopValidTest) {
   auto shader = PaintShader::MakeLinearGradient(points, colors, positions, 1,
                                                 SkTileMode::kClamp);
   EXPECT_TRUE(shader->IsValid());
+}
+
+TEST(PaintShaderTest, InfinityStopShouldBeValid) {
+  float infinity = std::numeric_limits<float>::infinity();
+
+  SkPoint points[] = {SkPoint::Make(-infinity, -infinity),
+                      SkPoint::Make(infinity, infinity)};
+  SkColor4f colors[] = {
+      SkColor4f::FromColor(SK_ColorGREEN),
+      SkColor4f::FromColor(SK_ColorYELLOW),
+  };
+  SkScalar positions[] = {0.0f, 1.0f};
+  auto shader = PaintShader::MakeLinearGradient(points, colors, positions, 2,
+                                                SkTileMode::kClamp);
+  EXPECT_TRUE(shader->GetSkShader(PaintFlags::FilterQuality::kNone));
 }
 
 }  // namespace cc

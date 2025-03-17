@@ -30,15 +30,8 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kUnknown;
   }
 
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-      return VideoDecoderType::kOutOfProcess;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      // The browser process ensures that this path is never reached for this
-      // OOP-VD mode.
-      NOTREACHED();
-    case media::OOPVDMode::kDisabled:
-      break;
+  if (IsOutOfProcessVideoDecodingEnabled()) {
+    return VideoDecoderType::kOutOfProcess;
   }
 
 #if BUILDFLAG(USE_VAAPI)
@@ -218,9 +211,9 @@ class GpuMojoMediaClientLinux final : public GpuMojoMediaClient {
   }
 
   void NotifyPlatformDecoderSupport(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<void(
-          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) final {
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb)
+      final {
     switch (
         GetActualPlatformDecoderImplementation(gpu_preferences_, gpu_info_)) {
       case VideoDecoderType::kOutOfProcess:

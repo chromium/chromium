@@ -13,21 +13,15 @@ namespace blink {
 
 class CSSFontSizeAdjustNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit CSSFontSizeAdjustNonInterpolableValue(FontSizeAdjust::Metric metric)
+      : metric_(metric) {}
   ~CSSFontSizeAdjustNonInterpolableValue() override = default;
-
-  static scoped_refptr<CSSFontSizeAdjustNonInterpolableValue> Create(
-      FontSizeAdjust::Metric metric) {
-    return base::AdoptRef(new CSSFontSizeAdjustNonInterpolableValue(metric));
-  }
 
   FontSizeAdjust::Metric Metric() const { return metric_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSFontSizeAdjustNonInterpolableValue(FontSizeAdjust::Metric metric)
-      : metric_(metric) {}
-
   FontSizeAdjust::Metric metric_;
 };
 
@@ -67,7 +61,7 @@ InterpolationValue CreateFontSizeAdjustValue(FontSizeAdjust font_size_adjust) {
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(font_size_adjust.Value()),
-      CSSFontSizeAdjustNonInterpolableValue::Create(
+      MakeGarbageCollected<CSSFontSizeAdjustNonInterpolableValue>(
           font_size_adjust.GetMetric()));
 }
 
@@ -85,7 +79,7 @@ InterpolationValue CreateFontSizeAdjustValue(
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(
           *function_value.ExpressionNode()),
-      CSSFontSizeAdjustNonInterpolableValue::Create(metric));
+      MakeGarbageCollected<CSSFontSizeAdjustNonInterpolableValue>(metric));
 }
 
 }  // namespace
