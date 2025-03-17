@@ -297,11 +297,6 @@ std::optional<base::Time> DeviceRestrictionScheduleController::GetNextRunTime(
 DeviceRestrictionScheduleController::State
 DeviceRestrictionScheduleController::GetCurrentState(
     base::Time current_time) const {
-  if (HasTimeBeenTamperedWith(current_time)) {
-    // Somebody tampered with the time, just go to restricted schedule.
-    return State::kRestricted;
-  }
-
   auto current_weekly_time_checked =
       WeeklyTimeChecked::FromTimeAsLocalTime(current_time);
   return IntervalsContainTime(intervals_, current_weekly_time_checked)
