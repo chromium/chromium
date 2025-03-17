@@ -18,4 +18,5 @@ include_rules = [
   "+ash/resources/vector_icons/vector_icons.h",
   "+ash/webui/grit/ash_mall_cros_app_resources.h",
   "+ash/webui/grit/ash_print_management_resources.h",
+  "+ash/webui/grit/ash_personalization_app_resources.h"
 ]
