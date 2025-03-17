@@ -14,6 +14,10 @@ namespace {
 
 void RegisterPrefs(PrefRegistrySimple& registry) {
   registry.RegisterBooleanPref(prefs::kSunfishConsentDisclaimerAccepted, false);
+  registry.RegisterBooleanPref(
+      prefs::kScannerEntryPointDisclaimerAckSmartActionsButton, false);
+  registry.RegisterBooleanPref(
+      prefs::kScannerEntryPointDisclaimerAckSunfishSession, false);
 }
 
 TEST(ScannerDisclaimerTest, InitialValues) {
@@ -37,7 +41,7 @@ TEST(ScannerDisclaimerTest, AfterSmartActionsButtonAcknowledge) {
       GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
       ScannerDisclaimerType::kNone);
   EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
-            ScannerDisclaimerType::kNone);
+            ScannerDisclaimerType::kReminder);
 }
 
 TEST(ScannerDisclaimerTest, AfterSunfishSessionAcknowledge) {
@@ -48,7 +52,7 @@ TEST(ScannerDisclaimerTest, AfterSunfishSessionAcknowledge) {
 
   EXPECT_EQ(
       GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
-      ScannerDisclaimerType::kNone);
+      ScannerDisclaimerType::kReminder);
   EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
             ScannerDisclaimerType::kNone);
 }
@@ -94,7 +98,7 @@ TEST(ScannerDisclaimerTest, AcknowledgeIsIdempotent) {
       GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
       ScannerDisclaimerType::kNone);
   EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
-            ScannerDisclaimerType::kNone);
+            ScannerDisclaimerType::kReminder);
 }
 
 }  // namespace

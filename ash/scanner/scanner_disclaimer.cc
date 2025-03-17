@@ -9,14 +9,28 @@
 
 namespace ash {
 
+namespace {
+
+constexpr const char* AckPrefForEntryPoint(ScannerEntryPoint entry_point) {
+  switch (entry_point) {
+    case ScannerEntryPoint::kSmartActionsButton:
+      return prefs::kScannerEntryPointDisclaimerAckSmartActionsButton;
+    case ScannerEntryPoint::kSunfishSession:
+      return prefs::kScannerEntryPointDisclaimerAckSunfishSession;
+  }
+}
+
+}  // namespace
+
 ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs,
                                                ScannerEntryPoint entry_point) {
   if (!prefs.GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)) {
     return ScannerDisclaimerType::kFull;
   }
 
-  // TODO: crbug.com/383437797 - Return `kReminder` here if the user has not
-  // yet acknowledged this entry-point.
+  if (!prefs.GetBoolean(AckPrefForEntryPoint(entry_point))) {
+    return ScannerDisclaimerType::kReminder;
+  }
 
   return ScannerDisclaimerType::kNone;
 }
@@ -24,13 +38,15 @@ ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs,
 void SetScannerDisclaimerAcked(PrefService& prefs,
                                ScannerEntryPoint entry_point) {
   prefs.SetBoolean(prefs::kSunfishConsentDisclaimerAccepted, true);
-  // TODO: crbug.com/383437797 - Record that the user has acknowledged the
-  // disclaimer for this entry-point.
+  prefs.SetBoolean(AckPrefForEntryPoint(entry_point), true);
 }
 
 void SetAllScannerDisclaimersUnackedForTest(PrefService& prefs) {
   prefs.SetBoolean(prefs::kSunfishConsentDisclaimerAccepted, false);
-  // TODO: crbug.com/383437797 - Unset the prefs for all entry-points.
+  prefs.SetBoolean(AckPrefForEntryPoint(ScannerEntryPoint::kSmartActionsButton),
+                   false);
+  prefs.SetBoolean(AckPrefForEntryPoint(ScannerEntryPoint::kSunfishSession),
+                   false);
 }
 
 }  // namespace ash
