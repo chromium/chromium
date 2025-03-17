@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A factory for producing a {@link BottomSheetController}. */
+@NullMarked
 public class BottomSheetControllerFactory {
     /**
      * @param scrimManagerSupplier Suppliers the {@ScrimManager}, used show scrims behind the sheet.
@@ -36,7 +36,7 @@ public class BottomSheetControllerFactory {
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
-            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
+            Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
