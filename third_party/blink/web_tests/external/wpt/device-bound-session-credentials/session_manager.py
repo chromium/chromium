@@ -11,7 +11,7 @@ def find_for_request(request):
     test_id = request.cookies.get(b'test_id').value.decode('utf-8')
     manager = test_to_session_manager_mapping.get(test_id)
     if manager == None:
-        raise Exception("Could not find manager for test_id: " + test_id)
+        raise Exception(f"Could not find manager for test_id: {test_id}")
     return manager
 
 class CookieDetail:
@@ -26,7 +26,7 @@ class CookieDetail:
 
     def get_attributes(self, request):
         if self.attributes is None:
-            return "Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials"
+            return f"Domain={request.url_parts.hostname}; Path=/device-bound-session-credentials"
         return self.attributes
 
 class SessionManager:
