@@ -1155,8 +1155,7 @@ views::View* ToolbarView::GetAnchorView(
           action_id.value())) {
     return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
   }
-  // TODO(crbug.com/386362832): Consider whether we should try anchoring to
-  // the corresponding PageActionView, if any, instead of the location bar.
+
   return location_bar_;
 }
 
