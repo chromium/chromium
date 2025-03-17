@@ -5,23 +5,28 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 
 namespace web_app {
@@ -31,6 +36,15 @@ namespace {
 constexpr char kLandingPage[] = "/web_apps/simple/index.html";
 constexpr char kFinalPage[] = "/web_apps/simple/index2.html";
 constexpr char kRedirectFromPage[] = "/web_apps/simple2/index.html";
+constexpr char kAppNoManifestUrl[] = "/web_apps/no_manifest.html";
+constexpr char kNavigateExistingUrl[] =
+    "/web_apps/simple_navigate_existing/index.html";
+constexpr char kNavigateExistingSecondUrl[] =
+    "/web_apps/simple_navigate_existing/index2.html";
+constexpr char kFocusExistingUrl[] =
+    "/web_apps/simple_focus_existing/index.html";
+constexpr char kFocusExistingSecondUrl[] =
+    "/web_apps/simple_focus_existing/index2.html";
 
 // Actually start a navigation in an existing web contents for the
 // `navigate-existing` use-case.
@@ -71,16 +85,22 @@ class NavigationCapturingBrowserNavigatorBrowserTest
  public:
   NavigationCapturingBrowserNavigatorBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
-        {});
+    enabled_features = apps::test::GetFeaturesToEnableLinkCapturingUX(
+        apps::test::LinkCapturingFeatureVersion::kV2DefaultOff);
 #else
-    feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
-        {});
+    enabled_features = apps::test::GetFeaturesToEnableLinkCapturingUX(
+        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn);
 #endif
+
+    enabled_features.emplace_back(blink::features::kDesktopPWAsTabStrip,
+                                  base::FieldTrialParams());
+    enabled_features.emplace_back(
+        blink::features::kDesktopPWAsTabStripCustomizations,
+        base::FieldTrialParams());
+
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/enabled_features,
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -96,6 +116,29 @@ class NavigationCapturingBrowserNavigatorBrowserTest
     return embedded_test_server()->GetURL(kFinalPage);
   }
 
+  GURL GetAppNoManifestUrl() const {
+    return embedded_test_server()->GetURL(kAppNoManifestUrl);
+  }
+
+  GURL GetNavigateExistingUrl() const {
+    return embedded_test_server()->GetURL(kNavigateExistingUrl);
+  }
+
+  GURL GetNavigateExistingSecondUrl() const {
+    return embedded_test_server()->GetURL(kNavigateExistingSecondUrl);
+  }
+
+  GURL GetFocusExistingUrl() const {
+    return embedded_test_server()->GetURL(kFocusExistingUrl);
+  }
+
+  GURL GetFocusExistingSecondUrl() const {
+    return embedded_test_server()->GetURL(kFocusExistingSecondUrl);
+  }
+
+  // InstallTestWebApp should not be called with a url that has a manifest link.
+  // This may cause flaky tests as it will be susceptible to manifest update as
+  // soon as url loads. Instead, consider using test::InstallWebApp().
   webapps::AppId InstallTestWebApp(
       const GURL& start_url,
       mojom::UserDisplayMode user_display_mode,
@@ -139,6 +182,7 @@ class NavigationCapturingBrowserNavigatorBrowserTest
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -192,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_2, app_id));
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
-  // `app_browser_2`.
+  // `app_browser_1`.
   base::HistogramTester histograms;
   ui_test_utils::UrlLoadObserver url_observer(GetFinalPage());
   {
@@ -351,6 +395,226 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       NavigateBrowserUsedForNavigateExistingToBrowserTab) {
+  // Test that the browser provided in NavigateParams is used when using a
+  // browser to open a browser tab, instead of the most recently active browser.
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetAppNoManifestUrl(), mojom::UserDisplayMode::kBrowser,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting);
+
+  // Navigate to GetAppUrl() in browser() so that a browser tab for the app_id
+  // exists.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppNoManifestUrl()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  const content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int tab_index = browser()->tab_strip_model()->GetIndexOfWebContents(contents);
+  int tab_count_for_browser = browser()->tab_strip_model()->count();
+
+  // Create a new browser which will be considered the most recently active
+  // one.
+  Browser* new_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
+  chrome::NewTab(new_browser);
+
+  // Do a capturable navigation to the landing page, and ensure that it
+  // opens in the browser().
+  base::HistogramTester histograms;
+  ui_test_utils::UrlLoadObserver url_observer(GetFinalPage());
+  {
+    NavigateParams params(browser(), GetFinalPage(), ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        new_browser->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+    LoadURLInContents(params.navigated_or_inserted_contents, GetFinalPage(),
+                      params);
+  }
+
+  test::CompletePageLoadForAllWebContents();
+  url_observer.Wait();
+  content::WebContents* contents_navigation_happened_in =
+      url_observer.web_contents();
+
+  // Ensure that capturing happened.
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  EXPECT_NE(contents_navigation_happened_in,
+            new_browser->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(contents_navigation_happened_in,
+            browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(tab_index, browser()->tab_strip_model()->GetIndexOfWebContents(
+                           contents_navigation_happened_in));
+  EXPECT_EQ(tab_count_for_browser, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       NavigateBrowserUsedForFocusExistingToBrowserTab) {
+  // Test that the browser provided in NavigateParams is used when using a
+  // browser to open a browser tab, instead of the most recently active browser.
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetAppNoManifestUrl(), mojom::UserDisplayMode::kBrowser,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+
+  // Navigate to GetAppUrl() in browser() so that a browser tab for the
+  // app_id exists.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppNoManifestUrl()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_count_for_browser = browser()->tab_strip_model()->count();
+
+  // Create a new browser which will be considered the most recently active
+  // one.
+  Browser* new_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
+  chrome::NewTab(new_browser);
+
+  // Do a capturable navigation to the landing page, and ensure that it opens in
+  // browser(). Since the web_app has a client_mode of `focus-existing`,
+  // browser() should be activated with no navigations happening.
+  base::HistogramTester histograms;
+  {
+    NavigateParams params(browser(), GetFinalPage(), ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        new_browser->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+
+  test::CompletePageLoadForAllWebContents();
+
+  // Ensure that capturing happened.
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  // browser() should still be at the GetAppUrl() page.
+  EXPECT_EQ(GetAppNoManifestUrl(), browser()
+                                       ->tab_strip_model()
+                                       ->GetActiveWebContents()
+                                       ->GetLastCommittedURL());
+  EXPECT_EQ(tab_count_for_browser, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationCapturingBrowserNavigatorBrowserTest,
+    NavigateBrowserUsedForNavigateExistingToAppBrowserTabStandalone) {
+  // Test that the app browser provided in NavigateParams is used even if a
+  // separate browser is populated with a matching tab.
+  const webapps::AppId& app_id = InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), GetNavigateExistingUrl());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+#endif
+
+  // Launch app in an app browser that will be passed in as the browser for
+  // NavigateParams.
+  Browser* app_browser_to_use = LaunchWebAppBrowser(app_id);
+
+  // Change the web app's user display mode to kBrowser
+  base::test::TestFuture<void> future;
+  provider().scheduler().SetUserDisplayMode(
+      app_id, mojom::UserDisplayMode::kBrowser, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Navigate to GetNavigateExistingUrl in browser() so that a browser tab for
+  // the app_id exists.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetNavigateExistingUrl()));
+  content::WebContents* blank_new_tab = chrome::AddAndReturnTabAt(
+      browser(), GURL(url::kAboutBlankURL), /*index=*/0, /*foreground=*/true);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Do a capturable navigation to the landing page, and ensure that it
+  // opens in the app_browser_to_use instead of browser().
+  base::HistogramTester histograms;
+  ui_test_utils::UrlLoadObserver url_observer(GetNavigateExistingSecondUrl());
+  {
+    NavigateParams params(app_browser_to_use, GetNavigateExistingSecondUrl(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents = blank_new_tab;
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+    LoadURLInContents(params.navigated_or_inserted_contents,
+                      GetNavigateExistingSecondUrl(), params);
+  }
+
+  test::CompletePageLoadForAllWebContents();
+  url_observer.Wait();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  content::WebContents* contents_navigation_happened_in =
+      url_observer.web_contents();
+  EXPECT_NE(contents_navigation_happened_in, blank_new_tab);
+
+  // Ensure that capturing happened.
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  EXPECT_EQ(contents_navigation_happened_in,
+            app_browser_to_use->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(0, app_browser_to_use->tab_strip_model()->GetIndexOfWebContents(
+                   contents_navigation_happened_in));
+  EXPECT_EQ(TabStripModel::kNoTab,
+            browser()->tab_strip_model()->GetIndexOfWebContents(
+                contents_navigation_happened_in));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationCapturingBrowserNavigatorBrowserTest,
+    NavigateBrowserUsedForFocusExistingToAppBrowserTabStandalone) {
+  // Test that the app browser provided in NavigateParams is used even if a
+  // separate browser is populated with a matching tab.
+  const webapps::AppId& app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+#endif
+
+  // Launch app in an app browser that will be passed in as the browser for
+  // NavigateParams.
+  Browser* app_browser_to_use = LaunchWebAppBrowser(app_id);
+
+  // Change the web app's user display mode to kBrowser
+  base::test::TestFuture<void> future;
+  provider().scheduler().SetUserDisplayMode(
+      app_id, mojom::UserDisplayMode::kBrowser, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Navigate to GetFocusExistingUrl() in browser() so that a browser tab for
+  // the app_id exists.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetFocusExistingUrl()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Do a capturable navigation to the landing page, and ensure that it opens in
+  // browser(). Since the web_app has a client_mode of `focus-existing`,
+  // browser() should be activated with no navigations happening.
+  base::HistogramTester histograms;
+  {
+    NavigateParams params(app_browser_to_use, GetFocusExistingSecondUrl(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+
+  test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  // Ensure that capturing happened.
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  EXPECT_EQ(GetFocusExistingUrl(), app_browser_to_use->tab_strip_model()
+                                       ->GetActiveWebContents()
+                                       ->GetLastCommittedURL());
+}
 class NavigationCapturingWithRedirectionBrowserNavigatorTest
     : public NavigationCapturingBrowserNavigatorBrowserTest {
  public:

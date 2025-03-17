@@ -1123,8 +1123,21 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
     switch (requested_display_mode) {
       case blink::mojom::DisplayMode::kUndefined:
       case blink::mojom::DisplayMode::kBrowser:
-        // TODO(crbug.com/396612316): Prefer `navigation_params_browser_` if it
-        // has a tab for the target app.
+        // If a populated browser exists with an applicable tab for
+        // focus-existing or navigate-existing, use that instead of a another
+        // existing browser. Note: This could mean that the provided browser is
+        // not a 'normal' and could be an app browser. It seems fine to
+        // respect this.
+        if (navigation_params_browser_) {
+          std::optional<int> tab_index =
+              AppBrowserController::FindTabIndexForApp(
+                  navigation_params_browser_, app_id, for_focus_existing);
+          if (tab_index.has_value()) {
+            existing_app_host = {.browser = navigation_params_browser_,
+                                 .tab_index = *tab_index};
+            break;
+          }
+        }
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
                 *profile_, app_id, Browser::TYPE_NORMAL, for_focus_existing);
@@ -1139,11 +1152,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
         // If that is not found, start looking into all active app browsers.
         if (navigation_params_browser_ &&
             WebAppBrowserController::IsForWebApp(navigation_params_browser_,
-                                                 app_id) &&
-            requested_display_mode != blink::mojom::DisplayMode::kTabbed) {
-          // TODO(crbug.com/396612316): Add support for app tabbed display mode,
-          // where we'll need home tab matching logic to determine the correct
-          // tab to use (if any).
+                                                 app_id)) {
           std::optional<int> tab_index =
               AppBrowserController::FindTabIndexForApp(
                   navigation_params_browser_, app_id, for_focus_existing);
@@ -1216,8 +1225,16 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       // existing browser. So never return a browser in this case.
       break;
     case blink::mojom::DisplayMode::kTabbed:
-      // TODO(crbug.com/396612316): Use `navigation_params_browser_` if it is a
-      // tabbed app browser for the target web app.
+      // TODO(crbug.com/403587716): Add tests for this case. Test should mimic
+      // opening two app windows and prioritizing the one that gets passed in
+      // NavigateParams.
+      if (navigation_params_browser_ &&
+          WebAppBrowserController::IsForWebApp(navigation_params_browser_,
+                                               app_id) &&
+          navigation_params_browser_->app_controller()->has_tab_strip()) {
+        result.browser = navigation_params_browser_;
+        break;
+      }
       result.browser = AppBrowserController::FindForWebApp(*profile_, app_id);
       // If somehow we found a browser that doesn't have a tab strip (which
       // might be possible if the manifest updated while a window is open),
