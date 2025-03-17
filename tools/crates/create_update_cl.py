@@ -479,7 +479,7 @@ Disable-Rts: True
 
 
 def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
-                upstream_branch: str):
+                upstream_branch: str, branch_number: int):
     """Runs `gnrt update <crate_id>` and other follow-up commands to actually
     update the crate."""
 
@@ -507,7 +507,7 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     description = CreateCommitDescription(title, diff, False)
 
     # Checkout a new git branch + `git cl upload`
-    new_branch = f"{BRANCH_BASENAME}--{old_crate_id.replace('@', '-')}"
+    new_branch = f"{BRANCH_BASENAME}--{branch_number:02}-{old_crate_id.replace('@', '-')}"
     Git("checkout", upstream_branch, "-b", new_branch)
     Git("branch", "--set-upstream-to", upstream_branch)
     GitAddRustFiles()
@@ -815,11 +815,14 @@ def AutoUpdate(args):
 
     print(f"** Updating {len(todo_crate_updates)} crates! "
           f"Expect this to take about {len(todo_crate_updates) * 2} minutes.")
+
+    branch_number = 1
     while todo_crate_updates:
         old_crate_ids = GetCurrentCrateIds()
         for (old_crate_id, new_crate_id) in todo_crate_updates:
             upstream_branch = UpdateCrate(args, old_crate_id, new_crate_id,
-                                          upstream_branch)
+                                          upstream_branch, branch_number)
+            branch_number += 1
 
         new_crate_ids = GetCurrentCrateIds()
         diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
