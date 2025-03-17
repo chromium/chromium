@@ -168,7 +168,7 @@ std::vector<blink::StorageKey> MediaDeviceSaltDatabase::GetAllStorageKeys() {
   sql::Statement statement(db_.GetUniqueStatement(kGetStorageKeysSql));
   while (statement.Step()) {
     std::optional<blink::StorageKey> key =
-        blink::StorageKey::Deserialize(statement.ColumnString(0));
+        blink::StorageKey::Deserialize(statement.ColumnStringView(0));
     if (key.has_value()) {
       storage_keys.push_back(*key);
     }
