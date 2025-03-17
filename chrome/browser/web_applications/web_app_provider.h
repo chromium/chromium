@@ -73,7 +73,7 @@ class WebAppRunOnOsLoginManager;
 //       FROM_HERE,
 //       base::BindOnce([](WebAppProvider& provider) {
 //         ...
-//       }, std::ref(*provider));
+//       }, std::ref(*provider)));
 // - All subsystems are constructed independently of each other in the
 //   WebAppProvider constructor.
 // - Subsystem construction should have no side effects and start no tasks.
