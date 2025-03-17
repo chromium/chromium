@@ -625,14 +625,14 @@ chromium-metrics-reviews@google.com.
   <int value="121" label="WebViewCompat.getNavigationClient"/>
   <int value="122" label="WebViewCompat.setNavigationClient"/>
   <int value="123" label="Navigation.getUrl"/>
-  <int value="124" label="Navigation.isPageInitiated"/>
+  <int value="124" label="Navigation.wasInitiatedByPage"/>
   <int value="125" label="Navigation.isSameDocument"/>
   <int value="126" label="Navigation.isReload"/>
   <int value="127" label="Navigation.isHistory"/>
   <int value="128" label="Navigation.isRestore"/>
   <int value="129" label="Navigation.isBack"/>
   <int value="130" label="Navigation.isForward"/>
-  <int value="131" label="Navigation.hasCommitted"/>
+  <int value="131" label="Navigation.didCommit"/>
   <int value="132" label="Navigation.didCommitErrorPage"/>
   <int value="133" label="Navigation.getStatusCode"/>
   <int value="134" label="WebViewCompat.clearAsyncShouldInterceptRequest"/>
