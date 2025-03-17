@@ -3999,6 +3999,26 @@
             ]
         }
     ],
+    "CanvasTextNg": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CanvasTextNg"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastMirroringPlayoutDelayChromeOS": [
         {
             "platforms": [
@@ -17243,6 +17263,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToModernPin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlainTextPainter": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlainTextPainter"
                     ]
                 }
             ]
