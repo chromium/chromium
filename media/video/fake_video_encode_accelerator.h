@@ -70,6 +70,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   void SetWillInitializationSucceed(bool will_initialization_succeed);
   void SetWillEncodingSucceed(bool will_encoding_succeed);
   void SetSupportFrameSizeChange(bool support_frame_size_change);
+  void SetFrameDelay(int frame_delay);
 
   size_t minimum_output_buffer_size() const { return kMinimumOutputBufferSize; }
 
