@@ -2261,12 +2261,6 @@ BASE_FEATURE(kParentAccessJelly,
              "ParentAccessJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature allows usage of passwordless flow in GAIA.
-// (This feature is only available for consumer users)
-BASE_FEATURE(kPasswordlessGaiaForConsumers,
-             "PasswordlessGaiaForConsumers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
 // TODO(crbug.com/40199811): Revisit this flag when there is a way to query
@@ -4169,10 +4163,6 @@ bool IsOsSyncConsentRevampEnabled() {
 
 bool IsParentAccessJellyEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessJelly);
-}
-
-bool IsPasswordlessGaiaEnabledForConsumers() {
-  return base::FeatureList::IsEnabled(kPasswordlessGaiaForConsumers);
 }
 
 bool IsPcieBillboardNotificationEnabled() {
