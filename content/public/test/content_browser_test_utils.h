@@ -273,6 +273,11 @@ void SetMockCursorPositionForTesting(WebContents* web_contents,
 
 #endif  // BUILDFLAG(IS_WIN)
 
+// Blocks the current execution until the renderer main thread in the main frame
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against the current `WebContents`.
+void WaitForCopyableView(WebContents* web_contents);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_UTILS_H_
