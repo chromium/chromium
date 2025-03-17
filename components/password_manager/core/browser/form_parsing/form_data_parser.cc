@@ -942,6 +942,11 @@ bool ParseUsingModelPredictions(
       case autofill::ONE_TIME_CODE:
         break;
       case autofill::UNKNOWN_TYPE:
+        if (field.accepts_webauthn_credentials) {
+          // Allow fallback parsing mechanisms to kick in to ensure webauthn
+          // fields are not ignored.
+          predictions_complete = false;
+        }
         unrelated_fields_contain_masked_fields =
             unrelated_fields_contain_masked_fields.value_or(false) ||
             field.is_password;
