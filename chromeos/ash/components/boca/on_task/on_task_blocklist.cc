@@ -76,24 +76,16 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
     return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // Enable google domain urls to be allowed to navigated to as long as we were
-  // on a google domain. This is especially to allow users to be able to
-  // navigate to other areas of google classroom or google drive files. This is
-  // only for chromeos specific use case with the OnTask app. The primary use
-  // case for the OnTask app is for managed chromebooks under the Edu licenses
-  // where they are expected to be Google Workspace users. We should allow
-  // traversing various google workspace domains so that the intended integrated
-  // workflow for Google Workspace is effective. All other use cases outside
-  // of the primary use case will not go through this code path since they have
-  // requirements for specific navigation rules set.
-  if (google_util::IsGoogleDomainUrl(previous_url_,
-                                     google_util::ALLOW_SUBDOMAIN,
-                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+  // Only allow users to navigate within Google domain URLs (except Google
+  // search) if the nav restriction is set to `WORKSPACE_NAVIGATION`.
+  if (current_page_restriction_level_ ==
+      LockedNavigationOptions::WORKSPACE_NAVIGATION) {
     if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
                                        google_util::ALLOW_NON_STANDARD_PORTS) &&
         !google_util::HasGoogleSearchQueryParam(url.query_piece())) {
       return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
     }
+    return policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
   }
 
   if (previous_url_.is_valid() &&
