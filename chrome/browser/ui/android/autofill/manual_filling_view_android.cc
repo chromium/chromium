@@ -33,7 +33,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/keyboard_accessory/internal/jni/ManualFillingComponentBridge_jni.h"
-#include "chrome/android/features/keyboard_accessory/public/jni/UserInfoField_jni.h"
+#include "chrome/browser/keyboard_accessory/android/java/jni/UserInfoField_jni.h"
 
 using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;

@@ -642,8 +642,10 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*gelu_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gemm_a=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gemm_c=*/{webnn::SupportedDataTypes::All(), kMaxRank},
-         /*gru_input=*/webnn::SupportedDataTypes::All(),
-         /*gru_cell_input=*/webnn::SupportedDataTypes::All(),
+         /*gru_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*hard_sigmoid_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*hard_swish_input=*/
@@ -658,8 +660,10 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*linear_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
-         /*lstm_input=*/webnn::SupportedDataTypes::All(),
-         /*lstm_cell_input=*/webnn::SupportedDataTypes::All(),
+         /*lstm_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*matmul_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*pad_input=*/

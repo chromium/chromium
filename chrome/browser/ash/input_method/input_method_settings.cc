@@ -28,6 +28,7 @@ namespace {
 namespace mojom = ::ash::ime::mojom;
 
 constexpr std::string_view kJapaneseEngineId = "nacl_mozc_jp";
+constexpr std::string_view kJapaneseUsEngineId = "nacl_mozc_us";
 
 // The values here should be kept in sync with
 // chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
@@ -83,6 +84,10 @@ bool IsFstEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) ||
          base::StartsWith(engine_id, "experimental_",
                           base::CompareCase::SENSITIVE);
+}
+
+bool IsJapaneseEngine(const std::string& engine_id) {
+  return engine_id == kJapaneseEngineId || engine_id == kJapaneseUsEngineId;
 }
 
 bool IsKoreanEngine(const std::string& engine_id) {
@@ -365,9 +370,11 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // subdictionary structure depends on the type of input method it's for.  The
   // subdictionary may be null if the user hasn't changed any settings for that
   // input method.
+  std::string_view lookup_engine_id =
+      engine_id == kJapaneseUsEngineId ? kJapaneseEngineId : engine_id;
   const base::Value::Dict* ime_prefs_ptr =
       prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
-          .FindDict(engine_id);
+          .FindDict(lookup_engine_id);
 
   base::Value::Dict default_dict;
   const base::Value::Dict& input_method_specific_pref =
@@ -397,7 +404,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     return mojom::InputMethodSettings::NewVietnameseVniSettings(
         CreateVietnameseVniSettings(input_method_specific_pref));
   }
-  if (engine_id == kJapaneseEngineId) {
+  if (IsJapaneseEngine(engine_id)) {
     return mojom::InputMethodSettings::NewJapaneseSettings(
         ToMojomInputMethodSettings(input_method_specific_pref));
   }

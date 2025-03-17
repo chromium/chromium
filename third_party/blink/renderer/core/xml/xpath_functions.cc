@@ -310,16 +310,22 @@ inline bool Interval::Contains(int value) const {
   return value >= min_ && value <= max_;
 }
 
-void Function::SetArguments(HeapVector<Member<Expression>>& args) {
+void Function::SetArguments(GCedHeapVector<Member<Expression>>* args) {
   DCHECK(!SubExprCount());
+
+  if (!args) {
+    return;
+  }
 
   // Some functions use context node as implicit argument, so when explicit
   // arguments are added, they may no longer be context node sensitive.
-  if (name_ != "lang" && !args.empty())
+  if (name_ != "lang" && !args->empty()) {
     SetIsContextNodeSensitive(false);
+  }
 
-  for (Expression* arg : args)
+  for (Expression* arg : *args) {
     AddSubExpression(arg);
+  }
 }
 
 Value FunLast::Evaluate(EvaluationContext& context) const {
@@ -738,12 +744,11 @@ static void CreateFunctionMap() {
 }
 
 Function* CreateFunction(const String& name) {
-  HeapVector<Member<Expression>> args;
-  return CreateFunction(name, args);
+  return CreateFunction(name, nullptr);
 }
 
 Function* CreateFunction(const String& name,
-                         HeapVector<Member<Expression>>& args) {
+                         GCedHeapVector<Member<Expression>>* args) {
   if (!g_function_map)
     CreateFunctionMap();
 
@@ -752,8 +757,10 @@ Function* CreateFunction(const String& name,
   FunctionRec* function_rec = nullptr;
 
   if (function_map_iter == g_function_map->end() ||
-      !(function_rec = &function_map_iter->value)->args.Contains(args.size()))
+      !(function_rec = &function_map_iter->value)
+           ->args.Contains(args ? args->size() : 0)) {
     return nullptr;
+  }
 
   Function* function = function_rec->factory_fn();
   function->SetArguments(args);

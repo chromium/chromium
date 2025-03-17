@@ -1427,9 +1427,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PopupViewViews,
     kAutofillCreditCardSuggestionEntryElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-    PopupViewViews,
-    kAutofillPredictionImprovementsIphElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillAiOptInIphElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PopupViewViews,
     kAutofillStandaloneCvcSuggestionElementId);

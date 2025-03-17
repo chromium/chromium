@@ -235,10 +235,14 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
   backend_context_properties.data_type_limits.gemm_c.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)});
-  backend_context_properties.data_type_limits.gru_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.gru_cell_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.gru_input.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)});
+  backend_context_properties.data_type_limits.gru_bias.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.gru_cell_input.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.gru_cell_bias.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)});
   backend_context_properties.data_type_limits.hard_sigmoid_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.hard_swish_input.data_types
@@ -255,10 +259,14 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.linear_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.lstm_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.lstm_cell_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.lstm_input.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)});
+  backend_context_properties.data_type_limits.lstm_bias.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.lstm_cell_input.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.lstm_cell_bias.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)});
   backend_context_properties.data_type_limits.matmul_input.IntersectWith(
       {DataTypeConstraint::kFloat16To32, {2, 8}});
   backend_context_properties.data_type_limits.pad_input.IntersectWith(

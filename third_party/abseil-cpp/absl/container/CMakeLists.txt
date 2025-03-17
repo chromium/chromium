@@ -720,9 +720,11 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    absl::common_policy_traits
     absl::container_memory
     absl::core_headers
     absl::raw_hash_set
+    absl::type_traits
     absl::throw_delegate
   PUBLIC
 )

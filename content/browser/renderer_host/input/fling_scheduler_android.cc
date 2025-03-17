@@ -159,8 +159,10 @@ void FlingSchedulerAndroid::OnViewAndroidDestroyed() {
   RemoveCompositorTick();
 }
 
-void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time,
-                                         base::TimeDelta frame_interval) {
+void FlingSchedulerAndroid::OnBeginFrame(
+    base::TimeTicks frame_begin_time,
+    base::TimeDelta frame_interval,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   DCHECK(observed_compositor_);
   if (fling_controller_)
     fling_controller_->ProgressFling(frame_begin_time);

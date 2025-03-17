@@ -4,6 +4,8 @@
 
 #include "ui/compositor/host_begin_frame_observer.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
@@ -45,6 +47,9 @@ void HostBeginFrameObserver::OnStandaloneBeginFrame(
                         [&](perfetto::EventContext ctx) {
                           WriteBeginFrameIdToTrace(ctx, args.frame_id);
                         });
+    if (!first_coalesced_begin_frame_time_) {
+      first_coalesced_begin_frame_time_ = begin_frame_args_.frame_time;
+    }
     begin_frame_args_ = args;
     return;
   }
@@ -53,6 +58,7 @@ void HostBeginFrameObserver::OnStandaloneBeginFrame(
     begin_frame_args_ = args;
     pending_coalesce_callback_ = true;
     coalesce_flow_id_ = base::trace_event::GetNextGlobalTraceId();
+    CHECK(!first_coalesced_begin_frame_time_);
     TRACE_EVENT_INSTANT("ui", "HostBeginFrameObserver::start coalescing",
                         perfetto::Flow::Global(coalesce_flow_id_),
                         [&](perfetto::EventContext ctx) {
@@ -66,7 +72,7 @@ void HostBeginFrameObserver::OnStandaloneBeginFrame(
     return;
   }
 
-  CallObservers(args);
+  CallObservers(args, std::nullopt);
 }
 
 mojo::PendingRemote<viz::mojom::BeginFrameObserver>
@@ -85,14 +91,20 @@ void HostBeginFrameObserver::CoalescedBeginFrame() {
   pending_coalesce_callback_ = false;
   viz::BeginFrameArgs args = begin_frame_args_;
   begin_frame_args_ = viz::BeginFrameArgs();
+  std::optional<base::TimeTicks> first_coalesced_begin_frame_time =
+      first_coalesced_begin_frame_time_;
+  first_coalesced_begin_frame_time_ = std::nullopt;
   coalesce_flow_id_ = ~0ull;
-  CallObservers(args);
+  CallObservers(args, first_coalesced_begin_frame_time);
 }
 
 // This may be deleted as part of `CallObservers`.
-void HostBeginFrameObserver::CallObservers(const viz::BeginFrameArgs& args) {
+void HostBeginFrameObserver::CallObservers(
+    const viz::BeginFrameArgs& args,
+    std::optional<const base::TimeTicks> first_coalesced_begin_frame_time) {
   simple_begin_frame_observers_->Notify(&SimpleBeginFrameObserver::OnBeginFrame,
-                                        args.frame_time, args.interval);
+                                        args.frame_time, args.interval,
+                                        first_coalesced_begin_frame_time);
 }
 
 }  // namespace ui

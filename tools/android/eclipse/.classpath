@@ -59,7 +59,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/internal/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/javatests/src"/>
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/junit/src"/>
-    <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/public/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/javatests/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/junit/src"/>
@@ -106,6 +105,7 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/browser/android/examples/partner_browser_customizations_provider/src"/>
     <classpathentry kind="src" path="chrome/browser/android/httpclient/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/httpclient/public/src"/>
+    <classpathentry kind="src" path="chrome/browser/android/keyboard_accessory/public/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/lifecycle/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/messages/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/metrics/javatests/src"/>

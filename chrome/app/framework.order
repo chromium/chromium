@@ -18,6 +18,11 @@
 # Provided by build/sanitizers/sanitizer_options.cc in ASan builds.
 ___asan_default_options
 
+# Provided by LLVM's compiler-rt in compiler-rt/lib/profile/InstrProfilingFile.c
+# and exported by Clang in https://github.com/llvm/llvm-project/pull/127257 in
+# builds with coverage instrumentation (use_clang_coverage=true).
+___llvm_write_custom_profile
+
 # Entry point from the app mode loader.
 _ChromeAppModeStart_v7
 

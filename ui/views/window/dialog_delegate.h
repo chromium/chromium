@@ -398,6 +398,13 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // closing the Widget when Esc is pressed. Called by DialogClientView.
   bool EscShouldCancelDialog() const;
 
+  // Explicitly sets the behavior of `EscShouldCancelDialog()`.
+  // Useful if something other than the default logic is needed.
+  void set_esc_should_cancel_dialog_override(
+      std::optional<bool> esc_should_cancel_dialog_override) {
+    esc_should_cancel_dialog_override_ = esc_should_cancel_dialog_override;
+  }
+
   // Returns the corner radius that is used for this dialog.
   int GetCornerRadius() const;
 
@@ -451,6 +458,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // returned true, *or* one of the Accept/Cancel methods have been called and
   // returned true.
   bool already_started_close_ = false;
+
+  // If set, changes the behavior of EscShouldCancelDialog() to return the
+  // specified value.
+  std::optional<bool> esc_should_cancel_dialog_override_;
 
   // Ownership of the views::Widget created by CreateDialogWidget().
   Widget::InitParams::Ownership ownership_of_new_widget_ =

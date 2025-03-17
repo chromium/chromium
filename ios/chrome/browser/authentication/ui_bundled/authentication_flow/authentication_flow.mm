@@ -721,17 +721,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching,
       _unsyncedDataTypes.value());
   SceneState* sceneState = _browser->GetSceneState();
-  __weak __typeof(self) weakSelf = self;
-  OnProfileSwitchCompletion completion = base::BindOnce(
-      [](__typeof(self) strong_self, bool success,
-         Browser* new_profile_browser) {
-        [strong_self onSwitchToProfileWithSuccess:success
-                                newProfileBrowser:new_profile_browser];
-      },
-      weakSelf);
   [_performer switchToProfileWithIdentity:_identityToSignIn
-                               sceneState:sceneState
-                               completion:std::move(completion)];
+                               sceneState:sceneState];
 }
 
 // Signs out, if the user is already signed in with a different identity.
@@ -963,6 +954,38 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self cancelFlowWithReason:CancelationReason::kUserCanceled];
 }
 
+- (void)didSwitchToProfileWithSuccess:(BOOL)success
+                    newProfileBrowser:(Browser*)newProfileBrowser {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK(!_didSwitchProfile);
+  if (!success) {
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
+    return;
+  }
+  // TODO(crbug.com/375605482): Need to block user until
+  // `AuthenticationFlowInProfile` is done? Probably with a blur animation.
+  // With the profile switching `_browser` and `_presentingViewController` are
+  // not valid anymore.
+  _browser = nullptr;
+  _presentingViewController = nil;
+  // The sign-in flow is passed to `authenticationFlowInProfile`, with the
+  // completion block. `AuthenticationFlowInProfile` retains itself until the
+  // sign-in is done. There is no need to own this instance.
+  AuthenticationFlowInProfile* authenticationFlowInProfile =
+      [[AuthenticationFlowInProfile alloc]
+            initWithBrowser:newProfileBrowser
+                   identity:_identityToSignIn
+          isManagedIdentity:_identityToSignInHostedDomain.length > 0
+                accessPoint:_accessPoint
+          postSignInActions:self.postSignInActions];
+  authenticationFlowInProfile.precedingHistorySync = self.precedingHistorySync;
+  [authenticationFlowInProfile startSignInWithCompletion:_signInCompletion];
+  _signInCompletion = nil;
+  _didSwitchProfile = YES;
+  [self continueFlow];
+}
+
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:
@@ -1017,40 +1040,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   }
 
   return YES;
-}
-
-// Called when the profile switching succeeded or failed (according to
-// `success`).
-- (void)onSwitchToProfileWithSuccess:(BOOL)success
-                   newProfileBrowser:(Browser*)newProfileBrowser {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  CHECK(!_didSwitchProfile);
-  if (!success) {
-    NSError* error = ios::provider::CreateMissingIdentitySigninError();
-    [self handleAuthenticationError:error];
-    return;
-  }
-  // TODO(crbug.com/375605482): Need to block user until
-  // `AuthenticationFlowInProfile` is done? Probably with a blur animation.
-  // With the profile switching `_browser` and `_presentingViewController` are
-  // not valid anymore.
-  _browser = nullptr;
-  _presentingViewController = nil;
-  // The sign-in flow is passed to `authenticationFlowInProfile`, with the
-  // completion block. `AuthenticationFlowInProfile` retains itself until the
-  // sign-in is done. There is no need to own this instance.
-  AuthenticationFlowInProfile* authenticationFlowInProfile =
-      [[AuthenticationFlowInProfile alloc]
-            initWithBrowser:newProfileBrowser
-                   identity:_identityToSignIn
-          isManagedIdentity:_identityToSignInHostedDomain.length > 0
-                accessPoint:_accessPoint
-          postSignInActions:self.postSignInActions];
-  authenticationFlowInProfile.precedingHistorySync = self.precedingHistorySync;
-  [authenticationFlowInProfile startSignInWithCompletion:_signInCompletion];
-  _signInCompletion = nil;
-  _didSwitchProfile = YES;
-  [self continueFlow];
 }
 
 #pragma mark - Used for testing

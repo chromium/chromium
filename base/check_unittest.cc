@@ -200,13 +200,13 @@ TEST(CheckDeathTest, PCheck) {
       PCHECK(fopen(file, "r") != nullptr) << "foo");
 
   EXPECT_DCHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
+      "DCHECK failed: fopen(file, \"r\") != nullptr."
       " : " +
           err,
       DPCHECK(fopen(file, "r") != nullptr));
 
   EXPECT_DCHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
+      "DCHECK failed: fopen(file, \"r\") != nullptr."
       " foo: " +
           err,
       DPCHECK(fopen(file, "r") != nullptr) << "foo");
@@ -222,12 +222,12 @@ TEST(CheckDeathTest, CheckOp) {
   EXPECT_CHECK("Check failed: a >= b (1 vs. 2)", CHECK_GE(a, b));
   EXPECT_CHECK("Check failed: a > b (1 vs. 2)",  CHECK_GT(a, b));
 
-  EXPECT_DCHECK("Check failed: a == b (1 vs. 2)", DCHECK_EQ(a, b));
-  EXPECT_DCHECK("Check failed: a != a (1 vs. 1)", DCHECK_NE(a, a));
-  EXPECT_DCHECK("Check failed: b <= a (2 vs. 1)", DCHECK_LE(b, a));
-  EXPECT_DCHECK("Check failed: b < a (2 vs. 1)",  DCHECK_LT(b, a));
-  EXPECT_DCHECK("Check failed: a >= b (1 vs. 2)", DCHECK_GE(a, b));
-  EXPECT_DCHECK("Check failed: a > b (1 vs. 2)",  DCHECK_GT(a, b));
+  EXPECT_DCHECK("DCHECK failed: a == b (1 vs. 2)", DCHECK_EQ(a, b));
+  EXPECT_DCHECK("DCHECK failed: a != a (1 vs. 1)", DCHECK_NE(a, a));
+  EXPECT_DCHECK("DCHECK failed: b <= a (2 vs. 1)", DCHECK_LE(b, a));
+  EXPECT_DCHECK("DCHECK failed: b < a (2 vs. 1)",  DCHECK_LT(b, a));
+  EXPECT_DCHECK("DCHECK failed: a >= b (1 vs. 2)", DCHECK_GE(a, b));
+  EXPECT_DCHECK("DCHECK failed: a > b (1 vs. 2)",  DCHECK_GT(a, b));
   // clang-format on
 
   EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2)",
@@ -253,9 +253,9 @@ TEST(CheckDeathTest, CheckOpStrings) {
   EXPECT_CHECK("Check failed: csv == s (2 vs. 3)", CHECK_EQ(csv, s));
   EXPECT_CHECK("Check failed: sv == s (1 vs. 3)", CHECK_EQ(sv, s));
 
-  EXPECT_DCHECK("Check failed: sv == csv (1 vs. 2)", DCHECK_EQ(sv, csv));
-  EXPECT_DCHECK("Check failed: csv == s (2 vs. 3)", DCHECK_EQ(csv, s));
-  EXPECT_DCHECK("Check failed: sv == s (1 vs. 3)", DCHECK_EQ(sv, s));
+  EXPECT_DCHECK("DCHECK failed: sv == csv (1 vs. 2)", DCHECK_EQ(sv, csv));
+  EXPECT_DCHECK("DCHECK failed: csv == s (2 vs. 3)", DCHECK_EQ(csv, s));
+  EXPECT_DCHECK("DCHECK failed: sv == s (1 vs. 3)", DCHECK_EQ(sv, s));
 }
 
 TEST(CheckDeathTest, CheckOpPointers) {
@@ -348,7 +348,7 @@ TEST(CheckDeathTest, Dcheck) {
   EXPECT_TRUE(DCHECK_IS_ON());
 #endif
 
-  EXPECT_DCHECK("Check failed: false. ", DCHECK(false));
+  EXPECT_DCHECK("DCHECK failed: false. ", DCHECK(false));
 
   // Produce a consistent error code so that both the main instance of this test
   // and the EXPECT_DEATH invocation below get the same error codes for DPCHECK.
@@ -356,8 +356,8 @@ TEST(CheckDeathTest, Dcheck) {
   std::ignore = fopen(file, "r");
   std::string err =
       logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode());
-  EXPECT_DCHECK("Check failed: false. : " + err, DPCHECK(false));
-  EXPECT_DCHECK("Check failed: 0 == 1 (0 vs. 1)", DCHECK_EQ(0, 1));
+  EXPECT_DCHECK("DCHECK failed: false. : " + err, DPCHECK(false));
+  EXPECT_DCHECK("DCHECK failed: 0 == 1 (0 vs. 1)", DCHECK_EQ(0, 1));
 
   // Test DCHECK on std::nullptr_t
   const void* p_null = nullptr;
@@ -370,7 +370,7 @@ TEST(CheckDeathTest, Dcheck) {
   // Test DCHECK on a scoped enum.
   enum class Animal { DOG, CAT };
   DCHECK_EQ(Animal::DOG, Animal::DOG);
-  EXPECT_DCHECK("Check failed: Animal::DOG == Animal::CAT (0 vs. 1)",
+  EXPECT_DCHECK("DCHECK failed: Animal::DOG == Animal::CAT (0 vs. 1)",
                 DCHECK_EQ(Animal::DOG, Animal::CAT));
 
   // Test DCHECK on functions and function pointers.
@@ -389,10 +389,10 @@ TEST(CheckDeathTest, Dcheck) {
   DCHECK_EQ(fp1, fp3);
   DCHECK_EQ(mp1, &MemberFunctions::MemberFunction1);
   DCHECK_EQ(mp2, &MemberFunctions::MemberFunction2);
-  EXPECT_DCHECK("=~Check failed: fp1 == fp2 \\(\\w+ vs. \\w+\\)",
+  EXPECT_DCHECK("=~DCHECK failed: fp1 == fp2 \\(\\w+ vs. \\w+\\)",
                 DCHECK_EQ(fp1, fp2));
   EXPECT_DCHECK(
-      "Check failed: mp2 == &MemberFunctions::MemberFunction1 (1 vs. 1)",
+      "DCHECK failed: mp2 == &MemberFunctions::MemberFunction1 (1 vs. 1)",
       DCHECK_EQ(mp2, &MemberFunctions::MemberFunction1));
 }
 
@@ -792,8 +792,13 @@ TEST(CheckDeathTest, CorrectSystemErrorUsed) {
   const logging::SystemErrorCode kTestError = 28;
   const std::string kExpectedCheckMessageRegex = base::StrCat(
       {" Check failed: false. ", base::NumberToString(kTestError)});
+  const std::string kExpectedDCheckMessageRegex = base::StrCat(
+      {" DCHECK failed: false. ", base::NumberToString(kTestError)});
   const std::string kExpectedPCheckMessageRegex =
       base::StrCat({" Check failed: false. ", base::NumberToString(kTestError),
+                    ": ", logging::SystemErrorCodeToString(kTestError)});
+  const std::string kExpectedDPCheckMessageRegex =
+      base::StrCat({" DCHECK failed: false. ", base::NumberToString(kTestError),
                     ": ", logging::SystemErrorCodeToString(kTestError)});
   const std::string kExpectedNotreachedMessageRegex =
       base::StrCat({" NOTREACHED hit. ", base::NumberToString(kTestError)});
@@ -812,7 +817,7 @@ TEST(CheckDeathTest, CorrectSystemErrorUsed) {
                CHECK(false) << logging::GetLastSystemErrorCode());
 
   set_last_error(kTestError);
-  EXPECT_DCHECK(kExpectedCheckMessageRegex,
+  EXPECT_DCHECK(kExpectedDCheckMessageRegex,
                 DCHECK(false) << logging::GetLastSystemErrorCode());
 
   set_last_error(kTestError);
@@ -820,7 +825,7 @@ TEST(CheckDeathTest, CorrectSystemErrorUsed) {
                PCHECK(false) << logging::GetLastSystemErrorCode());
 
   set_last_error(kTestError);
-  EXPECT_DCHECK(kExpectedPCheckMessageRegex,
+  EXPECT_DCHECK(kExpectedDPCheckMessageRegex,
                 DPCHECK(false) << logging::GetLastSystemErrorCode());
 
   set_last_error(kTestError);

@@ -180,7 +180,8 @@ void SyntheticGestureTargetAndroid::GetVSyncParameters(
 
 void SyntheticGestureTargetAndroid::OnBeginFrame(
     base::TimeTicks frame_begin_time,
-    base::TimeDelta frame_interval) {
+    base::TimeDelta frame_interval,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   vsync_timebase_ = frame_begin_time;
   vsync_interval_ = frame_interval;
 }

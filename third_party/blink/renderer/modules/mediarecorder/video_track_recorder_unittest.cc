@@ -13,9 +13,11 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -24,6 +26,7 @@
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
+#include "media/base/media_log.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -198,6 +201,62 @@ class MockVideoTrackRecorderCallbackInterface
   WeakCellFactory<VideoTrackRecorder::CallbackInterface> weak_factory_{this};
 };
 
+// Adds an artificial encoder frame delay by postponing superclass calls
+// according to the specified delay value.
+class FakeVideoEncodeAcceleratorWithFrameDelay final
+    : public media::FakeVideoEncodeAccelerator {
+ public:
+  FakeVideoEncodeAcceleratorWithFrameDelay(
+      int frame_delay,
+      base::OnceClosure on_bitstream_buffers_ready_cb)
+      : media::FakeVideoEncodeAccelerator(
+            scheduler::GetSequencedTaskRunnerForTesting()),
+        frame_delay_(frame_delay),
+        on_bitstream_buffers_ready_cb_(
+            std::move(on_bitstream_buffers_ready_cb)) {}
+
+  bool Initialize(const Config& config,
+                  Client* client,
+                  std::unique_ptr<media::MediaLog> media_log) override {
+    if (media::FakeVideoEncodeAccelerator::Initialize(config, client,
+                                                      std::move(media_log))) {
+      SetFrameDelay(frame_delay_);
+      return true;
+    }
+    return false;
+  }
+
+  void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override {
+    media::FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
+        std::move(buffer));
+    if (on_bitstream_buffers_ready_cb_) {
+      std::move(on_bitstream_buffers_ready_cb_).Run();
+    }
+  }
+
+  void Encode(scoped_refptr<media::VideoFrame> frame,
+              bool force_keyframe) override {
+    submitted_frames_.push({std::move(frame), force_keyframe});
+    if (submitted_frames_.size() > frame_delay_) {
+      auto [delayed_frame, delayed_force_keyframe] =
+          std::move(submitted_frames_.front());
+      submitted_frames_.pop();
+      media::FakeVideoEncodeAccelerator::Encode(std::move(delayed_frame),
+                                                delayed_force_keyframe);
+    }
+  }
+
+ private:
+  struct SubmittedFrame {
+    scoped_refptr<media::VideoFrame> frame;
+    bool force_keyframe = false;
+  };
+
+  const size_t frame_delay_;
+  base::OnceClosure on_bitstream_buffers_ready_cb_;
+  base::queue<SubmittedFrame> submitted_frames_;
+};
+
 class VideoTrackRecorderTestBase {
  public:
   VideoTrackRecorderTestBase()
@@ -287,7 +346,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         WebMediaStreamTrack(component_.Get()),
         mock_callback_interface_->GetWeakCell(),
         /*bits_per_second=*/1000000, keyframe_config,
-        /*frame_buffer_pool_limit=*/10);
+        /*frame_buffer_pool_limit=*/30);
   }
 
   void Encode(scoped_refptr<media::VideoFrame> frame,
@@ -1147,6 +1206,67 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
   run_loop2.Run();
 
   Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
+       RespectsEncoderFrameDelay) {
+  auto shared_image_interface =
+      base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  shared_image_interface->UseTestGMBInSharedImageCreationWithBufferUsage();
+  EXPECT_CALL(*shared_image_interface, DoCreateSharedImage(_, _, _, _))
+      .Times(testing::AnyNumber());
+
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(
+      shared_image_interface.get());
+  EXPECT_CALL(*platform_, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown)
+      .WillOnce(base::test::RunOnceClosure<0>());
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::VP8PROFILE_ANY,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_CALL(mock_gpu_factories, GetTaskRunner)
+      .WillRepeatedly(Return(scheduler::GetSequencedTaskRunnerForTesting()));
+
+  // Note that this is greater than VideoTrackRecorder's default capacity.
+  constexpr int kEncoderDelay = 20;
+  base::OnceClosure quit_closure = task_environment_.QuitClosure();
+  EXPECT_CALL(mock_gpu_factories, DoCreateVideoEncodeAccelerator)
+      .WillOnce([&quit_closure]() {
+        return new FakeVideoEncodeAcceleratorWithFrameDelay(
+            kEncoderDelay,
+            /*on_bitstream_buffers_ready_cb=*/std::move(quit_closure));
+      });
+
+  InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
+
+  // Must be large enough for VideoTrackRecorder to want to use accelerated
+  // encoding.
+  const gfx::Size kFrameSize(kVEAEncoderMinResolutionWidth,
+                             kVEAEncoderMinResolutionHeight);
+  scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  Encode(video_frame, base::TimeTicks::Now());
+
+  // Wait until the encoder client has been created, initialized and it has
+  // provided bitstream buffers to our fake encoder.
+  task_environment_.RunUntilQuit();
+
+  quit_closure = task_environment_.QuitClosure();
+  EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _))
+      .WillOnce([&quit_closure]() { std::move(quit_closure).Run(); });
+  for (int i = 0; i < kEncoderDelay; ++i) {
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([this, video_frame]() {
+          Encode(video_frame, base::TimeTicks::Now());
+        }));
+  }
+  task_environment_.RunUntilQuit();
 }
 
 // Inserts a frame for encode and makes sure that it is released.

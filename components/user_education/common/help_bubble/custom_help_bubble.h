@@ -16,6 +16,8 @@
 
 namespace user_education {
 
+class CustomHelpBubbleViews;
+
 // Custom Help Bubbles
 
 // A custom help bubble is a `HelpBubble` that wraps some UI that behaves like a
@@ -107,6 +109,8 @@ class CustomHelpBubbleUi {
   void NotifyUserAction(UserAction user_action);
 
  private:
+  friend class CustomHelpBubbleViews;
+
   std::unique_ptr<base::OnceCallbackList<void(UserAction)>>
       user_action_callbacks_;
   base::WeakPtrFactory<CustomHelpBubbleUi> weak_ptr_factory_{this};

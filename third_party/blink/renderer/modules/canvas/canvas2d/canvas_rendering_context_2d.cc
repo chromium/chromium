@@ -288,6 +288,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
                          ? canvas() != nullptr
                          : IsPaintable();
   if (context_lost_mode_ == kRealLostContext && can_restore && Restore()) {
+    Host()->set_context_lost(false);
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -332,8 +333,6 @@ bool CanvasRenderingContext2D::Restore() {
     if (resource_provider && host->GetRasterMode() == RasterMode::kCPU) {
       host->ReplaceResourceProvider(nullptr);
       // FIXME: draw sad canvas picture into new buffer crbug.com/243842
-    } else {
-      host->set_context_lost(false);
     }
   }
 

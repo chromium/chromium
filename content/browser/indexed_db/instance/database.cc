@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -590,6 +591,12 @@ Status Database::CreateIndexOperation(int64_t object_store_id,
 void Database::CreateIndexAbortOperation(int64_t object_store_id,
                                          int64_t index_id) {
   TRACE_EVENT0("IndexedDB", "Database::CreateIndexAbortOperation");
+  if (!IsObjectStoreIdAndIndexIdInMetadata(object_store_id, index_id)) {
+    // crbug.com/398879932 suggests it's possible to get here, but it's not
+    // clear how. This DWOC should let us know if the prospective fix worked.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   RemoveIndexFromMetadata(object_store_id, index_id);
 }
 
@@ -612,12 +619,11 @@ Status Database::DeleteIndexOperation(int64_t object_store_id,
       backing_store()->DeleteIndex(transaction->BackingStoreTransaction(), id(),
                                    object_store_id, index_metadata);
 
-  if (!s.ok()) {
-    return s;
+  if (s.ok()) {
+    s = backing_store()->ClearIndex(transaction->BackingStoreTransaction(),
+                                    id(), object_store_id, index_id);
   }
 
-  s = backing_store()->ClearIndex(transaction->BackingStoreTransaction(), id(),
-                                  object_store_id, index_id);
   if (!s.ok()) {
     AddIndexToMetadata(object_store_id, std::move(index_metadata),
                        IndexedDBIndexMetadata::kInvalidId);
@@ -627,7 +633,7 @@ Status Database::DeleteIndexOperation(int64_t object_store_id,
   transaction->ScheduleAbortTask(
       base::BindOnce(&Database::DeleteIndexAbortOperation, AsWeakPtr(),
                      object_store_id, std::move(index_metadata)));
-  return s;
+  return Status::OK();
 }
 
 void Database::DeleteIndexAbortOperation(

@@ -2497,6 +2497,11 @@ Chromium is unable to recover your settings.
           To get this extension and more on all your computers, sign in to Chromium
         </message>
       </if>
+
+      <!-- UNO Promo strings for bookmarks -->
+      <message name="IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the bookmark bubble asking the user to enable UNO.">
+        To get this bookmark and more on all your devices, sign in to Chromium
+      </message>
     </messages>
   </release>
 </grit>

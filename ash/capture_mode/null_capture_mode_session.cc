@@ -136,6 +136,7 @@ ActionButtonView* NullCaptureModeSession::AddActionButton(
 void NullCaptureModeSession::AddSmartActionsButton() {}
 
 void NullCaptureModeSession::MaybeShowScannerDisclaimer(
+    ScannerEntryPoint entry_point,
     base::RepeatingClosure accept_callback,
     base::RepeatingClosure decline_callback) {}
 

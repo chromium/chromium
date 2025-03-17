@@ -4,10 +4,13 @@
 
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
+
 namespace ash {
 
 SunfishCaptureBarView::SunfishCaptureBarView() {
-  AppendCloseButton();
+  AppendCloseButton(
+      IDS_ASH_SCREEN_CAPTURE_SUNFISH_CLOSE_BUTTON_ACCESSIBLE_NAME);
 }
 
 SunfishCaptureBarView::~SunfishCaptureBarView() = default;
