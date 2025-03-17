@@ -350,7 +350,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     base::Value::Dict body;
     body.Set("capabilities", session->capabilities->Clone());
     body.Set("sessionId", session->id);
-    *value = std::make_unique<base::Value>(body.Clone());
+    *value = std::make_unique<base::Value>(std::move(body));
   } else {
     *value = std::make_unique<base::Value>(session->capabilities->Clone());
   }

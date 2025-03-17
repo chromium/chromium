@@ -11,6 +11,7 @@
 
 namespace base {
 class Value;
+class ValueView;
 }
 
 typedef bool (*IsVLogOnFunc)(int vlog_level);
@@ -54,7 +55,7 @@ class Log {
 bool IsVLogOn(int vlog_level);
 bool TruncateLoggedParams();
 
-std::string PrettyPrintValue(const base::Value& value);
+std::string PrettyPrintValue(base::ValueView value);
 
 // Returns a pretty printed value, after truncating long strings.
 std::string FormatValueForDisplay(const base::Value& value);
