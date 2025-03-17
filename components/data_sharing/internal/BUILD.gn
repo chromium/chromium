@@ -37,8 +37,6 @@ static_library("internal") {
     "group_data_store.h",
     "logger_impl.cc",
     "logger_impl.h",
-    "partial_failure_sdk_delegate_wrapper.cc",
-    "partial_failure_sdk_delegate_wrapper.h",
     "preview_server_proxy.cc",
     "preview_server_proxy.h",
   ]
@@ -98,7 +96,6 @@ source_set("unit_tests") {
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
     "logger_impl_unittest.cc",
-    "partial_failure_sdk_delegate_wrapper_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -107,13 +108,10 @@ void FakeDataSharingSDKDelegate::ReadGroups(
     if (groups_.find(group_id) != groups_.end()) {
       *result.add_group_data() = groups_[group_id];
     } else {
-      // Partial failure is not supported in this fake to simplify testing.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), base::unexpected(absl::Status(
-                                                  absl::StatusCode::kNotFound,
-                                                  "Groups not found"))));
-      return;
+      auto* failed_group = result.add_failed_read_group_results();
+      failed_group->set_group_id(group_params.group_id());
+      failed_group->set_failure_reason(
+          data_sharing_pb::FailedReadGroupResult::GROUP_NOT_FOUND);
     }
   }
 

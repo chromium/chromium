@@ -6,6 +6,7 @@
 
 #include <iterator>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -53,6 +54,7 @@ GroupDataModel::GroupDataModel(
       collaboration_group_sync_bridge_(collaboration_group_sync_bridge),
       sdk_delegate_(sdk_delegate) {
   CHECK(collaboration_group_sync_bridge_);
+  CHECK(sdk_delegate_);
   collaboration_group_sync_bridge_->AddObserver(this);
 
   if (collaboration_group_sync_bridge_->IsDataLoaded()) {
@@ -296,7 +298,7 @@ void GroupDataModel::FetchGroupsFromSDK(
         collaboration_group_specifics_opt->consistency_token());
   }
 
-  sdk_delegate_.ReadGroups(
+  sdk_delegate_->ReadGroups(
       params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
                              weak_ptr_factory_.GetWeakPtr(), group_versions,
                              base::Time::Now()));
