@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
-#import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
@@ -197,7 +196,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   collaboration::messaging::MessagingBackendServiceFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
   data_sharing::DataSharingServiceFactory::GetInstance();
-  dom_distiller::DomDistillerServiceFactory::GetInstance();
   drive::DriveServiceFactory::GetInstance();
   enterprise::ProfileIdServiceFactoryIOS::GetInstance();
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
