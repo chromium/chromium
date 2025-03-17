@@ -22376,6 +22376,12 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failed to measure a particular metric value"/>
 </enum>
 
+<enum name="PreFreezeReadProcMapsType">
+  <int value="0" label="Failed to read /proc/self/maps"/>
+  <int value="1" label="/proc/self/maps is empty"/>
+  <int value="2" label="Read /proc/self/maps successfully"/>
+</enum>
+
 <enum name="PreloadingTriggeringOutcome">
   <int value="0" label="Unspecified"/>
   <int value="2" label="Duplicate"/>

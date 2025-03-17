@@ -2135,6 +2135,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SelfCompact2.Renderer.ReadProcMaps"
+    enum="PreFreezeReadProcMapsType" expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Whether we were able to read /proc/self/maps successfully. If
+    self-compaction is not enabled, this will always record as success. Recorded
+    right before we begin self-compaction.
+  </summary>
+</histogram>
+
 <histogram name="Memory.SelfCompact2.Renderer.SelfCompactionTime" units="ms"
     expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>

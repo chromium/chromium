@@ -977,7 +977,7 @@ TEST_F(PreFreezeSelfCompactionTest, Disabled) {
   // We also check that no other histograms (other than the ones expected above)
   // were recorded.
   EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
-            47);
+            48);
 }
 
 TEST_F(PreFreezeSelfCompactionTest, OnSelfFreezeCancel) {
