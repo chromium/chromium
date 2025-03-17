@@ -1968,8 +1968,9 @@
       status: "stable",
     },
     {
+      // Killswitch M136.
       name: "FewerSubsequences",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Also enabled when blink::features::kFileHandlingAPI is overridden
