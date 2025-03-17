@@ -377,7 +377,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
       memory_allocator_->New<PersistentHistogramData>(
           offsetof(PersistentHistogramData, name) + name.size() + 1);
   if (histogram_data) {
-    memcpy(histogram_data->name, name.data(), name.size());
+    UNSAFE_TODO(memcpy(histogram_data->name, name.data(), name.size()));
     UNSAFE_TODO(histogram_data->name[name.size()]) = '\0';
     histogram_data->histogram_type = histogram_type;
     histogram_data->flags = flags | HistogramBase::kIsPersistent;
