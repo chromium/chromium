@@ -69,11 +69,18 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      const LayoutUnit percentage_resolution_size =
+      LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return kIndefiniteSize;
+        if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
+          if (length_type != LengthTypeInternal::kMin) {
+            return kIndefiniteSize;
+          }
+          percentage_resolution_size = LayoutUnit();
+        } else {
+          return kIndefiniteSize;
+        }
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
@@ -202,15 +209,26 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      const LayoutUnit percentage_resolution_size =
+      LayoutUnit percentage_resolution_size =
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return length_type == LengthTypeInternal::kMain
-                   ? block_size_func(SizeType::kContent)
-                   : kIndefiniteSize;
+        switch (length_type) {
+          case LengthTypeInternal::kMin: {
+            if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
+              percentage_resolution_size = LayoutUnit();
+            } else {
+              return kIndefiniteSize;
+            }
+            break;
+          }
+          case LengthTypeInternal::kMain:
+            return block_size_func(SizeType::kContent);
+          case LengthTypeInternal::kMax:
+            return kIndefiniteSize;
+        }
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
