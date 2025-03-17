@@ -9081,3 +9081,7 @@ crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Fa
 
 # Gardener 2025-03-03
 crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]
+
+# Gardener 2025-03-13
+crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
+crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
