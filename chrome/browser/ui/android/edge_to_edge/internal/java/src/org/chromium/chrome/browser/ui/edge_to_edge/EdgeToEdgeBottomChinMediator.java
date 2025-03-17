@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerS
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -45,10 +46,10 @@ class EdgeToEdgeBottomChinMediator
     private boolean mIsDrawingToEdge;
     private boolean mIsPagedOptedIntoEdgeToEdge;
 
-    // The offset of the composited view in the renderer. When BCIV is enabled, this will usually
-    // not be equal to the property model's Y_OFFSET value, since the composited view will be moved
-    // by viz instead of the browser.
-    private int mRendererOffset;
+    // The offset of the composited view in the browser. When BCIV is enabled, this will usually
+    // not be equal to the offset in the renderer, since the composited view will be moved by viz
+    // instead of the browser.
+    private int mYOffset;
 
     private int mNavigationBarColor;
     private int mDividerColor;
@@ -130,7 +131,13 @@ class EdgeToEdgeBottomChinMediator
     }
 
     private boolean isVisible() {
-        return mRendererOffset < mModel.get(HEIGHT);
+        // This assumes the chin is at the very bottom, or all layers below the chin are scrollable.
+        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && mModel.get(OFFSET_TAG) != null) {
+            return mBottomControlsStacker.getBrowserControls().getBottomControlOffset()
+                    < mModel.get(HEIGHT);
+        } else {
+            return mYOffset < mModel.get(HEIGHT);
+        }
     }
 
     /** Change the color of the bottom chin. */
@@ -267,7 +274,7 @@ class EdgeToEdgeBottomChinMediator
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
-        mRendererOffset = layerYOffset;
+        mYOffset = layerYOffset;
 
         if (isVisible()) {
             // If the chin isn't visible, cache the color and update it when the chin is visible.
