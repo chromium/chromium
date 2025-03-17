@@ -283,6 +283,26 @@ void OverridePlatformValue(const std::string& platform_value) {
   // "platform" is used to determine device_model on the crash server.
   PlatformStorage().Set(platform_value);
 }
+
+crashpad::SimpleAddressRangeBag* ExtraMemoryRanges() {
+  return crashpad::CrashpadInfo::GetCrashpadInfo()->extra_memory_ranges();
+}
+
+void SetExtraMemoryRanges(crashpad::SimpleAddressRangeBag* address_range_bag) {
+  crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(
+      address_range_bag);
+}
+
+crashpad::SimpleAddressRangeBag* IntermediateDumpExtraMemoryRanges() {
+  return crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->intermediate_dump_extra_memory_ranges();
+}
+
+void SetIntermediateDumpExtraMemoryRanges(
+    crashpad::SimpleAddressRangeBag* address_range_bag) {
+  crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->set_intermediate_dump_extra_memory_ranges(address_range_bag);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 #endif
