@@ -36,7 +36,7 @@ namespace xpath {
 
 class CORE_EXPORT Function : public Expression {
  public:
-  void SetArguments(HeapVector<Member<Expression>>&);
+  void SetArguments(GCedHeapVector<Member<Expression>>*);
   void SetName(const String& name) { name_ = name; }
 
  protected:
@@ -51,7 +51,7 @@ class CORE_EXPORT Function : public Expression {
 
 Function* CreateFunction(const String& name);
 CORE_EXPORT Function* CreateFunction(const String& name,
-                                     HeapVector<Member<Expression>>&);
+                                     GCedHeapVector<Member<Expression>>*);
 
 }  // namespace xpath
 
