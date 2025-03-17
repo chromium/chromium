@@ -12,8 +12,8 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
- * {@link ManualFillingComponent}.
+ * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
+ * ManualFillingComponent}.
  */
 public class ManualFillingComponentSupplier
         extends UnownedUserDataSupplier<ManualFillingComponent> {

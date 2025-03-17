@@ -103,8 +103,8 @@ public final class UserInfoField {
     }
 
     /**
-     * Returns true if obfuscation should be applied to the item's caption, for example to
-     * hide passwords.
+     * Returns true if obfuscation should be applied to the item's caption, for example to hide
+     * passwords.
      */
     @CalledByNative
     public boolean isObfuscated() {

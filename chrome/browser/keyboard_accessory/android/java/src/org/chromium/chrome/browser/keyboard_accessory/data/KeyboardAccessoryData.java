@@ -131,8 +131,8 @@ public class KeyboardAccessoryData {
     }
 
     /**
-     * This describes an action that can be invoked from the keyboard accessory.
-     * The most prominent example hereof is the "Generate Password" action.
+     * This describes an action that can be invoked from the keyboard accessory. The most prominent
+     * example hereof is the "Generate Password" action.
      */
     public static final class Action {
         private final Callback<Action> mActionCallback;
@@ -291,8 +291,8 @@ public class KeyboardAccessoryData {
     }
 
     /**
-     * Represents a Profile, or a Credit Card, or the credentials for a website
-     * (username + password), to be shown on the manual fallback UI.
+     * Represents a Profile, or a Credit Card, or the credentials for a website (username +
+     * password), to be shown on the manual fallback UI.
      */
     public static final class UserInfo {
         private final String mOrigin;
@@ -335,7 +335,7 @@ public class KeyboardAccessoryData {
 
         /**
          * @return True iff the user info originates from a first-party item and not from a PSL or
-         *         affiliated match.
+         *     affiliated match.
          */
         public boolean isExactMatch() {
             return mIsExactMatch;

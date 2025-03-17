@@ -43,14 +43,15 @@ public interface ManualFillingComponent extends BackPressHandler {
     /**
      * Since the ManualFillingComponent is considered part of the keyboard when using the regular
      * {@link org.chromium.ui.KeyboardVisibilityDelegate}, it needs direct access to the system
-     * keyboard (but still reuse a form of {@link org.chromium.ui.KeyboardVisibilityDelegate}).
-     * The "soft keyboard" describes the system's onscreen keyboard that covers part of the device
+     * keyboard (but still reuse a form of {@link org.chromium.ui.KeyboardVisibilityDelegate}). The
+     * "soft keyboard" describes the system's onscreen keyboard that covers part of the device
      * screen. It is hidden by default if the phone uses any physical keyboard.
      */
     interface SoftKeyboardDelegate {
         /**
          * Hide only Android's soft keyboard. Keeps eventual keyboard replacements and extensions
          * untouched.
+         *
          * @param view A focused {@link View}.
          * @return True if the keyboard was visible before this call.
          */
@@ -58,21 +59,24 @@ public interface ManualFillingComponent extends BackPressHandler {
 
         /**
          * Returns whether Android soft keyboard is showing and ignores all extensions/replacements.
+         *
          * @param context A {@link Context} instance.
-         * @param view    A {@link View}.
+         * @param view A {@link View}.
          * @return Returns true if Android's soft keyboard is visible. Ignores
-         *         extensions/replacements.
+         *     extensions/replacements.
          */
         boolean isSoftKeyboardShowing(Context context, View view);
 
         /**
          * Requests Android's soft keyboard.
+         *
          * @param contentView A {@link ViewGroup} used as target for the keyboard.
          */
         void showSoftKeyboard(ViewGroup contentView);
 
         /**
          * Returns the height of the bare soft keyboard (excluding extensions like accessories).
+         *
          * @param rootView A root {@link View} that allows size estimation based on display size.
          * @return The soft keyboard size in pixels.
          */
@@ -85,6 +89,7 @@ public interface ManualFillingComponent extends BackPressHandler {
         /**
          * Requests a timely update to the accessory sheet of the given {@param sheetType}. If any
          * sheet can be constructed, the native side will push it, even if it was pushed before.
+         *
          * @param sheetType The {@link AccessoryTabType} of the sheet that should be updated.
          */
         void requestSheet(@AccessoryTabType int sheetType);
@@ -119,6 +124,7 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Handles tapping on the Android back button.
+     *
      * @return Whether tapping the back button dismissed the accessory sheet or not.
      */
     boolean onBackPressed();
@@ -128,13 +134,15 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Notifies the component that a popup window exists so it can be dismissed if necessary.
+     *
      * @param popup A {@link DropdownPopupWindow} that might be dismissed later.
      */
     void notifyPopupAvailable(DropdownPopupWindow popup);
 
     /**
-     * By registering a provider, an empty tab of the given tab type is created. Call
-     * {@link PropertyProvider#notifyObservers(Object)} to fill or update the sheet.
+     * By registering a provider, an empty tab of the given tab type is created. Call {@link
+     * PropertyProvider#notifyObservers(Object)} to fill or update the sheet.
+     *
      * @param webContents The {@link WebContents} the provided data is meant for.
      * @param sheetType The type of sheet to instantiate and to provide data for.
      * @param sheetDataProvider The {@link PropertyProvider} the tab will get its data from.
@@ -146,6 +154,7 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Registers an updater delegate which requests new accessory sheets for a given `webContents`.
+     *
      * @param webContents The {@link WebContents} the given `delegate` maintains sheets for.
      * @param delegate A {@link UpdateAccessorySheetDelegate} to issue requests for recent sheets.
      */
@@ -153,8 +162,9 @@ public interface ManualFillingComponent extends BackPressHandler {
             WebContents webContents, UpdateAccessorySheetDelegate delegate);
 
     /**
-     * Registers a provider, to provide actions for the keyboard accessory bar. Call
-     * {@link PropertyProvider#notifyObservers(Object)} to fill or update the actions.
+     * Registers a provider, to provide actions for the keyboard accessory bar. Call {@link
+     * PropertyProvider#notifyObservers(Object)} to fill or update the actions.
+     *
      * @param webContents The {@link WebContents} the provided data is meant for.
      * @param actionProvider The {@link PropertyProvider} providing actions.
      */
@@ -195,6 +205,7 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Commands the accessory to show and set the currently active tab to the given |tabType|.
+     *
      * @param tabType the tab that should be selected by default.
      */
     void showAccessorySheetTab(@AccessoryTabType int tabType);
@@ -207,6 +218,7 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Returns whether the Keyboard is replaced by an accessory sheet or is about to do so.
+     *
      * @return True if an accessory sheet is (being) opened and replacing the keyboard.
      * @param view A {@link View} that is used to find the window root.
      */
@@ -214,6 +226,7 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * The filling UI extends or
+     *
      * @return A {@link ObservableSupplier<Integer>} providing an inset to shrink the page by.
      */
     ObservableSupplier<Integer> getBottomInsetSupplier();

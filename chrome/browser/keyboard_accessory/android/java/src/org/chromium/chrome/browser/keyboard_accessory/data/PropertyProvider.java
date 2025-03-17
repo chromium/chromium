@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * A simple class that holds a set of {@link Observer}s which can be notified about new data by
  * directly passing that data into {@link PropertyProvider#notifyObservers(T)}.
+ *
  * @param <T> The object this provider provides.
  */
 public class PropertyProvider<T> implements Provider<T> {
