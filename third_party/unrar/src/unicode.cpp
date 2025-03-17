@@ -656,6 +656,34 @@ bool IsTextUtf8(const byte *Src,size_t SrcSize)
 
 int wcsicomp(const wchar *s1,const wchar *s2)
 {
+  // If strings are English or numeric, perform the fast comparison.
+  // It improves speed in cases like comparing against a lot of MOTW masks.
+  bool FastMode=true;
+  while (true)
+  {
+    // English uppercase, English lowercase and digit flags.
+    bool u1=*s1>='A' && *s1<='Z', l1=*s1>='a' && *s1<='z', d1=*s1>='0' && *s1<='9';
+    bool u2=*s2>='A' && *s2<='Z', l2=*s2>='a' && *s2<='z', d2=*s2>='0' && *s2<='9';
+
+    // Fast comparison is impossible if both characters are not alphanumeric or 0.
+    if (!u1 && !l1 && !d1 && *s1!=0 && !u2 && !l2 && !d2 && *s2!=0)
+    {
+      FastMode=false;
+      break;
+    }
+    // Convert lowercase to uppercase, keep numeric and not alphanumeric as is.
+    wchar c1 = l1 ? *s1-'a'+'A' : *s1;
+    wchar c2 = l2 ? *s2-'a'+'A' : *s2;
+    if (c1 != c2)
+      return *s1 < *s2 ? -1 : 1;
+    if (*s1==0)
+      break;
+    s1++;
+    s2++;
+  }
+  if (FastMode)
+    return 0;
+
 #ifdef _WIN_ALL
   return CompareStringW(LOCALE_USER_DEFAULT,NORM_IGNORECASE|SORT_STRINGSORT,s1,-1,s2,-1)-2;
 #else
@@ -664,7 +692,7 @@ int wcsicomp(const wchar *s1,const wchar *s2)
     wchar u1 = towupper(*s1);
     wchar u2 = towupper(*s2);
     if (u1 != u2)
-      return u1 < u2 ? -1 : 1;
+      return *s1 < *s2 ? -1 : 1;
     if (*s1==0)
       break;
     s1++;
