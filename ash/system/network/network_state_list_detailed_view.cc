@@ -5,6 +5,8 @@
 #include "ash/system/network/network_state_list_detailed_view.h"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -127,7 +129,7 @@ class NetworkStateListDetailedView::InfoBubble
     : public views::BubbleDialogDelegateView {
  public:
   InfoBubble(views::View* anchor,
-             views::View* content,
+             std::unique_ptr<views::View> content,
              NetworkStateListDetailedView* detailed_view)
       : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
         detailed_view_(detailed_view) {
@@ -137,7 +139,7 @@ class NetworkStateListDetailedView::InfoBubble
     set_shadow(views::BubbleBorder::NO_SHADOW);
     SetNotifyEnterExitOnChild(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildViewRaw(content);
+    AddChildView(std::move(content));
   }
 
   InfoBubble(const InfoBubble&) = delete;
@@ -413,7 +415,8 @@ void NetworkStateListDetailedView::OnInfoBubbleDestroyed() {
   GetWidget()->Activate();
 }
 
-views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
+std::unique_ptr<views::View>
+NetworkStateListDetailedView::CreateNetworkInfoView() {
   std::string ipv4_address, ipv6_address;
   const NetworkStateProperties* network = model_->default_network();
   const DeviceStateProperties* device =
@@ -471,7 +474,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
     bubble_text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_NETWORKS);
   }
 
-  auto* label = new views::Label(bubble_text);
+  auto label = std::make_unique<views::Label>(bubble_text);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   label->SetSelectable(true);

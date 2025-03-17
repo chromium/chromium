@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/login_status.h"
@@ -95,7 +96,7 @@ class ASH_EXPORT NetworkStateListDetailedView
   void ToggleInfoBubble();
   bool ResetInfoBubble();
   void OnInfoBubbleDestroyed();
-  views::View* CreateNetworkInfoView();
+  std::unique_ptr<views::View> CreateNetworkInfoView();
 
   // Scan and start timer to periodically request a network scan.
   void ScanAndStartTimer();
