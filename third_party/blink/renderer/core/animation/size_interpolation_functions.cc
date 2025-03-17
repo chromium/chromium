@@ -14,14 +14,19 @@ namespace blink {
 
 class CSSSizeNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSSizeNonInterpolableValue> Create(CSSValueID keyword) {
-    return base::AdoptRef(new CSSSizeNonInterpolableValue(keyword));
+  explicit CSSSizeNonInterpolableValue(CSSValueID keyword)
+      : keyword_(keyword), length_non_interpolable_value_(nullptr) {
+    DCHECK_NE(keyword, CSSValueID::kInvalid);
   }
+  explicit CSSSizeNonInterpolableValue(
+      const NonInterpolableValue* length_non_interpolable_value)
+      : keyword_(CSSValueID::kInvalid),
+        length_non_interpolable_value_(
+            std::move(length_non_interpolable_value)) {}
 
-  static scoped_refptr<CSSSizeNonInterpolableValue> Create(
-      scoped_refptr<const NonInterpolableValue> length_non_interpolable_value) {
-    return base::AdoptRef(new CSSSizeNonInterpolableValue(
-        std::move(length_non_interpolable_value)));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(length_non_interpolable_value_);
   }
 
   bool IsKeyword() const { return IsValidCSSValueID(keyword_); }
@@ -32,25 +37,14 @@ class CSSSizeNonInterpolableValue : public NonInterpolableValue {
 
   const NonInterpolableValue* LengthNonInterpolableValue() const {
     DCHECK(!IsKeyword());
-    return length_non_interpolable_value_.get();
+    return length_non_interpolable_value_.Get();
   }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSSizeNonInterpolableValue(CSSValueID keyword)
-      : keyword_(keyword), length_non_interpolable_value_(nullptr) {
-    DCHECK_NE(keyword, CSSValueID::kInvalid);
-  }
-
-  CSSSizeNonInterpolableValue(
-      scoped_refptr<const NonInterpolableValue> length_non_interpolable_value)
-      : keyword_(CSSValueID::kInvalid),
-        length_non_interpolable_value_(
-            std::move(length_non_interpolable_value)) {}
-
   CSSValueID keyword_;
-  scoped_refptr<const NonInterpolableValue> length_non_interpolable_value_;
+  Member<const NonInterpolableValue> length_non_interpolable_value_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(CSSSizeNonInterpolableValue);
@@ -65,17 +59,19 @@ struct DowncastTraits<CSSSizeNonInterpolableValue> {
 };
 
 static InterpolationValue ConvertKeyword(CSSValueID keyword) {
-  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
-                            CSSSizeNonInterpolableValue::Create(keyword));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableList>(0),
+      MakeGarbageCollected<CSSSizeNonInterpolableValue>(keyword));
 }
 
 static InterpolationValue WrapConvertedLength(
     InterpolationValue&& converted_length) {
   if (!converted_length)
     return nullptr;
-  return InterpolationValue(std::move(converted_length.interpolable_value),
-                            CSSSizeNonInterpolableValue::Create(std::move(
-                                converted_length.non_interpolable_value)));
+  return InterpolationValue(
+      std::move(converted_length.interpolable_value),
+      MakeGarbageCollected<CSSSizeNonInterpolableValue>(
+          std::move(converted_length.non_interpolable_value)));
 }
 
 InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
@@ -133,9 +129,10 @@ InterpolationValue SizeInterpolationFunctions::MaybeConvertCSSSizeSide(
 PairwiseInterpolationValue SizeInterpolationFunctions::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) {
-  if (!NonInterpolableValuesAreCompatible(start.non_interpolable_value.get(),
-                                          end.non_interpolable_value.get()))
+  if (!NonInterpolableValuesAreCompatible(start.non_interpolable_value.Get(),
+                                          end.non_interpolable_value.Get())) {
     return nullptr;
+  }
   return PairwiseInterpolationValue(std::move(start.interpolable_value),
                                     std::move(end.interpolable_value),
                                     std::move(start.non_interpolable_value));

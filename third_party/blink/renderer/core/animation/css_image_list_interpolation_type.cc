@@ -129,7 +129,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
 
   const wtf_size_t length = value_list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
-  Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
+  HeapVector<Member<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {
     InterpolationValue component =
@@ -140,9 +140,9 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
     interpolable_list->Set(i, std::move(component.interpolable_value));
     non_interpolable_values[i] = std::move(component.non_interpolable_value);
   }
-  return InterpolationValue(
-      std::move(interpolable_list),
-      NonInterpolableList::Create(std::move(non_interpolable_values)));
+  return InterpolationValue(std::move(interpolable_list),
+                            MakeGarbageCollected<NonInterpolableList>(
+                                std::move(non_interpolable_values)));
 }
 
 PairwiseInterpolationValue CSSImageListInterpolationType::MaybeMergeSingles(

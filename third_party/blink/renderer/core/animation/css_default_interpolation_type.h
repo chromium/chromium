@@ -14,11 +14,12 @@ namespace blink {
 class CORE_EXPORT CSSDefaultNonInterpolableValue final
     : public NonInterpolableValue {
  public:
+  explicit CSSDefaultNonInterpolableValue(const CSSValue*);
   ~CSSDefaultNonInterpolableValue() final = default;
 
-  static scoped_refptr<CSSDefaultNonInterpolableValue> Create(
-      const CSSValue* css_value) {
-    return base::AdoptRef(new CSSDefaultNonInterpolableValue(css_value));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(css_value_);
   }
 
   const CSSValue* CssValue() const { return css_value_.Get(); }
@@ -26,9 +27,7 @@ class CORE_EXPORT CSSDefaultNonInterpolableValue final
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSDefaultNonInterpolableValue(const CSSValue*);
-
-  Persistent<const CSSValue> css_value_;
+  Member<const CSSValue> css_value_;
 };
 
 template <>
@@ -45,7 +44,7 @@ struct DowncastTraits<CSSDefaultNonInterpolableValue> {
 // A catch all default for CSSValue interpolation.
 class CSSDefaultInterpolationType : public InterpolationType {
  public:
-  CSSDefaultInterpolationType(PropertyHandle property)
+  explicit CSSDefaultInterpolationType(PropertyHandle property)
       : InterpolationType(property) {
     DCHECK(property.IsCSSProperty());
   }
