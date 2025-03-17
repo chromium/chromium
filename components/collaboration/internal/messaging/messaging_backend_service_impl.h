@@ -130,9 +130,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // given user.
   std::optional<std::string> GetDisplayNameForUserInGroup(
       const data_sharing::GroupId& group_id,
-      const GaiaId& gaia_id,
-      const std::optional<data_sharing::GroupData>& group_data,
-      const std::optional<collaboration_pb::Message>& db_message);
+      const GaiaId& gaia_id);
 
   // Converts a stored message to an ActivityLogItem for display. Some events
   // should not be part of the activity log and for those std::nullopt is
