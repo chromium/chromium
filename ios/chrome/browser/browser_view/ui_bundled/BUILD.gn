@@ -391,6 +391,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/ui_bundled:coordinator",
     "//ios/chrome/browser/tabs/ui_bundled:ui_bundled",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/toolbar/ui_bundled:coordinator",
     "//ios/chrome/browser/toolbar/ui_bundled/test",
     "//ios/chrome/browser/ui/popup_menu",

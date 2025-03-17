@@ -421,6 +421,7 @@ source_set("test_fixture") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:fakes",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
