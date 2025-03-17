@@ -128,14 +128,6 @@ namespace blink {
 
 namespace {
 
-// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
-// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
-// TODO(crbug.com/401192130): Resolve crash and re-enable.
-// TODO(crbug.com/40280152): Eliminate post safe-rollout.
-BASE_FEATURE(kAdjustGetOrCreate2DCanvasProvider,
-             "AdjustGetOrCreate2DCanvasProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool AdjustGetOrCreate2DCanvasProvider() {
   // The change to GetOrCreateCanvasResourceProvider() is safe only if the below
   // new features are also enabled, as (a) our reasoning about the
@@ -153,7 +145,8 @@ bool AdjustGetOrCreate2DCanvasProvider() {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kAdjustGetOrCreate2DCanvasProvider);
+  return base::FeatureList::IsEnabled(
+      features::kAdjustGetOrCreate2DCanvasProvider);
 }
 
 // These two constants determine if a newly created canvas starts with
