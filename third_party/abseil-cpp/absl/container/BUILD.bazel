@@ -659,11 +659,13 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":common_policy_traits",
         ":container_memory",
         ":raw_hash_set",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:throw_delegate",
+        "//absl/meta:type_traits",
     ],
 )
 
