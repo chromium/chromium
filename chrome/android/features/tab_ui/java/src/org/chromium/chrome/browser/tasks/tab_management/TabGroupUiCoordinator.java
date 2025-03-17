@@ -249,7 +249,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     new TabGroupUiMediator(
                             visibilityController,
                             mHandleBackPressChangedSupplier,
-                            this,
+                            /* resetHandler= */ this,
                             mModel,
                             mTabModelSelector,
                             mTabContentManager,

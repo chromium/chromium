@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,16 +48,14 @@ class TabStripViewBinder {
         }
         if (TabProperties.IS_SELECTED == propertyKey) {
             ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
+            @DrawableRes
             int selectedDrawableId =
                     model.get(TabProperties.IS_INCOGNITO)
                             ? R.drawable.tab_strip_selected_ring_incognito
                             : R.drawable.tab_strip_selected_ring;
             view.setForeground(
                     model.get(TabProperties.IS_SELECTED)
-                            ? ResourcesCompat.getDrawable(
-                                    view.getResources(),
-                                    selectedDrawableId,
-                                    view.getContext().getTheme())
+                            ? AppCompatResources.getDrawable(view.getContext(), selectedDrawableId)
                             : null);
 
             if (model.get(TabProperties.IS_SELECTED)) {
