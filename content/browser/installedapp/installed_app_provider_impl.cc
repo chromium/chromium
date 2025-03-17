@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -34,7 +35,7 @@
 namespace content {
 
 namespace {
-constexpr int kMaxNumberOfMatchedApps = 10;
+constexpr int kMaxNumberOfQueriedApps = 10;
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<NativeWinAppFetcher> CreateNativeWinAppFetcher() {
@@ -58,6 +59,7 @@ InstalledAppProviderImpl::~InstalledAppProviderImpl() = default;
 void InstalledAppProviderImpl::FilterInstalledApps(
     std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
     const GURL& manifest_url,
+    bool add_saved_related_applications,
     FilterInstalledAppsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(features::kInstalledAppProvider)) {
@@ -66,6 +68,22 @@ void InstalledAppProviderImpl::FilterInstalledApps(
         base::BindOnce(std::move(callback),
                        std::vector<blink::mojom::RelatedApplicationPtr>()));
     return;
+  }
+
+  // If we failed to retrieve the manifest, fall back to the saved
+  // related_apps.
+  if (add_saved_related_applications) {
+    WebContents* web_contents =
+        WebContents::FromRenderFrameHost(&render_frame_host());
+    std::vector<blink::mojom::RelatedApplicationPtr> saved_related_apps =
+        web_contents->GetDelegate()->GetSavedRelatedApplications(web_contents);
+    related_apps.insert(related_apps.end(),
+                        std::make_move_iterator(saved_related_apps.begin()),
+                        std::make_move_iterator(saved_related_apps.end()));
+  }
+
+  if (related_apps.size() > kMaxNumberOfQueriedApps) {
+    related_apps.resize(kMaxNumberOfQueriedApps);
   }
 
   base::ConcurrentCallbacks<FetchRelatedAppsTaskResult> concurrent;
@@ -134,9 +152,6 @@ void InstalledAppProviderImpl::AggregateTaskResults(
         std::vector<blink::mojom::RelatedApplicationPtr>());
   }
 
-  if (matched_apps.size() > kMaxNumberOfMatchedApps) {
-    matched_apps.resize(kMaxNumberOfMatchedApps);
-  }
   return std::move(callback).Run(mojo::Clone(matched_apps));
 }
 

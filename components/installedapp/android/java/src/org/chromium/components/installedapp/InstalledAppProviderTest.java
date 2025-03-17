@@ -322,6 +322,7 @@ public class InstalledAppProviderTest {
         mInstalledAppProvider.filterInstalledApps(
                 manifestRelatedApps,
                 manifestUrl,
+                /* addSavedRelatedApplications= */ false,
                 new InstalledAppProvider.FilterInstalledApps_Response() {
                     @Override
                     public void call(RelatedApplication[] installedRelatedApps) {
