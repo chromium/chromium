@@ -18037,29 +18037,6 @@
             ]
         }
     ],
-    "PriceTrackingPromoIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Tips_And_Price_Tracking_Enabled",
-                    "params": {
-                        "TipsEphemeralCardExperimentTrainParam": "lens_ephemeral_module_search_variation,save_passwords_ephemeral_module,enhanced_safe_browsing_ephemeral_module,address_bar_position_ephemeral_module",
-                        "TipsEphemeralCardModuleMaxImpressionCount": "3",
-                        "TipsLensShopExperimentType": "0",
-                        "TipsSafeBrowsingExperimentType": "0"
-                    },
-                    "enable_features": [
-                        "PriceTrackingPromo",
-                        "SegmentationPlatformEphemeralCardRanker",
-                        "SegmentationPlatformTipsEphemeralCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrintWithPostScriptType42Fonts": [
         {
             "platforms": [
