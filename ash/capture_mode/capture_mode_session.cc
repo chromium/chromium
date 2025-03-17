@@ -1562,16 +1562,26 @@ void CaptureModeSession::AddSmartActionsButton() {
 void CaptureModeSession::MaybeShowScannerDisclaimer(
     base::RepeatingClosure accept_callback,
     base::RepeatingClosure decline_callback) {
-  if (!ShouldShowScannerDisclaimer(
-          *capture_mode_util::GetActiveUserPrefService())) {
-    if (accept_callback) {
-      std::move(accept_callback).Run();
-    }
-    return;
+  bool is_reminder;
+  switch (GetScannerDisclaimerType(
+      *capture_mode_util::GetActiveUserPrefService())) {
+    case ScannerDisclaimerType::kNone:
+      if (accept_callback) {
+        std::move(accept_callback).Run();
+      }
+      return;
+
+    case ScannerDisclaimerType::kReminder:
+      is_reminder = true;
+      break;
+
+    case ScannerDisclaimerType::kFull:
+      is_reminder = false;
+      break;
   }
+
   disclaimer_ = DisclaimerView::CreateWidget(
-      capture_mode_util::GetPreferredRootWindow(),
-      /*is_reminder=*/false,
+      capture_mode_util::GetPreferredRootWindow(), is_reminder,
       base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(accept_callback)),

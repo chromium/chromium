@@ -11,11 +11,22 @@ class PrefService;
 
 namespace ash {
 
-// Returns whether the Scanner disclaimer should be shown according to the
+// The type of Scanner disclaimer that should be shown.
+enum class ASH_EXPORT ScannerDisclaimerType {
+  // No disclaimer should be shown.
+  kNone,
+  // The reminder disclaimer should be shown.
+  kReminder,
+  // The full non-reminder disclaimer should be shown.
+  kFull,
+};
+
+// Returns the type of Scanner disclaimer that should be shown according to the
 // given `PrefService`.
 // Does NOT check whether Scanner-related UI can be shown
 // (`ScannerController::CanShowUiForShell()`).
-ASH_EXPORT bool ShouldShowScannerDisclaimer(const PrefService& prefs);
+ASH_EXPORT ScannerDisclaimerType
+GetScannerDisclaimerType(const PrefService& prefs);
 
 // Sets the Scanner disclaimer as acknowledged by the user in the given
 // `PrefService`.

@@ -4784,8 +4784,9 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScreenshotSession) {
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_FALSE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kNone);
   EXPECT_TRUE(controller->IsActive());
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
@@ -4913,8 +4914,9 @@ TEST_F(ScannerTest, DisclaimerDeclineGoesBackToScreenshotMode) {
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_FALSE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5026,8 +5028,9 @@ TEST_F(ScannerTest, DisclaimerTosLinkFromScreenshotMode) {
   paragraph_one->ClickFirstLinkForTesting();
 
   EXPECT_FALSE(controller->IsActive());
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5055,8 +5058,9 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromScreenshotMode) {
   paragraph_three->ClickFirstLinkForTesting();
 
   EXPECT_FALSE(controller->IsActive());
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5083,8 +5087,9 @@ TEST_F(ScannerTest, DisclaimerTosLinkFromSunfishMode) {
   paragraph_one->ClickFirstLinkForTesting();
 
   EXPECT_FALSE(controller->IsActive());
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5111,8 +5116,9 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromSunfishMode) {
   paragraph_three->ClickFirstLinkForTesting();
 
   EXPECT_FALSE(controller->IsActive());
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5183,8 +5189,9 @@ TEST_F(ScannerTest,
   LeftClickOn(accept_button);
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_FALSE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kNone);
   EXPECT_TRUE(controller->IsActive());
 }
 
@@ -5206,8 +5213,9 @@ TEST_F(ScannerTest,
       kDisclaimerViewDeclineButtonId);
   LeftClickOn(decline_button);
 
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_FALSE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5237,8 +5245,9 @@ TEST_F(
   LeftClickOn(decline_button);
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
   EXPECT_FALSE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
@@ -5260,8 +5269,9 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerAcceptedFromSunfishMode) {
   SendKey(ui::VKEY_RETURN, GetEventGenerator());
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_FALSE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kNone);
 }
 
 TEST_F(ScannerTest, KeyboardNavigationDisclaimerDeclinedFromSunfishMode) {
@@ -5283,8 +5293,9 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerDeclinedFromSunfishMode) {
   SendKey(ui::VKEY_RETURN, event_generator);
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(
-      *Shell::Get()->session_controller()->GetActivePrefService()));
+  EXPECT_EQ(GetScannerDisclaimerType(
+                *Shell::Get()->session_controller()->GetActivePrefService()),
+            ScannerDisclaimerType::kFull);
 }
 
 }  // namespace

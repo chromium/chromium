@@ -20,7 +20,7 @@ TEST(ScannerDisclaimerTest, InitialValue) {
   TestingPrefServiceSimple prefs;
   RegisterPrefs(*prefs.registry());
 
-  EXPECT_TRUE(ShouldShowScannerDisclaimer(prefs));
+  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kFull);
 }
 
 TEST(ScannerDisclaimerTest, AfterAcknowledge) {
@@ -29,7 +29,7 @@ TEST(ScannerDisclaimerTest, AfterAcknowledge) {
 
   SetScannerDisclaimerAcked(prefs);
 
-  EXPECT_FALSE(ShouldShowScannerDisclaimer(prefs));
+  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kNone);
 }
 
 TEST(ScannerDisclaimerTest, AcknowledgeIsIdempotent) {
@@ -39,7 +39,7 @@ TEST(ScannerDisclaimerTest, AcknowledgeIsIdempotent) {
   SetScannerDisclaimerAcked(prefs);
   SetScannerDisclaimerAcked(prefs);
 
-  EXPECT_FALSE(ShouldShowScannerDisclaimer(prefs));
+  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kNone);
 }
 
 }  // namespace

@@ -9,8 +9,14 @@
 
 namespace ash {
 
-bool ShouldShowScannerDisclaimer(const PrefService& prefs) {
-  return !prefs.GetBoolean(prefs::kSunfishConsentDisclaimerAccepted);
+ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs) {
+  if (!prefs.GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)) {
+    return ScannerDisclaimerType::kFull;
+  }
+
+  // TODO: crbug.com/383437797 - Return `kReminder` here.
+
+  return ScannerDisclaimerType::kNone;
 }
 
 void SetScannerDisclaimerAcked(PrefService& prefs) {
