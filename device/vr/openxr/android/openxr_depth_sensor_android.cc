@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -170,6 +171,7 @@ void CopyDepthData(base::span<const float> input,
                    XrDepthViewANDROID depth_view,
                    const mojom::XRViewPtr& view,
                    FunctionType&& conversion_fn) {
+  TRACE_EVENT0("xr", "CopyDepthData");
   // We should've handled an invalid image_size before getting to this point.
   size_t num_pixels;
   CHECK(image_size.GetCheckedArea().AssignIfValid(&num_pixels));
@@ -423,6 +425,7 @@ void OpenXrDepthSensorAndroid::PopulateDepthData(
     DLOG(ERROR) << __func__ << " Incorrect eye configuration";
     return;
   }
+  TRACE_EVENT0("xr", "PopulateDepthData");
 
   XrDepthAcquireInfoANDROID acquire_info = {XR_TYPE_DEPTH_ACQUIRE_INFO_ANDROID};
   acquire_info.space = mojo_space_;

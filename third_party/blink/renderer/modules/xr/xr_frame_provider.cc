@@ -260,6 +260,10 @@ void XRFrameProvider::ScheduleImmersiveFrame(
 
   pending_immersive_vsync_ = true;
   frame_data_time_.StartTimer();
+  // `this` is an okay TRACE ID here, since we are only allowed one immersive
+  // session at a time.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "RequestImmersiveFrame",
+                                    TRACE_ID_LOCAL(this));
   immersive_data_provider_->GetFrameData(
       std::move(options), WTF::BindOnce(&XRFrameProvider::OnImmersiveFrameData,
                                         WrapWeakPersistent(this)));
@@ -292,6 +296,8 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
 void XRFrameProvider::OnImmersiveFrameData(
     device::mojom::blink::XRFrameDataPtr data) {
   frame_data_time_.StopTimer();
+  TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "RequestImmersiveFrame",
+                                  TRACE_ID_LOCAL(this));
   TRACE_EVENT0("gpu", "OnImmersiveFrameData");
 
   if (data.is_null()) {

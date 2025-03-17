@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_hand_utils.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
@@ -134,6 +135,7 @@ mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
       !mesh_scale_enabled_) {
     return nullptr;
   }
+  TRACE_EVENT1("xr", "GetHandTrackingData", "XrHandedness", type_);
 
   mojom::XRHandTrackingDataPtr hand_tracking_data =
       device::mojom::XRHandTrackingData::New();
