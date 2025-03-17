@@ -10935,11 +10935,14 @@
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "EnabledLowerTotalPages",
                     "params": {
-                        "BrowserMaxAllocations": "2048",
-                        "BrowserMaxMetadata": "2048",
-                        "BrowserTotalPages": "6144"
+                        "AllocationSamplingMultiplier": "2000",
+                        "AllocationSamplingRange": "20",
+                        "MaxAllocations": "2048",
+                        "MaxMetadata": "2048",
+                        "ProcessSamplingProbability": "0.015",
+                        "TotalPages": "6144"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
