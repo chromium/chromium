@@ -136,6 +136,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
+  // Asks the Wayland compositor to cancel the drag session, if any.
+  void CancelDragSession();
   // Handles drag/move mouse |event|, while in |kDetached| mode, forwarding it
   // as a bounds change event to the upper layer handlers.
   void HandleMotionEvent(LocatedEvent* event);
