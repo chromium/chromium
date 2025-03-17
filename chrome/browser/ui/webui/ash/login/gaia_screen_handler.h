@@ -477,7 +477,6 @@ class GaiaScreenHandler final
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  // Once Lacros is shipped, this will no longer be necessary.
   std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
