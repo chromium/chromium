@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 module ash.ime.mojom;
 
@@ -25,7 +25,7 @@ enum KeyEventType {
 // If a key is not listed here, then it means that the Chrome OS first-party
 // IMEs do not handle it and it is safe for the OS to handle the key itself.
 //
-// Next ordinal: 40
+// Next ordinal: 41
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.NamedDomKey"]
 enum NamedDomKey {
   [Default] kOther = 0,
@@ -74,6 +74,7 @@ enum NamedDomKey {
   [MinVersion=23] kAudioVolumeMute = 37,
   [MinVersion=23] kAudioVolumeDown = 38,
   [MinVersion=23] kAudioVolumeUp = 39,
+  [MinVersion=24] kDelete = 40,
 };
 
 // Represents a key pressed by the user, taking into account aspects like
