@@ -3,7 +3,6 @@
 <title>DBSC multiple registrations</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
 <script src="helper.js" type="module"></script>
 
 <script type="module">
@@ -12,10 +11,10 @@
   async function runMultipleRegistrationsTest(t, useSingleHeader) {
     await setupShardedServerState();
     const expectedCookieAndValue1 = "auth_cookie=abcdef0123";
-    const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t, expectedCookieAndAttributes1);
     const expectedCookieAndValue2 = "other_cookie=ghijkl4567";
-    const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t, expectedCookieAndAttributes2);
 
     // Configure server to configure cookies for next two created sessions.

@@ -3,7 +3,6 @@
 <title>DBSC session ended with continue:false</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
 <script src="helper.js" type="module"></script>
 
 <script type="module">
@@ -12,7 +11,7 @@
   promise_test(async t => {
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
-    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t);
 
     // Configure server to end the session upon refresh.

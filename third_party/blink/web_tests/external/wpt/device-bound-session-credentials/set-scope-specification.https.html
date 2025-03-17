@@ -61,7 +61,7 @@
     // This one is marked as included, but excludeInScopeSpecification/ is marked as excluded, and order matters.
     await expireCookieAndTriggerRequest("excludeInScopeSpecification/excluded_verify_authenticated.py", /*expectRefresh=*/false);
     await expireCookieAndTriggerRequest("includeInScopeSpecification/included_verify_authenticated.py", /*expectRefresh=*/true);
-    await expireCookieAndTriggerRequest(`${location.protocol}//www1.${location.hostname}:${location.port}/device-bound-session-credentials/verify_authenticated.py`, /*expectRefresh=*/true);
-    await expireCookieAndTriggerRequest(`${location.protocol}//www2.${location.hostname}:${location.port}/device-bound-session-credentials/verify_authenticated.py`, /*expectRefresh=*/false);
+    await expireCookieAndTriggerRequest(`${location.protocol}//www1.${location.host}/device-bound-session-credentials/verify_authenticated.py`, /*expectRefresh=*/true);
+    await expireCookieAndTriggerRequest(`${location.protocol}//www2.${location.host}/device-bound-session-credentials/verify_authenticated.py`, /*expectRefresh=*/false);
   }, "Scope specification configuration is respected");
 </script>

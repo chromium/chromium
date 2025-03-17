@@ -3,7 +3,6 @@
 <title>DBSC early challenge set</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
 <script src="helper.js" type="module"></script>
 
 <script type="module">
@@ -12,7 +11,7 @@
   promise_test(async t => {
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
-    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     const earlyChallengeString = "early_challenge";
     addCookieAndSessionCleanup(t);
 
@@ -40,10 +39,10 @@
   async function runMultipleChallengesTest(t, useSingleHeader) {
     await setupShardedServerState();
     const expectedCookieAndValue1 = "auth_cookie=abcdef0123";
-    const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     const earlyChallenge1 = "early_challenge1";
     const expectedCookieAndValue2 = "other_cookie=ghijkl4567";
-    const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     const earlyChallenge2 = "early_challenge2";
     addCookieAndSessionCleanup(t);
 

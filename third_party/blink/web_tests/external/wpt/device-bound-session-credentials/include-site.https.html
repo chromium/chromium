@@ -3,7 +3,6 @@
 <title>DBSC session over multiple origins</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
 <script src="helper.js" type="module"></script>
 
 <script type="module">
@@ -12,7 +11,7 @@
   async function runTest(t, includeSite) {
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
-    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${location.hostname};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t);
 
     configureServer({ includeSite });
@@ -25,7 +24,7 @@
     // Expire the cookie, and check whether a refresh has occurred.
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
-    const url = get_host_info().HTTPS_REMOTE_ORIGIN + '/device-bound-session-credentials/verify_authenticated.py';
+    const url = `${location.protocol}//www1.${location.host}/device-bound-session-credentials/verify_authenticated.py`;
     const authResponseAfterExpiry = await fetch(url, {credentials: "include"});
     // The cookie should only be refreshed if the session includes the whole site.
     assert_equals(authResponseAfterExpiry.status, includeSite ? 200 : 401);
