@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
@@ -101,7 +102,8 @@ const ShapeResultView* PlainTextItem::EnsureView() const {
 PlainTextNode::PlainTextNode(const TextRun& run,
                              bool normalize_space,
                              const Font& font,
-                             bool supports_bidi)
+                             bool supports_bidi,
+                             FrameShapeCache* cache)
     : normalize_space_(normalize_space), base_direction_(run.Direction()) {
   if (supports_bidi && run.DirectionalOverride()) [[unlikely]] {
     // If directional override, create a new string with Unicode directional
@@ -117,7 +119,7 @@ PlainTextNode::PlainTextNode(const TextRun& run,
   } else {
     SegmentText(run, /* bidi_overridden */ false, font, supports_bidi);
   }
-  Shape(font);
+  Shape(font, cache);
 }
 
 void PlainTextNode::Trace(Visitor* visitor) const {
@@ -258,11 +260,20 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
   }
 }
 
-void PlainTextNode::Shape(const Font& font) {
+void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
   ShapeResultSpacing<String> spacing(text_content_);
   spacing.SetSpacingAndExpansion(font.GetFontDescription(), normalize_space_);
   for (auto& item : item_list_) {
-    // TODO(crbug.com/389726691): Implement ShapeResult cache.
+    FrameShapeCache::ShapeEntry* entry = nullptr;
+    if (cache) {
+      entry = cache->FindOrCreateShapeEntry(item.text_, item.Direction());
+      if (entry && entry->shape_result) {
+        item.shape_result_ = entry->shape_result;
+        item.ink_bounds_ = entry->ink_bounds;
+        continue;
+      }
+    }
+
     HarfBuzzShaper shaper(item.text_);
     ShapeResult* shape_result = shaper.Shape(&font, item.Direction());
     if (!shape_result) {
@@ -297,6 +308,9 @@ void PlainTextNode::Shape(const Font& font) {
     }
     item.shape_result_ = shape_result;
     item.ink_bounds_ = ink_bounds;
+    if (cache) {
+      cache->RegisterShapeEntry(item, entry);
+    }
   }
 }
 

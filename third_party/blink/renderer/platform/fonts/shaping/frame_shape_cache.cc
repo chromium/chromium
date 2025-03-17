@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 
 namespace blink {
 
@@ -12,6 +13,7 @@ FrameShapeCache::FrameShapeCache() = default;
 
 void FrameShapeCache::Trace(Visitor* visitor) const {
   visitor->Trace(node_map_);
+  visitor->Trace(shape_map_);
 }
 
 void FrameShapeCache::DidSwitchFrame() {
@@ -22,6 +24,7 @@ void FrameShapeCache::DidSwitchFrame() {
 
   if (frame_generation_ > kInitialFrame) {
     RemoveOldEntries(node_map_, node_lru_list_);
+    RemoveOldEntries(shape_map_, shape_lru_list_);
   }
   ++frame_generation_;
   if (frame_generation_ == kInitialFrame) {
@@ -83,7 +86,20 @@ void FrameShapeCache::RemoveOldEntries(HeapHashMap<KeyType, E>& map,
 FrameShapeCache::NodeEntry* FrameShapeCache::FindOrCreateNodeEntry(
     const String& text,
     TextDirection direction) {
-  return FindOrCreateEntry(text, direction, node_map_, node_lru_list_);
+  NodeEntry* entry =
+      FindOrCreateEntry(text, direction, node_map_, node_lru_list_);
+  const PlainTextNode* node = entry->node;
+  if (node && entry->list_index != WTF::kNotFound) {
+    // Touch ShapeResult cache entries for words in the hit node.
+    for (const auto& item : node->ItemList()) {
+      ShapeEntry* shape_entry =
+          FindOrCreateShapeEntry(item.Text(), item.Direction());
+      if (!shape_entry->shape_result) {
+        RegisterShapeEntry(item, shape_entry);
+      }
+    }
+  }
+  return entry;
 }
 
 void FrameShapeCache::RegisterNodeEntry(const String& text,
@@ -95,8 +111,27 @@ void FrameShapeCache::RegisterNodeEntry(const String& text,
   added_new_entries_ = true;
 }
 
+FrameShapeCache::ShapeEntry* FrameShapeCache::FindOrCreateShapeEntry(
+    const String& word,
+    TextDirection direction) {
+  return FindOrCreateEntry(word, direction, shape_map_, shape_lru_list_);
+}
+
+void FrameShapeCache::RegisterShapeEntry(const PlainTextItem& item,
+                                         ShapeEntry* entry) {
+  entry->shape_result = item.GetShapeResult();
+  entry->ink_bounds = item.InkBounds();
+  entry->list_index =
+      ListIndexForNewEntry(item.Text(), item.Direction(), shape_lru_list_);
+  added_new_entries_ = true;
+}
+
 void FrameShapeCache::NodeEntry::Trace(Visitor* visitor) const {
   visitor->Trace(node);
+}
+
+void FrameShapeCache::ShapeEntry::Trace(Visitor* visitor) const {
+  visitor->Trace(shape_result);
 }
 
 }  // namespace blink

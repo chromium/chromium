@@ -25,8 +25,8 @@ class PlainTextNodeTest : public testing::Test {
   static PlainTextNode& CreatePlainTextNode(const TextRun& run,
                                             bool normalize_space,
                                             bool supports_bidi) {
-    return *MakeGarbageCollected<PlainTextNode>(run, normalize_space,
-                                                TestFont(), supports_bidi);
+    return *MakeGarbageCollected<PlainTextNode>(
+        run, normalize_space, TestFont(), supports_bidi, nullptr);
   }
 
   static constexpr bool kDirectionalOverride = true;
