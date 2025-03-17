@@ -162,17 +162,22 @@ std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
   std::vector<mojom::IdentifiedActivityPtr> result;
   for (auto item : activities) {
-    for (auto device : item.second.devices()) {
-      // Only update state and active tab now.
+    if (auto const device = item.second.devices().begin();
+        device != item.second.devices().end()) {
+      // Only update state and active tab for the first device now.
+      // TODO - crbug.com/403655119: Ideally we should support multi-device. But
+      // since now UI only supports single device, always parse the first one to
+      // make the behavior deterministic.
       auto identity_ptr = mojom::IdentifiedActivity::New(
-          item.first, mojom::StudentActivity::New(
-                          item.second.state() == ::boca::StudentStatus::ACTIVE,
-                          device.second.activity().active_tab().title(),
-                          /*is_caption_enabled=*/false,
-                          /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
-                          device.second.view_screen_config()
-                              .connection_param()
-                              .connection_code()));
+          item.first,
+          mojom::StudentActivity::New(
+              device->second.state() == ::boca::StudentDevice::ACTIVE,
+              device->second.activity().active_tab().title(),
+              /*is_caption_enabled=*/false,
+              /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
+              device->second.view_screen_config()
+                  .connection_param()
+                  .connection_code()));
       result.push_back(std::move(identity_ptr));
     }
   }
