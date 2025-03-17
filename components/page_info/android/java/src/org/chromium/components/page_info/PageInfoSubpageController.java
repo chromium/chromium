@@ -7,18 +7,17 @@ package org.chromium.components.page_info;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Interface for a page info subpage controller. */
+@NullMarked
 public interface PageInfoSubpageController {
     /** Returns a title string for the page info subpage. */
-    @NonNull
-    String getSubpageTitle();
+    @Nullable String getSubpageTitle();
 
     /** Returns a personalized subview to be used inside of the page info subpage. */
-    @Nullable
-    View createViewForSubpage(ViewGroup parent);
+    @Nullable View createViewForSubpage(ViewGroup parent);
 
     /** Called after the subpage closes in order to perform any necessary cleanup. */
     void onSubpageRemoved();

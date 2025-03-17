@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.Website;
@@ -29,15 +31,29 @@ import java.util.Collection;
 import java.util.List;
 
 /** Class for controlling the page info permissions section. */
+@NullMarked
 public class PageInfoPermissionsController extends PageInfoPreferenceSubpageController
         implements SingleWebsiteSettings.Observer {
-    /**  Parameters to represent a single permission. */
+    /** Parameters to represent a single permission. */
     public static class PermissionObject {
-        public @ContentSettingsType.EnumType int type;
-        public CharSequence name;
-        public CharSequence nameMidSentence;
-        public boolean allowed;
-        public @StringRes int warningTextResource;
+        public final @ContentSettingsType.EnumType int type;
+        public final CharSequence name;
+        public final CharSequence nameMidSentence;
+        public final boolean allowed;
+        public final @StringRes int warningTextResource;
+
+        public PermissionObject(
+                int type,
+                CharSequence name,
+                CharSequence nameMidSentence,
+                boolean allowed,
+                int warningTextResource) {
+            this.type = type;
+            this.name = name;
+            this.nameMidSentence = nameMidSentence;
+            this.allowed = allowed;
+            this.warningTextResource = warningTextResource;
+        }
     }
 
     private final PageInfoMainController mMainController;
@@ -46,7 +62,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private final String mPageUrl;
     private boolean mHasSoundPermission;
     private boolean mDataIsStale;
-    private SingleWebsiteSettings mSubPage;
+    private @Nullable SingleWebsiteSettings mSubPage;
     @ContentSettingsType.EnumType private int mHighlightedPermission;
     @ColorRes private int mHighlightColor;
 
@@ -76,7 +92,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     }
 
     @Override
-    public View createViewForSubpage(ViewGroup parent) {
+    public @Nullable View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         if (!canCreateSubpageFragment()) return null;
 
@@ -128,7 +144,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
 
     /** Returns the most comprehensive subtitle summary string. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static String getPermissionSummaryString(
+    public static @Nullable String getPermissionSummaryString(
             List<PermissionObject> permissions, Resources resources) {
         int numPermissions = permissions.size();
         if (numPermissions == 0) {
@@ -211,6 +227,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                 new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate());
         String origin = Origin.createOrThrow(mPageUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
+        assert address != null;
 
         // Asynchronous function, callback will clear the data.
         fetcher.fetchAllPreferences(

@@ -4,6 +4,7 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -15,6 +16,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.TrackingProtectionBlockingStatus;
@@ -23,6 +26,7 @@ import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 public class TrackingProtectionStatusPreference extends Preference {
 
     private static class UpdateAction {
@@ -35,9 +39,9 @@ public class TrackingProtectionStatusPreference extends Preference {
         }
     }
 
-    private TextView mCookieStatus;
-    private TextView mIpStatus;
-    private TextView mFingerprintStatus;
+    private @Nullable TextView mCookieStatus;
+    private @Nullable TextView mIpStatus;
+    private @Nullable TextView mFingerprintStatus;
 
     private List<UpdateAction> mStatusUpdates;
 
@@ -47,7 +51,7 @@ public class TrackingProtectionStatusPreference extends Preference {
     }
 
     /** Constructor from xml. */
-    public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
+    public TrackingProtectionStatusPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mStatusUpdates = new ArrayList<UpdateAction>();
         setLayoutResource(R.layout.tracking_protection_status);
@@ -66,7 +70,8 @@ public class TrackingProtectionStatusPreference extends Preference {
         mStatusUpdates.clear();
     }
 
-    private Drawable managedIconForEnforcement(@CookieControlsEnforcement int enforcement) {
+    private @Nullable Drawable managedIconForEnforcement(
+            @CookieControlsEnforcement int enforcement) {
         switch (enforcement) {
             case CookieControlsEnforcement.NO_ENFORCEMENT:
             case CookieControlsEnforcement.ENFORCED_BY_EXTENSION:
@@ -193,6 +198,7 @@ public class TrackingProtectionStatusPreference extends Preference {
             default:
                 assert false : "Invalid TrackingProtectionFeatureType";
         }
+        assumeNonNull(viewToUpdate);
         viewToUpdate.setVisibility(visibility);
         viewToUpdate.setText(stringRes);
         viewToUpdate.setCompoundDrawablesRelativeWithIntrinsicBounds(
