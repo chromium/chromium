@@ -3564,7 +3564,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       "<div><h2>Second Heading</h2><span>\nParagraph Two</span></div>";
 
   const std::vector<const wchar_t*> format_units = {
-      L"First Heading", L"\nParagraph One\n", L"Second Heading",
+      L"First Heading", L"\nParagraph One", L"Second Heading",
       L"\nParagraph Two"};
 
   AssertMoveByUnitForMarkup(TextUnit_Format, html_markup, format_units);
