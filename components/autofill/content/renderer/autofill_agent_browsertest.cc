@@ -1714,12 +1714,20 @@ TEST_P(AutofillAgentTestClick, MAYBE_AskForValuesToFillOnClick) {
   }
 
   WaitForFormsSeen();
+
+  task_environment_.FastForwardBy(base::Seconds(1));
   checkpoint.Call("click on field");
   Click("f");
+
+  task_environment_.FastForwardBy(base::Seconds(1));
   checkpoint.Call("click on field");
   Click("f");
+
+  task_environment_.FastForwardBy(base::Seconds(1));
   checkpoint.Call("click outside of field");
   Click("other");
+
+  task_environment_.FastForwardBy(base::Seconds(1));
   checkpoint.Call("right click on field");
   RightClick("f");
 }
