@@ -17,7 +17,6 @@ import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
-import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
@@ -449,12 +448,7 @@ interface Crosapi {
       pending_receiver<ChromeAppKioskService> receiver);
 
   // BindWebKioskService@114 was removed.
-
-  // Binds the extension service for device local accounts. This service manages
-  // the cached install of extensions into Lacros.
-  [MinVersion=96] BindDeviceLocalAccountExtensionService@100(
-      pending_receiver<DeviceLocalAccountExtensionService> receiver);
-
+  // BindDeviceLocalAccountExtensionService@100 was removed.
   // BindVolumeManager@94 was removed.
 
   // Binds the vpn service. This service is used to facilirate

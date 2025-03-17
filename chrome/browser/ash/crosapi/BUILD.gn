@@ -33,8 +33,6 @@ static_library("crosapi") {
     "desk_profiles_ash.h",
     "device_attributes_ash.cc",
     "device_attributes_ash.h",
-    "device_local_account_extension_service_ash.cc",
-    "device_local_account_extension_service_ash.h",
     "device_oauth2_token_service_ash.cc",
     "device_oauth2_token_service_ash.h",
     "document_scan_ash.cc",

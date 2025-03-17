@@ -17,7 +17,6 @@ mojom("mojom") {
     "desk.mojom",
     "desk_profiles.mojom",
     "device_attributes.mojom",
-    "device_local_account_extension_service.mojom",
     "device_oauth2_token_service.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",

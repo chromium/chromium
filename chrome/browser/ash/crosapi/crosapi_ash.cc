@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
-#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
@@ -68,7 +67,6 @@
 #include "chromeos/components/in_session_auth/in_session_auth.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -128,8 +126,6 @@ CrosapiAsh::CrosapiAsh()
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
-      device_local_account_extension_service_ash_(
-          std::make_unique<DeviceLocalAccountExtensionServiceAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
       diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
@@ -241,12 +237,6 @@ void CrosapiAsh::BindDeskProfileObserver(
 void CrosapiAsh::BindDeviceAttributes(
     mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
   device_attributes_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindDeviceLocalAccountExtensionService(
-    mojo::PendingReceiver<mojom::DeviceLocalAccountExtensionService> receiver) {
-  device_local_account_extension_service_ash_->BindReceiver(
-      std::move(receiver));
 }
 
 void CrosapiAsh::BindDeviceOAuth2TokenService(
