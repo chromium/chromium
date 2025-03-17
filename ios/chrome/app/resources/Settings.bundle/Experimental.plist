@@ -410,34 +410,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Tab Resumption force Decoration</string>
-			<key>Key</key>
-			<string>TabResumptionDecorationOverride</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>MostRecent</string>
-				<string>FrequentlyVisited</string>
-				<string>FrequentlyVisitedAtTime</string>
-				<string>VisitedSomeTimeAgoRecent</string>
-				<string>VisitedSomeTimeAgoOld</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Unset</string>
-				<string>Most recent</string>
-				<string>Frequently visited</string>
-				<string>Frequently visited at time</string>
-				<string>Visited some time ago (recent)</string>
-				<string>Visited some time ago (old)</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Tips (Magic Stack) State</string>
 			<key>Key</key>
 			<string>TipsMagicStackStateOverride</string>

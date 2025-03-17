@@ -780,15 +780,6 @@ extern const char kTabGroupsIPadDescription[];
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 
-extern const char kTabResumption1_5Name[];
-extern const char kTabResumption1_5Description[];
-
-extern const char kTabResumption2Name[];
-extern const char kTabResumption2Description[];
-
-extern const char kTabResumption2ReasonName[];
-extern const char kTabResumption2ReasonDescription[];
-
 extern const char kTabResumptionImagesName[];
 extern const char kTabResumptionImagesDescription[];
 

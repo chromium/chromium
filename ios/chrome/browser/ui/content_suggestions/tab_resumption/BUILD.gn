@@ -30,7 +30,6 @@ source_set("tab_resumption") {
     "//components/sync/service",
     "//components/sync_sessions",
     "//components/url_formatter",
-    "//components/visited_url_ranking/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/intents:intents_donation_helper",

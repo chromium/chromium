@@ -60,8 +60,6 @@ NSString* const kSafetyCheckNotificationsInactivityThreshold =
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
-NSString* const kTabResumptionDecorationOverride =
-    @"TabResumptionDecorationOverride";
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
 NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
@@ -329,15 +327,6 @@ bool ShouldUseInactiveTabsDemoThreshold() {
 bool ShouldUseInactiveTabsTestThreshold() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsTestMode];
-}
-
-NSString* GetTabResumptionDecorationOverride() {
-  NSString* override_value = [[NSUserDefaults standardUserDefaults]
-      stringForKey:kTabResumptionDecorationOverride];
-  if ([override_value length]) {
-    return override_value;
-  }
-  return nil;
 }
 
 bool ShouldOpenInIncognitoOverride() {
