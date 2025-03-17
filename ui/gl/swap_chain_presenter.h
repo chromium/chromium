@@ -229,10 +229,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // the upscaling because it produces better results.
   bool ShouldUseVideoProcessorScaling();
 
-  // This is called when a new swap chain is created, or when a new frame
-  // rate is received.
-  void SetSwapChainPresentDuration();
-
   // Returns swap chain media for either |swap_chain_| or |decode_swap_chain_|,
   // whichever is currently used.
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
