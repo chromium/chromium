@@ -7,16 +7,13 @@
 -- Currently we only track Chrome page loads and their associated metrics.
 
 INCLUDE PERFETTO MODULE chrome.page_loads;
-
 INCLUDE PERFETTO MODULE chrome.scroll_interactions;
-
 INCLUDE PERFETTO MODULE chrome.startups;
-
 INCLUDE PERFETTO MODULE chrome.web_content_interactions;
 
 -- All critical user interaction events, including type and table with
 -- associated metrics.
-CREATE PERFETTO TABLE chrome_interactions (
+CREATE PERFETTO TABLE chrome_interactions(
   -- Identifier of the interaction; this is not guaranteed to be unique to the table -
   -- rather, it is unique within an individual interaction type. Combine with type to get
   -- a unique identifier in this table.
@@ -38,7 +35,7 @@ SELECT
   'chrome_page_loads' AS type,
   'PageLoad' AS name,
   navigation_start_ts AS ts,
-  coalesce(lcp, fcp) AS dur
+  IFNULL(lcp, fcp) AS dur
 FROM chrome_page_loads
 UNION ALL
 SELECT
@@ -48,7 +45,7 @@ SELECT
   startup_begin_ts AS ts,
   CASE
     WHEN first_visible_content_ts IS NOT NULL
-    THEN first_visible_content_ts - startup_begin_ts
+      THEN first_visible_content_ts - startup_begin_ts
     ELSE 0
   END AS dur
 FROM chrome_startups
