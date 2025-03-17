@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_PARTIAL_TRANSLATE_UI_BUNDLED_PARTIAL_TRANSLATE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_PARTIAL_TRANSLATE_UI_BUNDLED_PARTIAL_TRANSLATE_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
+#import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_delegate.h"
 
 @protocol BrowserCoordinatorCommands;
 @protocol EditMenuAlertDelegate;
@@ -50,4 +50,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_PARTIAL_TRANSLATE_UI_BUNDLED_PARTIAL_TRANSLATE_MEDIATOR_H_
