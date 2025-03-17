@@ -25,11 +25,11 @@ class IdentityManager;
 
 namespace glic {
 class AuthController;
+class GlicActorController;
 class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
-class GlicWindowController;
 class GlicWindowController;
 class GlicScreenshotCapturer;
 struct FocusedTabData;
@@ -188,6 +188,7 @@ class GlicKeyedService : public KeyedService {
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
+  std::unique_ptr<GlicActorController> actor_controller_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;
