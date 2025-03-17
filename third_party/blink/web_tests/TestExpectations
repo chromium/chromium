@@ -2621,6 +2621,16 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Linux ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
+[ Win ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
+[ Linux ] external/wpt/css/css-ui/caret-eol-002.html [ Failure ]
+[ Win ] external/wpt/css/css-ui/caret-eol-002.html [ Failure ]
+[ Linux ] external/wpt/css/css-ui/caret-eol-003.html [ Failure ]
+[ Win ] external/wpt/css/css-ui/caret-eol-003.html [ Failure ]
+[ Linux ] external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
+[ Win ] external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
+[ Mac15 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
 crbug.com/403345128 [ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
