@@ -39,14 +39,18 @@ const CanvasTestType = Object.freeze({
 function canvasPromiseTest(
     testBody, description,
     {testTypes = Object.values(CanvasTestType)} = {}) {
-  setup(() => {
-    const currentScript = document.currentScript;
-    assert_true(
-        currentScript.classList.contains('runCanvasTestsInWorkerInvoked'),
-        'runCanvasTestsInWorker() must be called in the current script ' +
-        'before calling canvasPromiseTest or else the test won\'t have ' +
-        'worker coverage.');
-  });
+  if (testTypes.includes(CanvasTestType.WORKER)) {
+    setup(() => {
+      const currentScript = document.currentScript;
+      assert_true(
+          currentScript.classList.contains('runCanvasTestsInWorkerInvoked'),
+          'runCanvasTestsInWorker() must be called in the current script ' +
+          'before calling canvasPromiseTest with CanvasTestType.WORKER test ' +
+          'type, or else the test won\'t have worker coverage.');
+
+      currentScript.classList.add('canvasWorkerTestAdded');
+    });
+  }
 
   if (testTypes.includes(CanvasTestType.HTML)) {
     promise_test(() => testBody(document.createElement('canvas')),
@@ -76,8 +80,6 @@ function runCanvasTestsInWorker({dependencies = []} = {}) {
     currentScript.classList.add('runCanvasTestsInWorkerInvoked');
   });
 
-  const canvasTests = currentScript.textContent;
-
   promise_setup(async () => {
     const allDeps = [
       '/resources/testharness.js',
@@ -86,10 +88,19 @@ function runCanvasTestsInWorker({dependencies = []} = {}) {
 
     const dependencyScripts =
        await Promise.all(allDeps.map(dep => fetch(dep).then(r => r.text())));
+    const canvasTests = currentScript.textContent;
     const allScripts = dependencyScripts.concat([canvasTests, 'done();']);
 
     const workerBlob = new Blob(allScripts);
     const worker = new Worker(URL.createObjectURL(workerBlob));
     fetch_tests_from_worker(worker);
+  });
+
+  promise_setup(async () => {
+    await new Promise(resolve => step_timeout(resolve, 0));
+    assert_true(
+        currentScript.classList.contains('canvasWorkerTestAdded'),
+        'runCanvasTestsInWorker() should not be called if no ' +
+        'canvasPromiseTest uses the CanvasTestType.WORKER test type.');
   });
 }
