@@ -3635,6 +3635,8 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     auto* parent = GetParentContainer(current_root_);
     action_container_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
+    action_container_widget_->widget_delegate()->SetTitle(
+        active_behavior_->GetActionButtonContainerTitle());
 
     action_container_view_ = action_container_widget_->SetContentsView(
         std::make_unique<ActionButtonContainerView>());

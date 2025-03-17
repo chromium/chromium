@@ -6859,6 +6859,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SEARCH_RESULTS_PANEL_TITLE" desc="The title of the panel that shows Google Search results when the user searches a selected region on their screen.">
         Google Search
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons for the screen capture tool other than capture image, e.g. copy text or search image.">
+        Other actions
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons after the user has selected a region on their screen of interest. Example actions include copy text or create a Google Doc.">
+        Actions
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL" desc="The label on a button that can be clicked to copy text from the contents of a screenshot into the user's clipboard.">
         Copy text
       </message>

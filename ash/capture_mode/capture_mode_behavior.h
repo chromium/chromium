@@ -139,6 +139,11 @@ class CaptureModeBehavior {
   // a capture region phase.
   virtual const std::u16string GetCaptureLabelRegionText() const;
 
+  // Returns the title to use for the action button container window. This will
+  // be announced by a screen reader when the user navigates to the action
+  // button container.
+  virtual const std::u16string GetActionButtonContainerTitle() const;
+
   // Returns the text to be announced by a screen reader when capture mode is
   // opened with this behavior.
   virtual const std::string GetCaptureModeOpenAnnouncement() const;

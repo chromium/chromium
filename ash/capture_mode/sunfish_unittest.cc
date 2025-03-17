@@ -54,6 +54,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/tab_slider_button.h"
@@ -83,6 +84,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -95,6 +97,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -1236,6 +1239,58 @@ TEST_F(SunfishTest, CaptureRegionOverlay) {
   controller->SetSource(CaptureModeSource::kWindow);
   EXPECT_TRUE(test_api.GetCaptureRegionOverlayController());
   EXPECT_FALSE(session->active_behavior()->CanPaintRegionOverlay());
+}
+
+// Tests that the action container window has a title and accessible title in
+// default capture mode.
+TEST_F(SunfishTest, ActionContainerWindowTitleDefaultMode) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(10, 10, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+
+  views::Widget* action_container_widget =
+      CaptureModeSessionTestApi(controller->capture_mode_session())
+          .GetActionContainerWidget();
+  ASSERT_TRUE(action_container_widget);
+  const std::u16string kActionContainerWindowTitle = l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE);
+  EXPECT_EQ(action_container_widget->widget_delegate()->GetWindowTitle(),
+            kActionContainerWindowTitle);
+  EXPECT_EQ(
+      action_container_widget->widget_delegate()->GetAccessibleWindowTitle(),
+      kActionContainerWindowTitle);
+}
+
+// Tests that the action container window has a title and accessible title in
+// Sunfish mode.
+TEST_F(SunfishTest, ActionContainerWindowTitleSunfishMode) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(10, 10, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+
+  views::Widget* action_container_widget =
+      CaptureModeSessionTestApi(controller->capture_mode_session())
+          .GetActionContainerWidget();
+  ASSERT_TRUE(action_container_widget);
+  const std::u16string kActionContainerWindowTitle = l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE);
+  EXPECT_EQ(action_container_widget->widget_delegate()->GetWindowTitle(),
+            kActionContainerWindowTitle);
+  EXPECT_EQ(
+      action_container_widget->widget_delegate()->GetAccessibleWindowTitle(),
+      kActionContainerWindowTitle);
 }
 
 // Tests that the action container widget's opacity is updated properly before a
