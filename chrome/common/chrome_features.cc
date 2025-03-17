@@ -897,7 +897,7 @@ BASE_FEATURE(kListWebAppsSwitch,
 // extension system. Speculative fix for https://crbug.com/356643975.
 BASE_FEATURE(kMacDirectEmailShare,
              "DirectEmailShare",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
