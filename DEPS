@@ -4652,7 +4652,7 @@ deps = {
 
   'src/components/test/data/autofill/heuristics-json/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
-        '1b1e7c46da50f123642fa78e557019779a583bfb',
+        '1c6850ad4985952a4a2a472076e876599bc75488',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
