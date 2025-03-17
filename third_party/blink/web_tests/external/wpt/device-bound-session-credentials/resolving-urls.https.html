@@ -20,19 +20,19 @@
 
     // Configure registration to use absolute URL instead of relative.
     // Prompt starting a session, and wait until registration completes.
-    const login_response = await postJson('login.py', { registrationUrl });
-    assert_equals(login_response.status, 200);
+    const loginResponse = await postJson('login.py', { registrationUrl });
+    assert_equals(loginResponse.status, 200);
     await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     // Confirm that a request has the cookie set.
-    const auth_response = await fetch('verify_authenticated.py');
-    assert_equals(auth_response.status, 200);
+    const authResponse = await fetch('verify_authenticated.py');
+    assert_equals(authResponse.status, 200);
 
     // Trigger refresh and confirm that the cookie gets set again.
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
-    const auth_response_after_expiry = await fetch('verify_authenticated.py');
-    assert_equals(auth_response_after_expiry.status, 200);
+    const authResponseAfterExpiry = await fetch('verify_authenticated.py');
+    assert_equals(authResponseAfterExpiry.status, 200);
     assert_true(documentHasCookie(expectedCookieAndValue));
   }
 

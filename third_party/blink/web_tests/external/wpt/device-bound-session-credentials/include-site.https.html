@@ -18,17 +18,17 @@
     configureServer({ includeSite });
 
     // Prompt starting a session, and wait until registration completes.
-    const login_response = await fetch('login.py');
-    assert_equals(login_response.status, 200);
+    const loginResponse = await fetch('login.py');
+    assert_equals(loginResponse.status, 200);
     await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     // Expire the cookie, and check whether a refresh has occurred.
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const url = get_host_info().HTTPS_REMOTE_ORIGIN + '/device-bound-session-credentials/verify_authenticated.py';
-    const auth_response_after_expiry = await fetch(url, {credentials: "include"});
+    const authResponseAfterExpiry = await fetch(url, {credentials: "include"});
     // The cookie should only be refreshed if the session includes the whole site.
-    assert_equals(auth_response_after_expiry.status, includeSite ? 200 : 401);
+    assert_equals(authResponseAfterExpiry.status, includeSite ? 200 : 401);
     assert_equals(documentHasCookie(expectedCookieAndValue), includeSite);
   }
 
