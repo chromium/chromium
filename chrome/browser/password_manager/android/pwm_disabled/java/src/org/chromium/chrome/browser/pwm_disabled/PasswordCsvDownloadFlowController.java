@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pwm_disabled;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.DialogInterface;
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.settings.DialogManager;
+import org.chromium.chrome.browser.password_manager.settings.ExportErrorDialogFragment;
 import org.chromium.chrome.browser.password_manager.settings.NonCancelableProgressBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -57,7 +59,10 @@ public class PasswordCsvDownloadFlowController {
                         activity,
                         isGooglePlayServicesAvailable,
                         this::reauthenticateUser,
-                        this::endFlow);
+                        () -> {
+                            dismissDownloadDialog();
+                            endFlow();
+                        });
         mCsvDownloadDialogController.showDialog();
     }
 
@@ -72,6 +77,7 @@ public class PasswordCsvDownloadFlowController {
                             R.string.password_export_set_lock_screen,
                             Toast.LENGTH_LONG)
                     .show();
+            dismissDownloadDialog();
             endFlow();
             return;
         }
@@ -83,54 +89,48 @@ public class PasswordCsvDownloadFlowController {
             mCsvDownloadDialogController.askForDownloadLocation(this::onDownloadLocationSet);
             return;
         }
+        dismissDownloadDialog();
         endFlow();
     }
 
     private void onDownloadLocationSet(Uri destinationFileUri) {
+        dismissDownloadDialog();
         mProgressBarManager = new DialogManager(null);
         Uri sourceFileUri = getSourceFileUri();
         if (sourceFileUri == null) {
-            endFlow();
+            showErrorDialog();
             return;
         }
         mProgressBarManager.show(
                 new NonCancelableProgressBar(R.string.passwords_export_in_progress_title),
                 mFragmentActivity.getSupportFragmentManager());
-        new AsyncTask<@Nullable String>() {
+        new AsyncTask<@Nullable Exception>() {
             @Override
-            protected @Nullable String doInBackground() {
+            protected @Nullable Exception doInBackground() {
                 try {
                     copyInternalCsvToSelectedDocument(sourceFileUri, destinationFileUri);
                 } catch (IOException e) {
-                    return e.getMessage();
+                    return e;
                 }
                 return null;
             }
 
             @Override
-            protected void onPostExecute(@Nullable String exceptionMessage) {
-                if (exceptionMessage == null) {
+            protected void onPostExecute(@Nullable Exception exception) {
+                if (exception == null) {
                     deleteOriginalFile(sourceFileUri);
                 }
-                // TODO(crbug.com/378653384): Add error dialog.
                 assumeNonNull(mProgressBarManager);
-                mProgressBarManager.hide(null);
+                mProgressBarManager.hide(exception == null ? null : () -> showErrorDialog());
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        endFlow();
     }
 
     private @Nullable Uri getSourceFileUri() {
         String autoExportedFilePath =
                 LoginDbDeprecationUtilBridge.getAutoExportCsvFilePath(mProfile);
         File autoExportedFile = new File(autoExportedFilePath);
-        Uri sourceFileUri = null;
-        try {
-            sourceFileUri = Uri.fromFile(autoExportedFile);
-        } catch (IllegalArgumentException e) {
-            // TODO(crbug.com/378653384): Record metrics and show error either here or in the
-            // caller.
-        }
+        Uri sourceFileUri = Uri.fromFile(autoExportedFile);
         return sourceFileUri;
     }
 
@@ -157,10 +157,27 @@ public class PasswordCsvDownloadFlowController {
             // The deletion will be re-attempted later.
             UserPrefs.get(mProfile).setBoolean(Pref.UPM_AUTO_EXPORT_CSV_NEEDS_DELETION, true);
         }
+        endFlow();
+    }
+
+    private void showErrorDialog() {
+        ExportErrorDialogFragment exportErrorDialogFragment = new ExportErrorDialogFragment();
+        ExportErrorDialogFragment.ErrorDialogParams params =
+                new ExportErrorDialogFragment.ErrorDialogParams();
+        params.positiveButtonLabelId = 0;
+        params.description =
+                mFragmentActivity.getResources().getString(R.string.password_settings_export_tips);
+        exportErrorDialogFragment.initialize(params);
+        exportErrorDialogFragment.setExportErrorHandler(
+                (DialogInterface dialog, int which) -> endFlow());
+        exportErrorDialogFragment.show(mFragmentActivity.getSupportFragmentManager(), null);
+    }
+
+    private void dismissDownloadDialog() {
+        mCsvDownloadDialogController.dismiss();
     }
 
     private void endFlow() {
-        mCsvDownloadDialogController.dismiss();
         mEndOfFlowCallback.run();
     }
 }
