@@ -79,30 +79,38 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
 
   bool NextWord(const ShapeResult** word_result) {
     return ShapeToEndIndex(
-        word_result, NextWordEndIndex(text_run_.ToStringView(), start_index_));
+        word_result,
+        NextWordEndIndex<false>(text_run_.ToStringView(), start_index_));
   }
 
+  template <bool split_by_zws>
   static bool IsWordDelimiter(UChar ch) {
-    return ch == kSpaceCharacter || ch == kTabulationCharacter;
+    // As of 2025 March, Google Docs always wraps text with BiDi control
+    // characters, and they are replaced with ZWS for HarfBuzzShaper.
+    // Assuming ZWS as a word delimiter improves hit rate of a shape cache.
+    return ch == kSpaceCharacter || ch == kTabulationCharacter ||
+           (split_by_zws && ch == kZeroWidthSpaceCharacter);
   }
 
   // TODO(crbug.com/389726691): Move NextWordEndIndex() to a new file because
   // CachingWordShapeIterator will be removed.
   friend class PlainTextNode;
+  template <bool split_by_zws>
   static unsigned NextWordEndIndex(StringView text, unsigned start_index) {
     const unsigned length = text.length();
     if (start_index >= length) {
       return 0;
     }
 
-    if (start_index + 1u == length || IsWordDelimiter(text[start_index])) {
+    if (start_index + 1u == length ||
+        IsWordDelimiter<split_by_zws>(text[start_index])) {
       return start_index + 1;
     }
 
     // 8Bit words end at IsWordDelimiter().
     if (text.Is8Bit()) {
       for (unsigned i = start_index + 1;; ++i) {
-        if (i == length || IsWordDelimiter(text[i])) {
+        if (i == length || IsWordDelimiter<false>(text[i])) {
           return i;
         }
       }
@@ -114,8 +122,10 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     if (!Character::IsCJKIdeographOrSymbol(ch)) {
       for (unsigned next_end = end; end < length; end = next_end) {
         ch = text.CodePointAtAndNext(next_end);
-        if (IsWordDelimiter(ch) || Character::IsCJKIdeographOrSymbolBase(ch))
+        if (IsWordDelimiter<split_by_zws>(ch) ||
+            Character::IsCJKIdeographOrSymbolBase(ch)) {
           return end;
+        }
       }
       return length;
     }

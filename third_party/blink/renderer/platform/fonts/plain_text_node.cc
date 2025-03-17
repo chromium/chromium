@@ -248,7 +248,7 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
   StringView text_content(text_content_, start_offset, run_length);
   for (wtf_size_t index = 0; index < run_length;) {
     wtf_size_t new_index =
-        CachingWordShapeIterator::NextWordEndIndex(text_content, index);
+        CachingWordShapeIterator::NextWordEndIndex<true>(text_content, index);
     PlainTextItem item(start_offset + index, new_index - index, direction,
                        text_content_);
     if (IsLtr(direction)) {
