@@ -292,7 +292,8 @@ public class BottomAttachedUiObserver
         // across the entire width, it looks nicer to match the color of other components behind /
         // to the side of the bottom sheet.
         if (mBottomSheetVisible
-                && (mBottomSheetController.isFullWidth() || !EdgeToEdgeUtils.isEnabled())) {
+                && (mBottomSheetController.isFullWidth()
+                        || !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled())) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
             return mBottomSheetColor;
@@ -316,7 +317,8 @@ public class BottomAttachedUiObserver
     /** The divider should be visible for partial width bottom-attached UI. */
     private boolean shouldShowDivider() {
         if (mBottomSheetVisible) {
-            return !mBottomSheetController.isFullWidth() && !EdgeToEdgeUtils.isEnabled();
+            return !mBottomSheetController.isFullWidth()
+                    && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
         }
         if (mOverlayPanelVisible && !EdgeToEdgeUtils.isEnabled()) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();
