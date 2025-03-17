@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Fragment containing standard preloading settings. */
+@NullMarked
 public class StandardPreloadingSettingsFragment extends PreloadPagesSettingsFragmentBase {
     @Override
     protected int getPreferenceResource() {
