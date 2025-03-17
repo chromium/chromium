@@ -310,6 +310,12 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
         shared_image_usage_flags, this);
   } else if (SharedGpuContext::MaySupportImageChromium() &&
              RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+    // In this case, we are using CPU raster and GPU compositing and native
+    // mappable buffers are supported. Try to use a
+    // CanvasResourceProviderSharedImage, which if successful will result in
+    // using a SharedImage that can be mapped onto the CPU for software raster
+    // writes and then read by the display compositor (and potentially used as
+    // an overlay).
     const gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
@@ -328,11 +334,17 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
           : !!dispatcher;
 
   if (!provider && use_software_shared_image_provider) {
+    // In this case, we are using CPU raster and CPU compositing. Create a
+    // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
+    // buffer that can be written by canvas raster and read by the compositor.
     provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
         Size(), format, alpha_type, color_space, kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
+    // The final fallback is to raster into a bitmap that will then either be
+    // uploaded into GPU memory (for GPU compositing) or copied into the Viz
+    // process (for software compositing).
     provider = CanvasResourceProvider::CreateBitmapProvider(
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
