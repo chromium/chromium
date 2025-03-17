@@ -205,6 +205,9 @@
           },
           "settings.managed.help_me_write": {
             "value": 0
+          },
+          "settings.lobster.enterprise_settings": {
+            "value": 0
           }
         }
       },
@@ -252,6 +255,9 @@
           },
           "settings.managed.help_me_write": {
             "value": 1
+          },
+          "settings.lobster.enterprise_settings": {
+            "value": 1
           }
         }
       },
@@ -262,6 +268,7 @@
           "CreateThemesSettings": 2,
           "DevToolsGenAiSettings": 2,
           "GenAiChromeOsSmartActionsSettings": 2,
+          "GenAIInlineImageSettings": 2,
           "GenAIPhotoEditingSettings": 2,
           "GenAISmartGroupingSettings": 2,
           "GenAIVcBackgroundSettings": 2,
@@ -313,6 +320,9 @@
             "value": 2
           },
           "settings.managed.help_me_write": {
+            "value": 2
+          },
+          "settings.lobster.enterprise_settings": {
             "value": 2
           }
         }
