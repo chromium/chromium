@@ -1,12 +1,19 @@
 Tests the data of user marks trace events
 Recording started
 Tracing complete
-Got a TimeStamp event:
+Got a TimeStamp event with labeled start and end:
 Object: {
 	args: {
 		data: {
+			color: string
+			end: string
 			frame: string
 			message: string
+			name: string
+			sampleTraceId: number
+			start: string
+			track: string
+			trackGroup: string
 		}
 	}
 	cat: string
@@ -17,6 +24,30 @@ Object: {
 	tid: number
 	ts: number
 }
+Got a TimeStamp event with numeric start and end:
+Object: {
+	args: {
+		data: {
+			color: string
+			end: number
+			frame: string
+			message: string
+			name: string
+			sampleTraceId: number
+			start: number
+			track: string
+			trackGroup: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+TimeStamp numeric start and end are correct.
 Got ConsoleTime events:
 Object: {
 	args: {
