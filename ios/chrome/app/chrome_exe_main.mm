@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/blink_buildflags.h"
 #import "components/component_updater/component_updater_paths.h"
+#import "components/crash/core/app/crashpad.h"
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -112,6 +113,9 @@ int ChromeMain(int argc, char* argv[]) {
   // don't have yet preferences. Later on it is stopped if the user opted out.
   // In any case reports are not sent if the user opted out.
   StartCrashController();
+
+  crashpad::SimpleAddressRangeBag ios_extra_ranges;
+  crash_reporter::SetIntermediateDumpExtraMemoryRanges(&ios_extra_ranges);
 
   // Always ignore SIGPIPE.  We check the return value of write().
   CHECK_NE(SIG_ERR, signal(SIGPIPE, SIG_IGN));
