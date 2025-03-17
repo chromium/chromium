@@ -43,6 +43,7 @@ class SessionManager:
         self.scope_specification_items = []
         self.refresh_sends_challenge = True
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
+        self.include_site = True
 
     def next_session_id_value(self):
         return len(self.session_to_key_map)
@@ -114,6 +115,10 @@ class SessionManager:
         if refresh_url is not None:
             self.refresh_url = refresh_url
 
+        include_site = configuration.get("includeSite")
+        if include_site is not None:
+            self.include_site = include_site
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -173,7 +178,7 @@ class SessionManager:
             "refresh_url": self.refresh_url,
             "scope": {
                 "origin": scope_origin,
-                "include_site": True,
+                "include_site": self.include_site,
                 "scope_specification" : self.scope_specification_items + [
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/request_early_challenge.py" },
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/end_session_via_clear_site_data.py" },
