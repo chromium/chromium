@@ -10,7 +10,6 @@ import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
-import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chaps_service.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
@@ -95,10 +94,7 @@ interface Crosapi {
 
   // BindCecPrivate@140 was removed.
 
-  // Binds the CertDatabase interface for initializing certificate database in
-  // client applications.
-  // Added in M89.
-  [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+  // BindCertDatabase@12 was removed.
 
   // Binds the CertProvisioning interface for implementing certificate
   // provisioning UI.

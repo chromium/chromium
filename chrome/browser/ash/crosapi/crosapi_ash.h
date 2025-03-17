@@ -43,7 +43,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
@@ -95,8 +94,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
-  void BindCertDatabase(
-      mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
   void BindCfmServiceContext(
@@ -221,8 +218,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
 
-  CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
-
   CertProvisioningAsh* cert_provisioning_ash() {
     return cert_provisioning_ash_.get();
   }
@@ -323,7 +318,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
