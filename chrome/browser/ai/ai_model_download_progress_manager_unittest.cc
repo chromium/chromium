@@ -360,6 +360,10 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
   // Should receive the this since it's been over 50ms since the last update.
   SendUpdate(component, ComponentState::kDownloading, 20);
   monitor.ExpectReceivedNormalizedUpdate(20, component.total_bytes());
+
+  // Shouldn't receive this update since it hasn't been 50ms since the last
+  // update.
+  SendUpdate(component, ComponentState::kDownloading, 25);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
