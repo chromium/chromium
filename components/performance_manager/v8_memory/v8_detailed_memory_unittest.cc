@@ -1504,10 +1504,14 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, MultipleStartMeasurement) {
   });
 }
 
+// TODO(crbug.com/40063488): Run this on official builds once we unconditionally
+// CHECK. This currently uses DUMP_WILL_BE_CHECK() which acts as a CHECK outside
+// official builds.
+#if !defined(OFFICIAL_BUILD)
 TEST_F(V8DetailedMemoryDecoratorDeathTest, EnforceObserversRemoved) {
   // Declare the observers before the requests to ensure they're deleted
   // afterwards.
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     MockV8DetailedMemoryObserver observer;
     V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests);
     memory_request.AddObserver(&observer);
@@ -1515,6 +1519,7 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, EnforceObserversRemoved) {
     // out of scope.
   });
 }
+#endif  // !defined(OFFICIAL_BUILD)
 
 TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidEagerModeConfig) {
   // Not allowed to use kEagerForTesting mode without calling

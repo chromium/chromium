@@ -401,7 +401,7 @@ NO_THREAD_SAFETY_ANALYSIS {
     locks[i].Acquire(subtle::LockTracking::kEnabled);
   }
 
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     locks[kHeldLocksCapacity].Acquire(subtle::LockTracking::kEnabled);
     locks[kHeldLocksCapacity].Release();
   });

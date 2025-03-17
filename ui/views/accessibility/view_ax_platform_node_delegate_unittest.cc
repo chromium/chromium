@@ -736,7 +736,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
 
   // Setting the labelledby View to itself should trigger a DCHECK.
   EXPECT_DCHECK_DEATH_WITH(button_accessibility()->SetName(*button_),
-                           "Check failed: view_ != &naming_view");
+                           "DCHECK failed: view_ != &naming_view");
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetIsSelected) {

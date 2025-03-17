@@ -250,7 +250,7 @@ TEST(SequenceCheckerTest, MoveOffSequenceBanned) {
   RunCallbackThread thread(
       BindOnce(&ExpectCalledOnValidSequence, Unretained(&other_sequence)));
 
-  EXPECT_DCHECK_DEATH(
+  EXPECT_CHECK_DEATH(
       SequenceCheckerImpl main_sequence(std::move(other_sequence)));
 }
 

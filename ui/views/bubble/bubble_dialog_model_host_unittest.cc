@@ -184,7 +184,7 @@ TEST_F(BubbleDialogModelHostTest, OverrideNoneDefaultButton) {
 }
 
 TEST_F(BubbleDialogModelHostTest, OverrideDefaultButtonDeathTest) {
-  EXPECT_DCHECK_DEATH(std::make_unique<BubbleDialogModelHost>(
+  EXPECT_CHECK_DEATH(std::make_unique<BubbleDialogModelHost>(
       ui::DialogModel::Builder()
           .AddCancelButton(base::DoNothing())
           .OverrideDefaultButton(ui::mojom::DialogButton::kOk)
