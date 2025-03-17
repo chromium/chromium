@@ -29,7 +29,7 @@ public class SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper
 
     @Override
     public String getTitle() {
-        return mContext.getString(R.string.safety_hub_password_check_unavailable_title);
+        return mContext.getString(R.string.safety_hub_account_password_check_unavailable_title);
     }
 
     @Override
