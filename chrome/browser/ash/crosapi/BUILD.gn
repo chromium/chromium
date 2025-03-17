@@ -279,7 +279,6 @@ static_library("crosapi") {
     "//extensions/browser/api/power",
     "//extensions/common",
     "//headless:headless_non_renderer",
-    "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
     "//services/data_decoder/public/cpp",

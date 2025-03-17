@@ -953,6 +953,58 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
       base::Time::FromTimeT(options.date_modified.ToTimeT()));
 }
 
+EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kVehicleOwner));
+    attributes.back().SetInfo(VEHICLE_OWNER_TAG, options.name,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+    attributes.back().FinalizeInfo();
+  }
+  if (options.plate) {
+    attributes.emplace_back(AttributeType(kVehiclePlateNumber));
+    attributes.back().SetInfo(VEHICLE_LICENSE_PLATE, options.plate,
+                              /*app_locale=*/"en-US", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kVehicleVin));
+    attributes.back().SetInfo(VEHICLE_VIN, options.number,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.make) {
+    attributes.emplace_back(AttributeType(kVehicleMake));
+    attributes.back().SetInfo(VEHICLE_MAKE, options.make,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.model) {
+    attributes.emplace_back(AttributeType(kVehicleModel));
+    attributes.back().SetInfo(VEHICLE_MODEL, options.model,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.year) {
+    attributes.emplace_back(AttributeType(kVehicleYear));
+    attributes.back().SetInfo(VEHICLE_YEAR, options.model,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.state) {
+    attributes.emplace_back(AttributeType(kVehiclePlateState));
+    attributes.back().SetInfo(VEHICLE_PLATE_STATE, options.state,
+                              /*app_locale=*/"", /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  return EntityInstance(
+      EntityType(EntityTypeName::kVehicle), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(kJune2017.ToTimeT()));
+}
+
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types) {
   possible_field_types.emplace_back();

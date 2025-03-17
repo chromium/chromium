@@ -28,7 +28,9 @@ import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Represents the Most Visited Tiles section in the New Tab Page. */
 public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
@@ -36,11 +38,21 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     public static final ViewSpec MOST_VISITED_TILES_LAYOUT = viewSpec(withId(R.id.mv_tiles_layout));
 
     private final List<SiteSuggestion> mSiteSuggestions;
+    private final Set<Integer> mNonTileIndices;
     private ArrayList<Item<WebPageStation>> mTiles;
 
-    /** Constructor. Expects the tiles to show the given |siteSuggestions|. */
-    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
+    /**
+     * @param siteSuggestions List of expects the tiles to show.
+     * @param nonTileIndices Set of tile container indices that are not tiles, e.g., dividers, or
+     *     other UI that exist alongside tiles.
+     */
+    public MvtsFacility(List<SiteSuggestion> siteSuggestions, Set<Integer> nonTileIndices) {
         mSiteSuggestions = siteSuggestions;
+        mNonTileIndices = nonTileIndices;
+    }
+
+    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
+        this(siteSuggestions, Collections.emptySet());
     }
 
     @Override
@@ -58,10 +70,14 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
 
     @Override
     protected void declareItems(ScrollableFacility<RegularNewTabPageStation>.ItemsBuilder items) {
+        int parentIndex = 0;
         mTiles = new ArrayList<>();
         for (int i = 0; i < mSiteSuggestions.size(); i++) {
+            while (mNonTileIndices.contains(parentIndex)) {
+                ++parentIndex;
+            }
             Matcher<View> tileMatcher =
-                    allOf(instanceOf(SuggestionsTileView.class), withParentIndex(i));
+                    allOf(instanceOf(SuggestionsTileView.class), withParentIndex(parentIndex));
             SiteSuggestion siteSuggestion = mSiteSuggestions.get(i);
             Item<WebPageStation> item =
                     items.declareItemToStation(
@@ -75,6 +91,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
                                             .withExpectedUrlSubstring(siteSuggestion.url.getPath())
                                             .build());
             mTiles.add(item);
+            ++parentIndex;
         }
     }
 

@@ -20,6 +20,18 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kAdjustCanCreateCanvas2DResourceProviderName[] =
+    "Adjust CanCreateCanvas2DResourceProvider()";
+const char kAdjustCanCreateCanvas2DResourceProviderDescription[] =
+    "Changes CanvasRenderingContxt2D::CanCreateCanvas2DResourceProvider() "
+    "to check for provider recreation rather than bridge recreation";
+
+const char kAdjustGetOrCreate2DCanvasProviderName[] =
+    "Adjust GetOrCreateCanvasResourceProvider() for Canvas2D";
+const char kAdjustGetOrCreate2DCanvasProviderDescription[] =
+    "Moves HTMLCanvasElement::GetOrCreateCanvasResourceProvider() "
+    "away from calling GetOrCreateCanvas2DLayerBridge() for Canvas2D";
+
 const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
 const char kAiSettingsPageRefreshDescription[] =
     "Enables a revamp of the existing AI settings page.";
@@ -556,6 +568,12 @@ const char kIsolatedSandboxedIframesDescription[] =
     "header, even in the main frame. The affected sandboxed documents can be "
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
+
+const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[] =
+    "CanvasRenderingContext2D::IsPaintable() adjustment";
+const char kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[] =
+    "Has CanvasRenderingContext2D::IsPaintable() check for the existence of "
+    "the resource provider rather than the bridge";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillDeprecateAccessibilityApiName[] =
@@ -1940,7 +1958,7 @@ const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
 
-const char kFedCmCooldownOnIgnoreName[] = "kFedCmCooldownOnIgnore";
+const char kFedCmCooldownOnIgnoreName[] = "FedCmCooldownOnIgnore";
 const char kFedCmCooldownOnIgnoreDescription[] =
     "Enables cooldown of the FedCM API in passive mode whenever the dialog is "
     "ignored by the user.";

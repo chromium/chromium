@@ -122,15 +122,6 @@ void DCompPresenter::ScheduleDCLayers(
   pending_overlays_ = std::move(overlays);
 }
 
-void DCompPresenter::SetFrameRate(float frame_rate) {
-  // Only try to reduce vsync frequency through the video swap chain.
-  // This allows us to experiment UseSetPresentDuration optimization to
-  // fullscreen video overlays only and avoid compromising
-  // UsePreferredIntervalForVideo optimization where we skip compositing
-  // every other frame when fps <= half the vsync frame rate.
-  layer_tree_->SetFrameRate(frame_rate);
-}
-
 void DCompPresenter::Present(SwapCompletionCallback completion_callback,
                              PresentationCallback presentation_callback,
                              gfx::FrameData data) {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
@@ -17,7 +18,10 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
 #import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -43,8 +47,21 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
     : public PlatformTest {
  public:
   TranslateInfobarOverlayTranslateOverlayTabHelperTest() {
+    TestProfileIOS::Builder test_profile_builder;
+
+    test_profile_builder.AddTestingFactory(
+        TipsManagerIOSFactory::GetInstance(),
+        TipsManagerIOSFactory::GetDefaultFactory());
+
+    profile_ = std::move(test_profile_builder).Build();
+
+    // Set up WebState
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+
+    // Associate the WebState with the Profile
+    web_state_.SetBrowserState(profile_.get());
+
     OverlayRequestQueue::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
@@ -73,6 +90,9 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;

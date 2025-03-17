@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
+#include "ui/gfx/geometry/clamp_float_geometry.h"
 
 namespace cc {
 namespace {
@@ -482,6 +483,10 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       break;
     case Type::kLinearGradient: {
       SkPoint points[2] = {start_point_, end_point_};
+      points[0].fX = gfx::ClampFloatGeometry(points[0].fX);
+      points[0].fY = gfx::ClampFloatGeometry(points[0].fY);
+      points[1].fX = gfx::ClampFloatGeometry(points[1].fX);
+      points[1].fY = gfx::ClampFloatGeometry(points[1].fY);
       return SkGradientShader::MakeLinear(
           points, colors_.data(), nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),

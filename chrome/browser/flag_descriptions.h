@@ -55,6 +55,12 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
+extern const char kAdjustCanCreateCanvas2DResourceProviderName[];
+extern const char kAdjustCanCreateCanvas2DResourceProviderDescription[];
+
+extern const char kAdjustGetOrCreate2DCanvasProviderName[];
+extern const char kAdjustGetOrCreate2DCanvasProviderDescription[];
+
 extern const char kAiSettingsPageRefreshName[];
 extern const char kAiSettingsPageRefreshDescription[];
 
@@ -650,6 +656,10 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
+
+extern const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[];
+extern const char
+    kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[];
 
 extern const char kExperimentalAccessibilityLanguageDetectionName[];
 extern const char kExperimentalAccessibilityLanguageDetectionDescription[];

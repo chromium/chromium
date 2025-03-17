@@ -1144,7 +1144,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(), !!node->GetTextContentLengthUTF16(),
+      node->HasNonEmptyValue(),
+      !!node->GetTextContentLengthUTF16() || !node->GetContainerTitle().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
@@ -1194,12 +1195,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
+        base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
         node->GetTextSize(), node->GetTextStyle(), node->GetTextColor(),
         node->GetTextBackgroundColor(),
         GetCanonicalJNIString(env, node->GetFontFamily()), node->IsSubscript(),
-        node->IsSuperscript()
-
-    );
+        node->IsSuperscript());
   } else {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
         env, obj, info,
@@ -1213,7 +1213,9 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
                                        ax::mojom::StringAttribute::kLanguage)),
         suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
         base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetStateDescription()));
+                                                node->GetStateDescription()),
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetContainerTitle()));
   }
 
   std::u16string element_id;

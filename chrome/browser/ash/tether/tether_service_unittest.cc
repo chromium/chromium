@@ -51,6 +51,7 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -378,11 +379,9 @@ class TetherServiceTest : public testing::Test {
   void SetPrimaryUserLoggedIn() {
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    const user_manager::User* user =
-        fake_chrome_user_manager_->AddPublicAccountUser(account_id);
-    fake_chrome_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                            false /* browser_restart */,
-                                            false /* is_child */);
+    fake_chrome_user_manager_->AddPublicAccountUser(account_id);
+    fake_chrome_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   void CreateTetherService() {

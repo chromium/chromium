@@ -248,13 +248,10 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
-  __weak __typeof(_delegate) weakDelegate = _delegate;
   GetApplicationContext()
       ->GetAccountProfileMapper()
-      ->MakePersonalProfileManagedWithGaiaID(
-          GaiaId(identity.gaiaID), base::BindOnce(^{
-            [weakDelegate didMakePersonalProfileManaged];
-          }));
+      ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
+  [_delegate didMakePersonalProfileManaged];
 }
 
 - (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile {

@@ -64,14 +64,9 @@ class ShapeNonInterpolableValue : public NonInterpolableValue {
     bool operator==(const SegmentParams&) const = default;
   };
 
+  ShapeNonInterpolableValue(WindRule wind_rule, Vector<SegmentParams>&& params)
+      : params_(params), wind_rule_(wind_rule) {}
   ~ShapeNonInterpolableValue() override = default;
-
-  static scoped_refptr<ShapeNonInterpolableValue> Create(
-      WindRule wind_rule,
-      Vector<SegmentParams> params) {
-    return base::AdoptRef(
-        new ShapeNonInterpolableValue(wind_rule, std::move(params)));
-  }
 
   const Vector<SegmentParams>& GetParams() const { return params_; }
   WindRule GetWindRule() const { return wind_rule_; }
@@ -79,9 +74,6 @@ class ShapeNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  ShapeNonInterpolableValue(WindRule wind_rule, Vector<SegmentParams> params)
-      : params_(std::move(params)), wind_rule_(wind_rule) {}
-
   Vector<SegmentParams> params_;
   WindRule wind_rule_;
 };
@@ -297,8 +289,8 @@ InterpolationValue ConvertPath(const StylePath* style_path,
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
-      ShapeNonInterpolableValue::Create(style_path->GetWindRule(),
-                                        std::move(non_interpolable_segments)));
+      MakeGarbageCollected<ShapeNonInterpolableValue>(
+          style_path->GetWindRule(), std::move(non_interpolable_segments)));
 }
 InterpolationValue ConvertShape(const StyleShape* style_shape,
                                 const CSSProperty& property,
@@ -319,8 +311,8 @@ InterpolationValue ConvertShape(const StyleShape* style_shape,
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
-      ShapeNonInterpolableValue::Create(style_shape->GetWindRule(),
-                                        std::move(non_interpolable_segments)));
+      MakeGarbageCollected<ShapeNonInterpolableValue>(
+          style_shape->GetWindRule(), std::move(non_interpolable_segments)));
 }
 
 InterpolationValue ConvertShapeOrPath(const BasicShape* shape,
@@ -335,15 +327,14 @@ InterpolationValue ConvertShapeOrPath(const BasicShape* shape,
 class UnderlyingShapeConversionChecker final
     : public InterpolationType::ConversionChecker {
  public:
-  ~UnderlyingShapeConversionChecker() final = default;
-
-  static UnderlyingShapeConversionChecker* Create(
-      const InterpolationValue& underlying) {
-    return MakeGarbageCollected<UnderlyingShapeConversionChecker>(underlying);
-  }
-
   explicit UnderlyingShapeConversionChecker(const InterpolationValue& value)
       : value_(&To<ShapeNonInterpolableValue>(*value.non_interpolable_value)) {}
+  ~UnderlyingShapeConversionChecker() final = default;
+
+  void Trace(Visitor* visitor) const override {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(value_);
+  }
 
   bool IsValid(const InterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
@@ -355,7 +346,7 @@ class UnderlyingShapeConversionChecker final
   }
 
  private:
-  scoped_refptr<const ShapeNonInterpolableValue> value_;
+  Member<const ShapeNonInterpolableValue> value_;
 };
 
 class ShapeInterpolationReader {
@@ -583,7 +574,7 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(
-      UnderlyingShapeConversionChecker::Create(underlying));
+      MakeGarbageCollected<UnderlyingShapeConversionChecker>(underlying));
 
   HeapVector<Member<InterpolableValue>> values;
   auto WriteLength = [&](size_t number = 1) {
@@ -793,8 +784,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
-      ShapeNonInterpolableValue::Create(shape_value->GetWindRule(),
-                                        std::move(non_interpolable_segments)));
+      MakeGarbageCollected<ShapeNonInterpolableValue>(
+          shape_value->GetWindRule(), std::move(non_interpolable_segments)));
 }
 
 InterpolationValue

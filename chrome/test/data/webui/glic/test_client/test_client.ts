@@ -90,7 +90,7 @@ interface PageElementTypes {
   resetHeight: HTMLButtonElement;
   dump: HTMLElement;
   fitWindow: HTMLInputElement;
-  fitContent: HTMLInputElement;
+  naturalSizing: HTMLInputElement;
   startMic: HTMLButtonElement;
   successUI: HTMLDivElement;
   localDenialUI: HTMLDivElement;
@@ -310,11 +310,13 @@ async function checkMicrophonePermission():
 $.enableTestSizingMode.addEventListener('click', () => {
   $.content.setAttribute('hidden', '');
   $.contentSizingTest.removeAttribute('hidden');
+  updateSizingMode(true);
 });
 
 $.disableTestSizingMode.addEventListener('click', () => {
   $.content.removeAttribute('hidden');
   $.contentSizingTest.setAttribute('hidden', '');
+  updateSizingMode(false);
 });
 
 $.growHeight.addEventListener('click', () => {
@@ -329,19 +331,22 @@ $.resetHeight.addEventListener('click', () => {
   $.dump.innerHTML = '';
 });
 
-$.fitWindow.addEventListener('change', () => {
-  if (!$.fitWindow.checked) {
+async function updateSizingMode(inSizingTest: boolean) {
+  if (!inSizingTest) {
+    document.documentElement.classList.remove('fitWindow');
     return;
   }
-  document.documentElement.style.height = '100%';
-});
 
-$.fitContent.addEventListener('change', () => {
-  if (!$.fitContent.checked) {
-    return;
+  if (await getBrowser()!.shouldFitWindow!()) {
+    $.fitWindow.checked = true;
+    $.naturalSizing.checked = false;
+    document.documentElement.classList.add('fitWindow');
+  } else {
+    $.fitWindow.checked = false;
+    $.naturalSizing.checked = true;
+    document.documentElement.classList.remove('fitWindow');
   }
-  document.documentElement.style.height = 'unset';
-});
+}
 
 // Permissions:
 

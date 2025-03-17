@@ -466,7 +466,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
   std::optional<DisplayFeature> GetDisplayFeature() override;
-  void SetDisplayFeatureForTesting(
+  void DisableDisplayFeatureOverrideForEmulation() override;
+  void OverrideDisplayFeatureForEmulation(
       const DisplayFeature* display_feature) override;
   void EnsurePlatformVisibility(PageVisibilityState page_visibility) override;
   void NotifyHostAndDelegateOnWasShown(
@@ -856,7 +857,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
   std::optional<DisplayFeature> display_feature_;
-  bool display_feature_overridden_for_testing_ = false;
+  bool display_feature_overridden_for_emulation_ = false;
   // Display feature bounds returned by the OS.
   gfx::Rect display_feature_bounds_;
 

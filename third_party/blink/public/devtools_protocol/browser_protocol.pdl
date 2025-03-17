@@ -858,6 +858,7 @@ experimental domain Audits
   type SRIMessageSignatureIssueDetails extends object
     properties
       SRIMessageSignatureError error
+      string signatureBase
       AffectedRequest request
 
   type GenericIssueErrorType extends string
@@ -4594,7 +4595,8 @@ domain Emulation
       experimental optional Page.Viewport viewport
       # If set, the display feature of a multi-segment screen. If not set, multi-segment support
       # is turned-off.
-      experimental optional DisplayFeature displayFeature
+      # Deprecated, use Emulation.setDisplayFeaturesOverride.
+      experimental deprecated optional DisplayFeature displayFeature
       # If set, the posture of a foldable device. If not set the posture is set
       # to continuous.
       # Deprecated, use Emulation.setDevicePostureOverride.
@@ -4611,6 +4613,18 @@ domain Emulation
   # platform again.
   # Does nothing if no override is set.
   experimental command clearDevicePostureOverride
+
+  # Start using the given display features to pupulate the Viewport Segments API.
+  # This override can also be set in setDeviceMetricsOverride().
+  experimental command setDisplayFeaturesOverride
+    parameters
+      array of DisplayFeature features
+
+  # Clears the display features override set with either setDeviceMetricsOverride()
+  # or setDisplayFeaturesOverride() and starts using display features from the
+  # platform again.
+  # Does nothing if no override is set.
+  experimental command clearDisplayFeaturesOverride
 
   experimental command setScrollbarsHidden
     parameters
@@ -12903,6 +12917,7 @@ experimental domain Preload
       PrefetchFailedMIMENotSupported
       PrefetchFailedNetError
       PrefetchFailedNon2XX
+      PrefetchEvictedAfterBrowsingDataRemoved
       PrefetchEvictedAfterCandidateRemoved
       PrefetchEvictedForNewerPrefetch
       PrefetchHeldback

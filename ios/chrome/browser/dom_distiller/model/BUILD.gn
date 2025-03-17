@@ -6,18 +6,9 @@ source_set("model") {
   sources = [
     "distiller_viewer.cc",
     "distiller_viewer.h",
-    "dom_distiller_service_factory.cc",
-    "dom_distiller_service_factory.h",
   ]
   deps = [
     "//base",
-    "//components/dom_distiller/ios",
-    "//components/leveldb_proto",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-    "//ios/web",
-    "//ios/web/public",
-    "//services/network/public/cpp",
     "//ui/gfx",
     "//url",
   ]

@@ -46,7 +46,7 @@ BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
 
 BASE_FEATURE(kClientSideDetectionAcceptHCAllowlist,
              "ClientSideDetectionAcceptHCAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
              "ClientSideDetectionBrandAndIntentForScamDetection",
@@ -237,6 +237,11 @@ BASE_FEATURE(kMaliciousApkDownloadCheck,
 
 constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
     &kMaliciousApkDownloadCheck, "telemetry_only", /*default_value=*/false};
+
+constexpr base::FeatureParam<std::string>
+    kMaliciousApkDownloadCheckServiceUrlOverride{&kMaliciousApkDownloadCheck,
+                                                 "service_url_override",
+                                                 /*default_value=*/""};
 #endif
 
 BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,

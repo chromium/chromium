@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoHighlight;
@@ -12,6 +13,7 @@ import org.chromium.components.page_info.PageInfoHighlight;
  * Chrome's customization of {@link PageInfoHighlight}. This class provides Chrome-specific
  * highlight info to PageInfoController.
  */
+@NullMarked
 public class ChromePageInfoHighlight extends PageInfoHighlight {
     private final boolean mHighlightStoreInfo;
 

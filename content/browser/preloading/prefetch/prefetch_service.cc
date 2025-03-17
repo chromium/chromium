@@ -548,6 +548,7 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
       return true;
   }
 }
@@ -785,13 +786,11 @@ void PrefetchService::CheckHasServiceWorker(
         NOTREACHED();
 
       case PrefetchServiceWorkerState::kControlled:
-        // Currently we disallow redirects for ServiceWorker-controlled
+        // Currently we disallow redirects from ServiceWorker-controlled
         // prefetches.
-        // TODO(https://crbug.com/40947546): Supply an appropriate eligibility
-        // value if needed.
         OnGotEligibility(std::move(prefetch_container),
                          std::move(redirect_data),
-                         PreloadingEligibility::kUserHasServiceWorker);
+                         PreloadingEligibility::kRedirectFromServiceWorker);
         return;
     }
   } else {
@@ -1860,6 +1859,30 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
         "PrefetchProxy.Prefetch."
         "NumExistingPrefetchWithMatchingURLAndRenderFrameHost",
         num_matching_prefetch_same_rfh);
+  }
+}
+
+void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
+    PrefetchStatus status) {
+  // TODO(crbug.com/40262310): Handle for prefetches from non-SpeculationRules
+  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_reset;
+  for (const auto& prefetch_iter : owned_prefetches_) {
+    base::WeakPtr<PrefetchContainer> prefetch_container =
+        prefetch_iter.second->GetWeakPtr();
+    CHECK(prefetch_container);
+    std::optional<url::Origin> referring_origin =
+        prefetch_container->GetReferringOrigin();
+    if (referring_origin.has_value() &&
+        storage_key_filter.Run(
+            blink::StorageKey::CreateFirstParty(referring_origin.value()))) {
+      prefetch_container->SetPrefetchStatus(status);
+      prefetches_to_reset.push_back(prefetch_container);
+    }
+  }
+
+  for (const auto& prefetch_container : prefetches_to_reset) {
+    ResetPrefetchContainer(prefetch_container);
   }
 }
 

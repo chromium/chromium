@@ -3880,7 +3880,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ApplicationShortcut.NewIncognitoSearchPressed">
-  <owner>pschaffner@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     Force pressed on a springboard shortcut and tapped Incognito Search in
     Chrome for iOS.
@@ -3888,10 +3888,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ApplicationShortcut.NewSearchPressed">
-  <owner>pschaffner@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     Force pressed on a springboard shortcut and tapped New Search in Chrome for
     iOS.
+  </description>
+</action>
+
+<action name="ApplicationShortcut.VoiceSearchPressed">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    Force pressed on a springboard shortcut and tapped Voice Search in Chrome
+    for iOS.
   </description>
 </action>
 

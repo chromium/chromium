@@ -392,8 +392,8 @@ GpuServiceImpl::GpuServiceImpl(
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
       auto cache_blob_callback = base::BindRepeating(
-          [](GpuServiceImpl* self, gpu::GpuDiskCacheType type,
-             const std::string& key, const std::string& blob) {
+          [](GpuServiceImpl* self, const std::string& key,
+             const std::string& blob) {
             self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
                                   blob);
           },

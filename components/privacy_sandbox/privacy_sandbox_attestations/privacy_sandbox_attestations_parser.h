@@ -19,7 +19,7 @@ namespace privacy_sandbox {
 // just in case the list sent from the server (or the file stored on disk) gets
 // corrupted.
 std::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
-    std::string& input);
+    const std::string& input);
 
 }  // namespace privacy_sandbox
 

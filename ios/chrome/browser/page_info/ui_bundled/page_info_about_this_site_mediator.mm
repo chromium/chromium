@@ -8,7 +8,7 @@
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/page_info/about_this_site_tab_helper.h"
+#import "ios/chrome/browser/page_info/model/about_this_site_tab_helper.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_about_this_site_consumer.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

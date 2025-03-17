@@ -54,17 +54,13 @@ class RayMode {
 
 class CSSRayNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSRayNonInterpolableValue> Create(const RayMode& mode) {
-    return base::AdoptRef(new CSSRayNonInterpolableValue(mode));
-  }
+  explicit CSSRayNonInterpolableValue(const RayMode& mode) : mode_(mode) {}
 
   const RayMode& Mode() const { return mode_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSRayNonInterpolableValue(const RayMode& mode) : mode_(mode) {}
-
   const RayMode mode_;
 };
 
@@ -176,8 +172,9 @@ InterpolationValue CreateValue(const StyleRay& ray,
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), property, zoom));
   list->Set(kRayHasExplicitCenterIndex,
             MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
-  return InterpolationValue(
-      list, CSSRayNonInterpolableValue::Create(RayMode(ray, coord_box)));
+  return InterpolationValue(list,
+                            MakeGarbageCollected<CSSRayNonInterpolableValue>(
+                                RayMode(ray, coord_box)));
 }
 
 InterpolationValue CreateNeutralValue(const RayMode& mode) {
@@ -188,7 +185,8 @@ InterpolationValue CreateNeutralValue(const RayMode& mode) {
   list->Set(kRayCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayHasExplicitCenterIndex,
             MakeGarbageCollected<InterpolableNumber>(0));
-  return InterpolationValue(list, CSSRayNonInterpolableValue::Create(mode));
+  return InterpolationValue(
+      list, MakeGarbageCollected<CSSRayNonInterpolableValue>(mode));
 }
 
 InterpolationValue CreateValue(const CSSValue& angle,
@@ -211,8 +209,9 @@ InterpolationValue CreateValue(const CSSValue& angle,
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), property, zoom));
   list->Set(kRayHasExplicitCenterIndex,
             MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
-  return InterpolationValue(
-      list, CSSRayNonInterpolableValue::Create(RayMode(ray, coord_box)));
+  return InterpolationValue(list,
+                            MakeGarbageCollected<CSSRayNonInterpolableValue>(
+                                RayMode(ray, coord_box)));
 }
 
 }  // namespace

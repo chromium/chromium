@@ -149,6 +149,9 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -2375,6 +2378,38 @@ void Browser::DraggableRegionsChanged(
   if (app_controller_) {
     app_controller_->DraggableRegionsChanged(regions, contents);
   }
+}
+
+std::vector<blink::mojom::RelatedApplicationPtr>
+Browser::GetSavedRelatedApplications(WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(profile);
+  if (!web_app::AreWebAppsEnabled(profile)) {
+    return {};
+  }
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id || app_id->empty()) {
+    return {};
+  }
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  std::vector<blink::Manifest::RelatedApplication> saved_related_apps =
+      provider->registrar_unsafe().GetRelatedApplications(*app_id);
+  std::vector<blink::mojom::RelatedApplicationPtr> related_apps_ptr;
+  for (const auto& app : saved_related_apps) {
+    auto related_app = blink::mojom::RelatedApplication::New();
+    related_app->platform =
+        base::UTF16ToUTF8(app.platform.value_or(std::u16string()));
+    related_app->id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
+    if (!app.url.is_empty()) {
+      related_app->url = app.url.spec();
+    }
+    related_apps_ptr.push_back(std::move(related_app));
+  }
+  return related_apps_ptr;
 }
 
 void Browser::DidFinishNavigation(

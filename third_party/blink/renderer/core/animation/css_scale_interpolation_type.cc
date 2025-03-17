@@ -65,48 +65,40 @@ class InheritedScaleChecker
 
 class CSSScaleNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSScaleNonInterpolableValue(const InterpolableList& start,
+                               const InterpolableList& end,
+                               bool is_start_additive = false,
+                               bool is_end_additive = false)
+      : start_(start.Clone()),
+        end_(end.Clone()),
+        is_start_additive_(is_start_additive),
+        is_end_additive_(is_end_additive) {}
+
   ~CSSScaleNonInterpolableValue() final = default;
 
-  static scoped_refptr<CSSScaleNonInterpolableValue> Create(
-      const InterpolableList& list) {
-    return base::AdoptRef(
-        new CSSScaleNonInterpolableValue(list, list, false, false));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(start_);
+    visitor->Trace(end_);
   }
 
-  static scoped_refptr<CSSScaleNonInterpolableValue> CreateAdditive(
-      const CSSScaleNonInterpolableValue& other) {
-    const bool is_additive = true;
-    return base::AdoptRef(new CSSScaleNonInterpolableValue(
-        *other.start_, *other.end_, is_additive, is_additive));
-  }
-
-  static scoped_refptr<CSSScaleNonInterpolableValue> Merge(
+  static CSSScaleNonInterpolableValue* Merge(
       const CSSScaleNonInterpolableValue& start,
       const CSSScaleNonInterpolableValue& end) {
-    return base::AdoptRef(new CSSScaleNonInterpolableValue(
-        start.Start(), end.end(), start.IsStartAdditive(),
-        end.IsEndAdditive()));
+    return MakeGarbageCollected<CSSScaleNonInterpolableValue>(
+        start.Start(), end.End(), start.IsStartAdditive(), end.IsEndAdditive());
   }
 
   const InterpolableList& Start() const { return *start_; }
-  const InterpolableList& end() const { return *end_; }
+  const InterpolableList& End() const { return *end_; }
   bool IsStartAdditive() const { return is_start_additive_; }
   bool IsEndAdditive() const { return is_end_additive_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSScaleNonInterpolableValue(const InterpolableList& start,
-                               const InterpolableList& end,
-                               bool is_start_additive,
-                               bool is_end_additive)
-      : start_(start.Clone()),
-        end_(end.Clone()),
-        is_start_additive_(is_start_additive),
-        is_end_additive_(is_end_additive) {}
-
-  Persistent<const InterpolableList> start_;
-  Persistent<const InterpolableList> end_;
+  Member<const InterpolableList> start_;
+  Member<const InterpolableList> end_;
   bool is_start_additive_;
   bool is_end_additive_;
 };
@@ -126,16 +118,19 @@ namespace {
 
 InterpolationValue CreateInterpolationValue(ScaleTransformOperation* op) {
   if (!op) {
-    return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
-                              CSSScaleNonInterpolableValue::Create(
-                                  *MakeGarbageCollected<InterpolableList>(0)));
+    return InterpolationValue(
+        MakeGarbageCollected<InterpolableList>(0),
+        MakeGarbageCollected<CSSScaleNonInterpolableValue>(
+            *MakeGarbageCollected<InterpolableList>(0),
+            *MakeGarbageCollected<InterpolableList>(0)));
   }
 
   auto* list = MakeGarbageCollected<InterpolableList>(3);
   list->Set(0, MakeGarbageCollected<InterpolableNumber>(op->X()));
   list->Set(1, MakeGarbageCollected<InterpolableNumber>(op->Y()));
   list->Set(2, MakeGarbageCollected<InterpolableNumber>(op->Z()));
-  return InterpolationValue(list, CSSScaleNonInterpolableValue::Create(*list));
+  return InterpolationValue(
+      list, MakeGarbageCollected<CSSScaleNonInterpolableValue>(*list, *list));
 }
 
 InterpolationValue CreateInterpolationValue(std::array<double, 3> a) {
@@ -143,7 +138,8 @@ InterpolationValue CreateInterpolationValue(std::array<double, 3> a) {
   list->Set(0, MakeGarbageCollected<InterpolableNumber>(a[0]));
   list->Set(1, MakeGarbageCollected<InterpolableNumber>(a[1]));
   list->Set(2, MakeGarbageCollected<InterpolableNumber>(a[2]));
-  return InterpolationValue(list, CSSScaleNonInterpolableValue::Create(*list));
+  return InterpolationValue(
+      list, MakeGarbageCollected<CSSScaleNonInterpolableValue>(*list, *list));
 }
 
 InterpolationValue CreateInterpolationValue(
@@ -152,7 +148,8 @@ InterpolationValue CreateInterpolationValue(
   list->Set(0, a[0]);
   list->Set(1, a[1]);
   list->Set(2, a[2]);
-  return InterpolationValue(list, CSSScaleNonInterpolableValue::Create(*list));
+  return InterpolationValue(
+      list, MakeGarbageCollected<CSSScaleNonInterpolableValue>(*list, *list));
 }
 
 InterpolationValue CreateInterpolationValue() {
@@ -160,8 +157,9 @@ InterpolationValue CreateInterpolationValue() {
   list->Set(0, MakeGarbageCollected<InterpolableNumber>(1.0));
   list->Set(1, MakeGarbageCollected<InterpolableNumber>(1.0));
   list->Set(2, MakeGarbageCollected<InterpolableNumber>(1.0));
-  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
-                            CSSScaleNonInterpolableValue::Create(*list));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableList>(0),
+      MakeGarbageCollected<CSSScaleNonInterpolableValue>(*list, *list));
 }
 
 }  // namespace
@@ -233,8 +231,12 @@ InterpolationValue CSSScaleInterpolationType::PreInterpolationCompositeIfNeeded(
     const InterpolationValue& underlying,
     EffectModel::CompositeOperation,
     ConversionCheckers&) const {
-  value.non_interpolable_value = CSSScaleNonInterpolableValue::CreateAdditive(
-      To<CSSScaleNonInterpolableValue>(*value.non_interpolable_value));
+  const auto& other =
+      To<CSSScaleNonInterpolableValue>(*value.non_interpolable_value);
+  value.non_interpolable_value =
+      MakeGarbageCollected<CSSScaleNonInterpolableValue>(
+          other.Start(), other.End(), /* is_additive */ true,
+          /* is_additive */ true);
   return value;
 }
 
@@ -293,7 +295,7 @@ void CSSScaleInterpolationType::Composite(
         metadata.IsEndAdditive()
             ? *underlying.Clone()
             : *MakeGarbageCollected<InterpolableNumber>(1.0);
-    end_number.Scale(*To<InterpolableNumber>(metadata.end().Get(i)));
+    end_number.Scale(*To<InterpolableNumber>(metadata.End().Get(i)));
     start_number.Interpolate(end_number, interpolation_fraction, underlying);
   }
 }

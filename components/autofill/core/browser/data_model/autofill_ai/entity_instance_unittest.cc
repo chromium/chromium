@@ -172,5 +172,17 @@ TEST(
   EXPECT_TRUE(result.is_subset);
 }
 
+// Tests that valid entities that don't share any attribute in common are not
+// merged, as we cannot verify that they represent the same real-world object.
+TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
+  EntityInstance::EntityMergeability result =
+      test::GetVehicleEntityInstance({.number = u"12345"})
+          .GetEntityMergeability(
+              test::GetVehicleEntityInstance({.plate = u"6789"}));
+
+  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_FALSE(result.is_subset);
+}
+
 }  // namespace
 }  // namespace autofill

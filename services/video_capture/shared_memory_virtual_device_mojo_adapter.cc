@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
@@ -36,7 +37,7 @@ namespace video_capture {
 SharedMemoryVirtualDeviceMojoAdapter::SharedMemoryVirtualDeviceMojoAdapter(
     mojo::Remote<mojom::Producer> producer)
     : producer_(std::move(producer)),
-      buffer_pool_(new media::VideoCaptureBufferPoolImpl(
+      buffer_pool_(base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
           media::VideoCaptureBufferType::kSharedMemory,
           max_buffer_pool_buffer_count())) {}
 

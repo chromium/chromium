@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -28,8 +27,6 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
 const CGFloat kLabelVerticalSpacing = 2.0;
 // The button padding.
 const CGFloat kButtonPadding = 8.0;
-// The button corner radius.
-const CGFloat kButtonCornerRadius = 15.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
@@ -54,8 +51,6 @@ UIImage* GetEnterpriseIcon() {
   NSString* _name;
   // Email subtitle displayed in secondary label.
   NSString* _email;
-  // True if the "Managed by your organization" label is present.
-  BOOL _managed;
   // The account avatar.
   UIImageView* _imageView;
   // Whether to use large margin.
@@ -68,13 +63,15 @@ UIImage* GetEnterpriseIcon() {
   UIButton* _button;
   // Manage your account button action.
   ProceduralBlock _manageYourAccountButtonAction;
+  // Management label.
+  UILabel* _managementLabel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                       avatarImage:(UIImage*)avatarImage
                              name:(NSString*)name
                             email:(NSString*)email
-                  managementState:(ManagementState)managementState
+            managementDescription:(NSString*)managementDescription
                   useLargeMargins:(BOOL)useLargeMargins
        addManageYourAccountButton:(BOOL)addManageYourAccountButton
     manageYourAccountButtonAction:
@@ -91,8 +88,6 @@ UIImage* GetEnterpriseIcon() {
     _manageYourAccountButtonAction = manageYourAccountButtonAction;
     CHECK_EQ(_addManageYourAccountButton,
              _manageYourAccountButtonAction != nil);
-    _managed = managementState.is_profile_managed();
-
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
 
@@ -132,7 +127,8 @@ UIImage* GetEnterpriseIcon() {
             ? (2 * kTableViewLargeVerticalSpacing)
             : (kTableViewLargeVerticalSpacing + kTableViewVerticalSpacing);
 
-    if (_managed) {
+    if (managementDescription) {
+      CHECK_GT(managementDescription.length, 0u, base::NotFatalUntil::M140);
       UIImage* managementIcon = GetEnterpriseIcon();
       UIImageView* managementIconView =
           [[UIImageView alloc] initWithImage:managementIcon];
@@ -153,22 +149,21 @@ UIImage* GetEnterpriseIcon() {
                                               UILayoutConstraintAxisVertical];
       [self addSubview:managementIconView];
 
-      UILabel* managementLabel = [[UILabel alloc] init];
-      // TODO(crbug.com/349071774): In Phase 2, display the domain name or
-      // admin-provided company name/icon (when available).
-      managementLabel.text = l10n_util::GetNSString(
-          IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
-      managementLabel.textAlignment = NSTextAlignmentNatural;
-      managementLabel.numberOfLines = 1;
-      managementLabel.adjustsFontForContentSizeCategory = YES;
-      managementLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-      managementLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      managementLabel.font =
+      _managementLabel = [[UILabel alloc] init];
+      // TODO(crbug.com/349071774): In Phase 2, display the admin-provided
+      // company icon (when available).
+      _managementLabel.text = managementDescription;
+      _managementLabel.textAlignment = NSTextAlignmentNatural;
+      _managementLabel.numberOfLines = 1;
+      _managementLabel.adjustsFontForContentSizeCategory = YES;
+      _managementLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+      _managementLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      _managementLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-      managementLabel.translatesAutoresizingMaskIntoConstraints = NO;
+      _managementLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
       UIStackView* horizontalStack = [[UIStackView alloc]
-          initWithArrangedSubviews:@[ managementIconView, managementLabel ]];
+          initWithArrangedSubviews:@[ managementIconView, _managementLabel ]];
       horizontalStack.axis = UILayoutConstraintAxisHorizontal;
       horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
       horizontalStack.alignment = UIStackViewAlignmentCenter;
@@ -257,10 +252,8 @@ UIImage* GetEnterpriseIcon() {
   if (_email) {
     [accessibilityLabel appendFormat:@", %@", _email];
   }
-  if (_managed) {
-    NSString* managedString =
-        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
-    [accessibilityLabel appendFormat:@". %@", managedString];
+  if ([self managed]) {
+    [accessibilityLabel appendFormat:@". %@", [self managementDescription]];
   }
   return accessibilityLabel;
 }
@@ -289,7 +282,11 @@ UIImage* GetEnterpriseIcon() {
 }
 
 - (BOOL)managed {
-  return _managed;
+  return _managementLabel != nil;
+}
+
+- (NSString*)managementDescription {
+  return _managementLabel.text;
 }
 
 - (void)updateTopPadding:(CGFloat)existingPadding {
@@ -318,12 +315,9 @@ UIImage* GetEnterpriseIcon() {
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonPadding, 2 * kButtonPadding, kButtonPadding, 2 * kButtonPadding);
-  configuration.background.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  configuration.background.cornerRadius = kButtonCornerRadius;
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
       initWithString:

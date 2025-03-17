@@ -9,9 +9,11 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
+#include "components/update_client/crx_update_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -105,6 +107,43 @@ class AITestUtils {
    private:
     mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
         this};
+  };
+
+  class FakeComponent {
+   public:
+    FakeComponent(std::string id, uint64_t total_bytes);
+
+    component_updater::CrxUpdateItem CreateUpdateItem(
+        update_client::ComponentState state,
+        uint64_t downloaded_bytes) const;
+
+    const std::string& id() { return id_; }
+    uint64_t total_bytes() { return total_bytes_; }
+
+   private:
+    std::string id_;
+    uint64_t total_bytes_;
+  };
+
+  class MockComponentUpdateService
+      : public component_updater::MockComponentUpdateService {
+   public:
+    MockComponentUpdateService();
+    ~MockComponentUpdateService() override;
+
+    void AddObserver(Observer* observer) override;
+
+    void RemoveObserver(Observer* observer) override;
+
+    void SendUpdate(const component_updater::CrxUpdateItem& item);
+
+    // Not copyable or movable.
+    MockComponentUpdateService(const MockComponentUpdateService&) = delete;
+    MockComponentUpdateService& operator=(const MockComponentUpdateService&) =
+        delete;
+
+   private:
+    base::ObserverList<Observer>::Unchecked observer_list_;
   };
 
   class AITestBase : public ChromeRenderViewHostTestHarness {

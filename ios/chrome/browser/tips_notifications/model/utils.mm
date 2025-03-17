@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_split.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -74,6 +76,32 @@ base::TimeDelta DefaultTriggerDelta(bool for_reactivation,
     case TipsNotificationUserType::kActiveSeeker:
       return base::Days(7);
   }
+}
+
+// Parses a field trial param as a comma separated list of integers, casts the
+// integers as type T, and returns a vector with elements of type T.
+template <typename T>
+std::vector<T> GetFieldTrialParamByFeatureAsVector(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const std::vector<T> default_values) {
+  std::string param_string =
+      GetFieldTrialParamValueByFeature(feature, param_name);
+  if (param_string.length() == 0) {
+    return default_values;
+  }
+
+  std::vector<T> values;
+  const std::vector<std::string> items = base::SplitString(
+      param_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (std::string_view item : items) {
+    int value;
+    if (base::StringToInt(item, &value) && value >= 0 &&
+        value <= int(T::kMaxValue)) {
+      values.push_back(static_cast<T>(value));
+    }
+  }
+  return values;
 }
 
 // A bitfield with all notification types from the enum enabled.
@@ -189,11 +217,13 @@ int TipsNotificationsEnabledBitfield() {
 std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
     bool for_reactivation) {
   if (for_reactivation) {
-    return {
-        TipsNotificationType::kLens,
-        TipsNotificationType::kWhatsNew,
-        TipsNotificationType::kEnhancedSafeBrowsing,
-    };
+    return GetFieldTrialParamByFeatureAsVector<TipsNotificationType>(
+        kIOSReactivationNotifications, kIOSReactivationNotificationsOrderParam,
+        {
+            TipsNotificationType::kLens,
+            TipsNotificationType::kEnhancedSafeBrowsing,
+            TipsNotificationType::kWhatsNew,
+        });
   }
   int order_num = GetFieldTrialParamByFeatureAsInt(
       kIOSTipsNotifications, kIOSTipsNotificationsOrderParam, 3);

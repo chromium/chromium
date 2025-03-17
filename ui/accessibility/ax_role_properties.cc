@@ -272,6 +272,26 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
   }
 }
 
+bool IsContainerOnAndroid(const ax::mojom::Role role) {
+  switch (role) {
+    // Do not include kGenericContainer otherwise <div>, <span> will also be
+    // considered as container, which is too general than we want.
+    case ax::mojom::Role::kIframe:
+    case ax::mojom::Role::kIframePresentational:
+    case ax::mojom::Role::kBanner:
+    case ax::mojom::Role::kComplementary:
+    case ax::mojom::Role::kContentInfo:
+    case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kMain:
+    case ax::mojom::Role::kNavigation:
+    case ax::mojom::Role::kRegion:
+    case ax::mojom::Role::kSearch:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsDateOrTimeInput(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kDate:

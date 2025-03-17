@@ -10,8 +10,6 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-struct ManagementState;
-
 // View for the signed-in account, used in account settings page. Contains the
 // following subviews:
 // 1. Rounded avatarImage used for the account user picture. The value cannot be
@@ -27,7 +25,7 @@ struct ManagementState;
                       avatarImage:(UIImage*)avatarImage
                              name:(NSString*)name
                             email:(NSString*)email
-                  managementState:(ManagementState)managementState
+            managementDescription:(NSString*)managementDescription
                   useLargeMargins:(BOOL)useLargeMargins
        addManageYourAccountButton:(BOOL)addManageYourAccountButton
     manageYourAccountButtonAction:
@@ -38,6 +36,8 @@ struct ManagementState;
 - (NSString*)name;
 - (NSString*)email;
 - (BOOL)managed;
+
+- (NSString*)managementDescription;
 
 // update the top padding.
 - (void)updateTopPadding:(CGFloat)existingPadding;

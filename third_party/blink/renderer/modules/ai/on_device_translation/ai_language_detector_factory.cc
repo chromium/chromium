@@ -17,6 +17,11 @@ namespace blink {
 
 namespace {
 
+void RejectModelNotAvailable(
+    ScriptPromiseResolver<AILanguageDetector>* resolver) {
+  resolver->Reject("Model not available");
+}
+
 template <typename T>
 class RejectOnDestructionHelper {
  public:
@@ -45,65 +50,68 @@ class RejectOnDestructionHelper {
   Persistent<ScriptPromiseResolver<T>> resolver_;
 };
 
-void RejectModelNotAvailable(
-    ScriptPromiseResolver<AILanguageDetector>* resolver) {
-  resolver->Reject("Model not available");
-}
+class AILanguageDetectorCreateTask
+    : public GarbageCollected<AILanguageDetectorCreateTask> {
+ public:
+  AILanguageDetectorCreateTask(
+      ExecutionContext* execution_context,
+      scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      ScriptPromiseResolver<AILanguageDetector>* resolver,
+      LanguageDetectionModel* model,
+      const AILanguageDetectorCreateOptions* options)
+      : task_runner_(task_runner),
+        resolver_(resolver),
+        language_detection_model_(model) {
+    if (options->hasMonitor()) {
+      monitor_ = MakeGarbageCollected<AICreateMonitor>(execution_context,
+                                                       task_runner_);
+      std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+    }
+  }
+
+  void CreateDetector(base::File model_file) {
+    language_detection_model_->LoadModelFile(
+        std::move(model_file),
+        WTF::BindOnce(&AILanguageDetectorCreateTask::OnModelLoaded,
+                      WrapPersistent(this)));
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(resolver_);
+    visitor->Trace(monitor_);
+    visitor->Trace(language_detection_model_);
+  }
+
+ private:
+  void OnModelLoaded(base::expected<LanguageDetectionModel*,
+                                    DetectLanguageError> maybe_model) {
+    if (maybe_model.has_value()) {
+      LanguageDetectionModel* model = maybe_model.value();
+      // TODO (crbug.com/383022111): Pass the real download progress rather than
+      // mocking one.
+      if (monitor_) {
+        monitor_->OnDownloadProgressUpdate(0, model->GetModelSize());
+        monitor_->OnDownloadProgressUpdate(model->GetModelSize(),
+                                           model->GetModelSize());
+      }
+      resolver_->Resolve(
+          MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
+    } else {
+      switch (maybe_model.error()) {
+        case DetectLanguageError::kUnavailable:
+          RejectModelNotAvailable(resolver_);
+      }
+    }
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  Member<AICreateMonitor> monitor_;
+  Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
+  Member<LanguageDetectionModel> language_detection_model_;
+};
 
 }  // namespace
-
-AILanguageDetectorFactory::AILanguageDetectorCreateTask::
-    AILanguageDetectorCreateTask(
-        ExecutionContext* execution_context,
-        scoped_refptr<base::SequencedTaskRunner>& task_runner,
-        ScriptPromiseResolver<AILanguageDetector>* resolver,
-        LanguageDetectionModel* model,
-        const AILanguageDetectorCreateOptions* options)
-    : task_runner_(task_runner),
-      resolver_(resolver),
-      language_detection_model_(model) {
-  if (options->hasMonitor()) {
-    monitor_ =
-        MakeGarbageCollected<AICreateMonitor>(execution_context, task_runner_);
-    std::ignore = options->monitor()->Invoke(nullptr, monitor_);
-  }
-}
-
-void AILanguageDetectorFactory::AILanguageDetectorCreateTask::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(resolver_);
-  visitor->Trace(monitor_);
-  visitor->Trace(language_detection_model_);
-}
-
-void AILanguageDetectorFactory::AILanguageDetectorCreateTask::CreateDetector(
-    base::File model_file) {
-  language_detection_model_->LoadModelFile(
-      std::move(model_file),
-      WTF::BindOnce(&AILanguageDetectorFactory::AILanguageDetectorCreateTask::
-                        OnModelLoaded,
-                    WrapPersistent(this)));
-}
-
-void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
-    base::expected<LanguageDetectionModel*, DetectLanguageError> maybe_model) {
-  if (maybe_model.has_value()) {
-    LanguageDetectionModel* model = maybe_model.value();
-    // TODO (crbug.com/383022111): Pass the real download progress rather than
-    // mocking one.
-    if (monitor_) {
-      monitor_->OnDownloadProgressUpdate(0, 0x10000);
-      monitor_->OnDownloadProgressUpdate(0x10000, 0x10000);
-    }
-    resolver_->Resolve(
-        MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
-  } else {
-    switch (maybe_model.error()) {
-      case DetectLanguageError::kUnavailable:
-        RejectModelNotAvailable(resolver_);
-    }
-  }
-}
 
 AILanguageDetectorFactory::AILanguageDetectorFactory(
     ExecutionContext* context,

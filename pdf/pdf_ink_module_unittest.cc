@@ -167,7 +167,7 @@ MATCHER_P(InkStrokeBrushSizeEq, expected_size, "") {
 MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
   const ink::Brush& ink_brush = arg.GetBrush();
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  float opacity = coat.tips[0].opacity_multiplier;
+  float opacity = coat.tip.opacity_multiplier;
   if (expected_type == PdfInkBrush::Type::kPen) {
     return opacity == 1.0f;
   }
@@ -567,9 +567,8 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  ASSERT_EQ(1u, coat.tips.size());
-  EXPECT_EQ(1.0f, coat.tips[0].corner_rounding);
-  EXPECT_EQ(1.0f, coat.tips[0].opacity_multiplier);
+  EXPECT_EQ(1.0f, coat.tip.corner_rounding);
+  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
 }
 
 // Verify that a set highlighter message sets the annotation brush to a
@@ -592,9 +591,8 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  ASSERT_EQ(1u, coat.tips.size());
-  EXPECT_EQ(0.0f, coat.tips[0].corner_rounding);
-  EXPECT_EQ(0.4f, coat.tips[0].opacity_multiplier);
+  EXPECT_EQ(0.0f, coat.tip.corner_rounding);
+  EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
 }
 
 // Verify that brushes with zero color values can be set as the annotation
@@ -616,9 +614,8 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  ASSERT_EQ(1u, coat.tips.size());
-  EXPECT_EQ(1.0f, coat.tips[0].corner_rounding);
-  EXPECT_EQ(1.0f, coat.tips[0].opacity_multiplier);
+  EXPECT_EQ(1.0f, coat.tip.corner_rounding);
+  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
 }
 
 TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {

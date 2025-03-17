@@ -22,14 +22,10 @@ namespace blink {
 
 class SVGPathNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit SVGPathNonInterpolableValue(Vector<SVGPathSegType>&& path_seg_types,
+                                       WindRule wind_rule = RULE_NONZERO)
+      : path_seg_types_(path_seg_types), wind_rule_(wind_rule) {}
   ~SVGPathNonInterpolableValue() override = default;
-
-  static scoped_refptr<SVGPathNonInterpolableValue> Create(
-      Vector<SVGPathSegType>& path_seg_types,
-      WindRule wind_rule = RULE_NONZERO) {
-    return base::AdoptRef(
-        new SVGPathNonInterpolableValue(path_seg_types, wind_rule));
-  }
 
   const Vector<SVGPathSegType>& PathSegTypes() const { return path_seg_types_; }
   WindRule GetWindRule() const { return wind_rule_; }
@@ -37,12 +33,6 @@ class SVGPathNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  SVGPathNonInterpolableValue(Vector<SVGPathSegType>& path_seg_types,
-                              WindRule wind_rule)
-      : wind_rule_(wind_rule) {
-    path_seg_types_.swap(path_seg_types);
-  }
-
   Vector<SVGPathSegType> path_seg_types_;
   WindRule wind_rule_;
 };
@@ -98,8 +88,8 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
   result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(0));
 
   return InterpolationValue(
-      result, SVGPathNonInterpolableValue::Create(path_seg_types,
-                                                  style_path->GetWindRule()));
+      result, MakeGarbageCollected<SVGPathNonInterpolableValue>(
+                  std::move(path_seg_types), style_path->GetWindRule()));
 }
 
 class UnderlyingPathSegTypesChecker final
@@ -151,7 +141,7 @@ InterpolationValue PathInterpolationFunctions::MaybeConvertNeutral(
                   .Get(kPathArgsIndex)
                   ->CloneAndZero());
   result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(1));
-  return InterpolationValue(result, underlying.non_interpolable_value.get());
+  return InterpolationValue(result, underlying.non_interpolable_value.Get());
 }
 
 static bool PathSegTypesMatch(const Vector<SVGPathSegType>& a,
@@ -192,9 +182,10 @@ bool PathInterpolationFunctions::PathsAreCompatible(
 PairwiseInterpolationValue PathInterpolationFunctions::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) {
-  if (!PathsAreCompatible(*start.non_interpolable_value.get(),
-                          *end.non_interpolable_value.get()))
+  if (!PathsAreCompatible(*start.non_interpolable_value.Get(),
+                          *end.non_interpolable_value.Get())) {
     return nullptr;
+  }
 
   return PairwiseInterpolationValue(std::move(start.interpolable_value),
                                     std::move(end.interpolable_value),
@@ -226,7 +217,7 @@ void PathInterpolationFunctions::Composite(
   underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
       neutral_component, *value.interpolable_value);
   underlying_value_owner.MutableValue().non_interpolable_value =
-      value.non_interpolable_value.get();
+      value.non_interpolable_value.Get();
 }
 
 scoped_refptr<StylePath> PathInterpolationFunctions::AppliedValue(

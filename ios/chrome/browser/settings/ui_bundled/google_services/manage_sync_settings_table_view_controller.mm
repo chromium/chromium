@@ -208,7 +208,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 - (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
                                        name:(NSString*)name
                                       email:(NSString*)email
-                            managementState:(ManagementState)managementState {
+                      managementDescription:(NSString*)managementDescription {
   CHECK(email, base::NotFatalUntil::M135);
   CHECK(avatarImage, base::NotFatalUntil::M135);
   // Put a small non-empty frame to avoid layout constraint error during
@@ -218,7 +218,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                     avatarImage:avatarImage
                                            name:name
                                           email:email
-                                managementState:std::move(managementState)
+                          managementDescription:managementDescription
                                 useLargeMargins:YES
                      addManageYourAccountButton:NO
                   manageYourAccountButtonAction:nil];

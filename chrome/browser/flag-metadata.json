@@ -69,6 +69,20 @@
     "expiry_milestone": 133
   },
   {
+    "name": "adjust-can-create-canvas2d-resource-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "adjust-get-or-create-2dcanvas-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ai-settings-enterprise-disabled-ui",
     "owners": [
       "dullweber@chromium.org",
@@ -5511,6 +5525,13 @@
       "expiry_milestone": 140
   },
   {
+    "name": "is-paintable-checks-resource-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
       "name": "is-secure-payment-confirmation-available-api",
       "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
       "expiry_milestone": 140
@@ -7264,11 +7285,6 @@
     "name": "product-specifications",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 145
-  },
-  {
-    "name": "product-specifications-multi-specifics",
-    "owners": [ "davidjm@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 135
   },
   {
     "name": "productivity-launcher",

@@ -28,8 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -473,7 +471,7 @@ public class TileGroupUnitTest {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);
 
-        ViewGroup layout = new FrameLayout(mContext, null);
+        TilesLinearLayout layout = new TilesLinearLayout(mContext, null);
         mTileRenderer.buildTileView(tile, layout, tileGroup.getTileSetupDelegate());
 
         // Ensure we run the callback for the new tile.
@@ -554,7 +552,7 @@ public class TileGroupUnitTest {
         refreshData(tileGroup, layout);
     }
 
-    private void refreshData(TileGroup tileGroup, ViewGroup tilesLayout) {
+    private void refreshData(TileGroup tileGroup, TilesLinearLayout tilesLayout) {
         assert tileGroup.getTileSections().size() == 1;
         List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
         assert tiles != null;

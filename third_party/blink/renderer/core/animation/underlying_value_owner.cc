@@ -29,11 +29,11 @@ void UnderlyingValueOwner::SetInterpolableValue(
 const NonInterpolableValue* UnderlyingValueOwner::GetNonInterpolableValue()
     const {
   DCHECK(value_);
-  return value_->non_interpolable_value.get();
+  return value_->non_interpolable_value.Get();
 }
 
 void UnderlyingValueOwner::SetNonInterpolableValue(
-    scoped_refptr<const NonInterpolableValue> non_interpolable_value) {
+    const NonInterpolableValue* non_interpolable_value) {
   MutableValue().non_interpolable_value = non_interpolable_value;
 }
 

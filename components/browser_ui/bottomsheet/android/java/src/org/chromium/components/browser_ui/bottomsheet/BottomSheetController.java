@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -127,7 +128,7 @@ public interface BottomSheetController {
     boolean collapseSheet(boolean animate);
 
     /** @return The content currently showing in the bottom sheet. */
-    BottomSheetContent getCurrentSheetContent();
+    @Nullable BottomSheetContent getCurrentSheetContent();
 
     /** @return The current state of the bottom sheet. */
     @SheetState

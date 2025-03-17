@@ -14,7 +14,6 @@
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "content/public/browser/stable_video_decoder_factory.h"
@@ -54,8 +53,7 @@ void FramelessMediaInterfaceProxy::CreateAudioDecoder(
 
 void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-        dst_video_decoder) {
+    mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The browser process cannot act as a proxy for video decoding and clients
@@ -66,41 +64,24 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
   if (!factory)
     return;
 
-  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-      oop_video_decoder;
+  mojo::PendingRemote<media::mojom::VideoDecoder> oop_video_decoder;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-      if (!render_process_host_) {
-        if (!stable_vd_factory_remote_.is_bound()) {
-          LaunchStableVideoDecoderFactory(
-              stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
-          stable_vd_factory_remote_.reset_on_disconnect();
-        }
-
-        CHECK(stable_vd_factory_remote_.is_bound());
-
-        stable_vd_factory_remote_->CreateStableVideoDecoder(
-            oop_video_decoder.InitWithNewPipeAndPassReceiver(), /*tracker=*/{});
-      } else {
-        render_process_host_->CreateStableVideoDecoder(
-            oop_video_decoder.InitWithNewPipeAndPassReceiver());
+  if (media::IsOutOfProcessVideoDecodingEnabled()) {
+    if (!render_process_host_) {
+      if (!vd_factory_remote_.is_bound()) {
+        LaunchOOPVideoDecoderFactory(
+            vd_factory_remote_.BindNewPipeAndPassReceiver());
+        vd_factory_remote_.reset_on_disconnect();
       }
-      break;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      // Well-behaved clients shouldn't call CreateVideoDecoder() in this OOP-VD
-      // mode.
-      //
-      // Note: FramelessMediaInterfaceProxy::CreateVideoDecoder() might be
-      // called outside of a message dispatch, e.g., by
-      // GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities().
-      // However, these calls should only occur inside of the browser process
-      // which we can trust not to reach this point, hence the CHECK().
-      CHECK(mojo::IsInMessageDispatch());
-      mojo::ReportBadMessage("CreateVideoDecoder() called unexpectedly");
-      return;
-    case media::OOPVDMode::kDisabled:
-      break;
+
+      CHECK(vd_factory_remote_.is_bound());
+
+      vd_factory_remote_->CreateVideoDecoderWithTracker(
+          oop_video_decoder.InitWithNewPipeAndPassReceiver(), /*tracker=*/{});
+    } else {
+      render_process_host_->CreateOOPVideoDecoder(
+          oop_video_decoder.InitWithNewPipeAndPassReceiver());
+    }
   }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   factory->CreateVideoDecoder(std::move(receiver),
@@ -108,43 +89,16 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void FramelessMediaInterfaceProxy::CreateStableVideoDecoder(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-        video_decoder) {
-  DVLOG(2) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-    case media::OOPVDMode::kDisabled:
-      // Well-behaved clients shouldn't call CreateStableVideoDecoder() in this
-      // OOP-VD mode.
-      //
-      // Note: FramelessMediaInterfaceProxy::CreateStableVideoDecoder() might be
-      // called outside of a message dispatch, e.g., by
-      // GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities().
-      // However, these calls should only occur inside of the browser process
-      // which we can trust not to reach this point, hence the CHECK().
-      CHECK(mojo::IsInMessageDispatch());
-      mojo::ReportBadMessage("CreateStableVideoDecoder() called unexpectedly");
-      return;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      if (!render_process_host_) {
-        if (!stable_vd_factory_remote_.is_bound()) {
-          LaunchStableVideoDecoderFactory(
-              stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
-          stable_vd_factory_remote_.reset_on_disconnect();
-        }
-
-        CHECK(stable_vd_factory_remote_.is_bound());
-
-        stable_vd_factory_remote_->CreateStableVideoDecoder(
-            std::move(video_decoder), /*tracker=*/{});
-      } else {
-        render_process_host_->CreateStableVideoDecoder(
-            std::move(video_decoder));
-      }
-      break;
-  }
+void FramelessMediaInterfaceProxy::CreateVideoDecoderWithTracker(
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) {
+  // mojo::ReportBadMessage() should be called directly within the stack frame
+  // of a message dispatch, hence the CHECK().
+  // CreateVideoDecoderWithTracker() should be called by the browser process
+  // only. This implementation is exposed to the renderer. Well-behaved clients
+  // (renderers) shouldn't call CreateVideoDecoderWithTracker().
+  CHECK(mojo::IsInMessageDispatch());
+  mojo::ReportBadMessage("CreateVideoDecoderWithTracker() called unexpectedly");
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 

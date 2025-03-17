@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "media/mojo/common/validation_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -14,174 +15,51 @@
 
 namespace media {
 
-namespace {
-
-// GetGpuMemoryBufferHandle() is a helper function that gets or creates a
-// GpuMemoryBufferHandle from |media_frame|. For decoders that use VDA, the
-// storage type is STORAGE_GPU_MEMORY_BUFFER. For decoders that use VD directly,
-// the storage type is STORAGE_OPAQUE.
-gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
-    scoped_refptr<VideoFrame> media_frame,
-    scoped_refptr<const FrameRegistry> frame_registry) {
-  switch (media_frame->storage_type()) {
-    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-      CHECK(media_frame->HasMappableGpuBuffer());
-      return media_frame->GetGpuMemoryBufferHandle();
-    case VideoFrame::STORAGE_OPAQUE: {
-      CHECK(frame_registry);
-      CHECK(media_frame->metadata().tracking_token.has_value());
-      auto frame_resource =
-          frame_registry->AccessFrame(*media_frame->metadata().tracking_token);
-      CHECK(frame_resource);
-      return frame_resource->CreateGpuMemoryBufferHandle();
-    }
-    default:
-      NOTREACHED();
-  }
-}
-
-stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
-    scoped_refptr<VideoFrame> media_frame,
-    scoped_refptr<const FrameRegistry> frame_registry) {
-  CHECK(!media_frame->metadata().end_of_stream);
-
-  stable::mojom::VideoFramePtr mojo_frame = stable::mojom::VideoFrame::New();
-  CHECK(mojo_frame);
-
-  static_assert(
-      std::is_same<decltype(media_frame->format()),
-                   decltype(stable::mojom::VideoFrame::format)>::value,
-      "Unexpected type for media::VideoFrame::format(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->format = media_frame->format();
-
-  static_assert(
-      std::is_same<decltype(media_frame->coded_size()),
-                   std::add_lvalue_reference<std::add_const<
-                       decltype(stable::mojom::VideoFrame::coded_size)>::type>::
-                       type>::value,
-      "Unexpected type for media::VideoFrame::coded_size(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->coded_size = media_frame->coded_size();
-
-  static_assert(
-      std::is_same<
-          decltype(media_frame->visible_rect()),
-          std::add_lvalue_reference<std::add_const<
-              decltype(stable::mojom::VideoFrame::visible_rect)>::type>::type>::
-          value,
-      "Unexpected type for media::VideoFrame::visible_rect(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->visible_rect = media_frame->visible_rect();
-
-  static_assert(
-      std::is_same<
-          decltype(media_frame->natural_size()),
-          std::add_lvalue_reference<std::add_const<
-              decltype(stable::mojom::VideoFrame::natural_size)>::type>::type>::
-          value,
-      "Unexpected type for media::VideoFrame::natural_size(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->natural_size = media_frame->natural_size();
-
-  static_assert(
-      std::is_same<decltype(media_frame->timestamp()),
-                   decltype(stable::mojom::VideoFrame::timestamp)>::value,
-      "Unexpected type for media::VideoFrame::timestamp(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->timestamp = media_frame->timestamp();
-
-  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
-      GetGpuMemoryBufferHandle(media_frame, frame_registry);
-  CHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
-  CHECK(!gpu_memory_buffer_handle.native_pixmap_handle.planes.empty());
-  mojo_frame->gpu_memory_buffer_handle = std::move(gpu_memory_buffer_handle);
-
-  static_assert(
-      std::is_same<
-          decltype(media_frame->metadata()),
-          std::add_lvalue_reference<
-              decltype(stable::mojom::VideoFrame::metadata)>::type>::value,
-      "Unexpected type for media::VideoFrame::metadata(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->metadata = media_frame->metadata();
-
-  static_assert(
-      std::is_same<decltype(media_frame->ColorSpace()),
-                   decltype(stable::mojom::VideoFrame::color_space)>::value,
-      "Unexpected type for media::VideoFrame::ColorSpace(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->color_space = media_frame->ColorSpace();
-
-  static_assert(
-      std::is_same<
-          decltype(media_frame->hdr_metadata()),
-          std::add_lvalue_reference<std::add_const<
-              decltype(stable::mojom::VideoFrame::hdr_metadata)>::type>::type>::
-          value,
-      "Unexpected type for media::VideoFrame::hdr_metadata(). If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-  mojo_frame->hdr_metadata = media_frame->hdr_metadata();
-
-  return mojo_frame;
-}
-
-}  // namespace
-
-StableVideoDecoderService::StableVideoDecoderService(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker>
-        tracker_remote,
+OOPVideoDecoderService::OOPVideoDecoderService(
+    mojo::PendingRemote<mojom::VideoDecoderTracker> tracker_remote,
     std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
-    MojoCdmServiceContext* cdm_service_context,
-    scoped_refptr<const FrameRegistry> frame_registry)
+    MojoCdmServiceContext* cdm_service_context)
     : tracker_remote_(std::move(tracker_remote)),
       video_decoder_client_receiver_(this),
       media_log_receiver_(this),
-      stable_video_frame_handle_releaser_receiver_(this),
+      video_frame_handle_releaser_receiver_(this),
       dst_video_decoder_(std::move(dst_video_decoder)),
       dst_video_decoder_receiver_(dst_video_decoder_.get())
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       cdm_service_context_(cdm_service_context)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      ,
-      frame_registry_(frame_registry) {
+{
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!!dst_video_decoder_);
   dst_video_decoder_remote_.Bind(
       dst_video_decoder_receiver_.BindNewPipeAndPassRemote());
 }
 
-StableVideoDecoderService::~StableVideoDecoderService() {
+OOPVideoDecoderService::~OOPVideoDecoderService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (cdm_id_)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (cdm_id_) {
     cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void StableVideoDecoderService::GetSupportedConfigs(
+void OOPVideoDecoderService::GetSupportedConfigs(
     GetSupportedConfigsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dst_video_decoder_remote_->GetSupportedConfigs(std::move(callback));
 }
 
-void StableVideoDecoderService::Construct(
-    mojo::PendingAssociatedRemote<stable::mojom::VideoDecoderClient>
-        stable_video_decoder_client_remote,
-    mojo::PendingRemote<stable::mojom::MediaLog> stable_media_log_remote,
-    mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
-        stable_video_frame_handle_releaser_receiver,
+void OOPVideoDecoderService::Construct(
+    mojo::PendingAssociatedRemote<mojom::VideoDecoderClient>
+        video_decoder_client_remote,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
+    mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+        video_frame_handle_releaser_receiver,
     mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+    mojom::CommandBufferIdPtr command_buffer_id,
     const gfx::ColorSpace& target_color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_decoder_client_receiver_.is_bound()) {
@@ -190,18 +68,17 @@ void StableVideoDecoderService::Construct(
   }
 
   DCHECK(!video_decoder_client_receiver_.is_bound());
-  DCHECK(!stable_video_decoder_client_remote_.is_bound());
-  stable_video_decoder_client_remote_.Bind(
-      std::move(stable_video_decoder_client_remote));
+  DCHECK(!video_decoder_client_remote_.is_bound());
+  video_decoder_client_remote_.Bind(std::move(video_decoder_client_remote));
 
   DCHECK(!media_log_receiver_.is_bound());
-  DCHECK(!stable_media_log_remote_.is_bound());
-  stable_media_log_remote_.Bind(std::move(stable_media_log_remote));
+  DCHECK(!media_log_remote_.is_bound());
+  media_log_remote_.Bind(std::move(media_log_remote));
 
   DCHECK(!video_frame_handle_releaser_remote_.is_bound());
-  DCHECK(!stable_video_frame_handle_releaser_receiver_.is_bound());
-  stable_video_frame_handle_releaser_receiver_.Bind(
-      std::move(stable_video_frame_handle_releaser_receiver));
+  DCHECK(!video_frame_handle_releaser_receiver_.is_bound());
+  video_frame_handle_releaser_receiver_.Bind(
+      std::move(video_frame_handle_releaser_receiver));
 
   dst_video_decoder_remote_->Construct(
       video_decoder_client_receiver_.BindNewEndpointAndPassRemote(),
@@ -211,11 +88,25 @@ void StableVideoDecoderService::Construct(
       target_color_space);
 }
 
-void StableVideoDecoderService::Initialize(
+void OOPVideoDecoderService::Initialize(
     const VideoDecoderConfig& config,
     bool low_delay,
-    mojo::PendingRemote<stable::mojom::StableCdmContext> cdm_context,
+    const std::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
+  // The client of the OOPVideoDecoderService is the OOPVideoDecoder which lives
+  // in the GPU process and is therefore up the trust gradient. The
+  // OOPVideoDecoder doesn't call Initialize() (it calls
+  // InitializeWithCdmContext() instead). Thus, it's appropriate to crash here
+  // via a NOTREACHED().
+  NOTREACHED();
+}
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void OOPVideoDecoderService::InitializeWithCdmContext(
+    const VideoDecoderConfig& config,
+    bool low_delay,
+    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
+    InitializeWithCdmContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_decoder_client_receiver_.is_bound()) {
     DVLOG(2) << __func__ << " Construct() must be called first";
@@ -270,13 +161,14 @@ void StableVideoDecoderService::Initialize(
   // the lifetime of *|this|.
   dst_video_decoder_remote_->Initialize(
       config, low_delay, cdm_id_,
-      base::BindOnce(&StableVideoDecoderService::OnInitializeDone,
+      base::BindOnce(&OOPVideoDecoderService::OnInitializeDone,
                      base::Unretained(this), std::move(callback),
                      needs_transcryption));
 }
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-void StableVideoDecoderService::OnInitializeDone(
-    InitializeCallback init_cb,
+void OOPVideoDecoderService::OnInitializeDone(
+    InitializeWithCdmContextCallback init_cb,
     bool needs_transcryption,
     const DecoderStatus& status,
     bool needs_bitstream_conversion,
@@ -288,9 +180,8 @@ void StableVideoDecoderService::OnInitializeDone(
                          needs_transcryption);
 }
 
-void StableVideoDecoderService::Decode(
-    const scoped_refptr<DecoderBuffer>& buffer,
-    DecodeCallback callback) {
+void OOPVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
+                                    DecodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_decoder_client_receiver_.is_bound()) {
     DVLOG(2) << __func__ << " Construct() must be called first";
@@ -298,14 +189,20 @@ void StableVideoDecoderService::Decode(
     return;
   }
 
-  CHECK(buffer);
-  mojom::DecoderBufferPtr mojo_buffer = mojom::DecoderBuffer::From(*buffer);
+  // TODO(crbug.com/390706725): remove this check once the extra validation in
+  // ValidateAndConvertMojoDecoderBuffer() is merged into
+  // media_type_converters.cc.
+  scoped_refptr<media::DecoderBuffer> media_decoder_buffer =
+      ValidateAndConvertMojoDecoderBuffer(std::move(buffer));
+  CHECK(media_decoder_buffer);
+  mojom::DecoderBufferPtr mojo_buffer =
+      mojom::DecoderBuffer::From(*media_decoder_buffer);
   CHECK(mojo_buffer);
   dst_video_decoder_remote_->Decode(std::move(mojo_buffer),
                                     std::move(callback));
 }
 
-void StableVideoDecoderService::Reset(ResetCallback callback) {
+void OOPVideoDecoderService::Reset(ResetCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_decoder_client_receiver_.is_bound()) {
     DVLOG(2) << __func__ << " Construct() must be called first";
@@ -315,8 +212,18 @@ void StableVideoDecoderService::Reset(ResetCallback callback) {
   dst_video_decoder_remote_->Reset(std::move(callback));
 }
 
-void StableVideoDecoderService::ReleaseVideoFrame(
-    const base::UnguessableToken& release_token) {
+void OOPVideoDecoderService::OnOverlayInfoChanged(
+    const OverlayInfo& overlay_info) {
+  // The client of the OOPVideoDecoderService is the OOPVideoDecoder which lives
+  // in the GPU process and is therefore up the trust gradient. The
+  // OOPVideoDecoder doesn't call OnOverlayInfoChanged(). Thus, it's appropriate
+  // to crash here via a NOTREACHED().
+  NOTREACHED();
+}
+
+void OOPVideoDecoderService::ReleaseVideoFrame(
+    const base::UnguessableToken& release_token,
+    const std::optional<gpu::SyncToken>& release_sync_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame_handle_releaser_remote_.is_bound());
   // Note: we don't pass a gpu::SyncToken because it's assumed that the client
@@ -327,40 +234,39 @@ void StableVideoDecoderService::ReleaseVideoFrame(
       release_token, /*release_sync_token=*/std::nullopt);
 }
 
-void StableVideoDecoderService::OnVideoFrameDecoded(
+void OOPVideoDecoderService::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
     const std::optional<base::UnguessableToken>& release_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(stable_video_decoder_client_remote_.is_bound());
+  DCHECK(video_decoder_client_remote_.is_bound());
   DCHECK(release_token.has_value());
 
   // The mojo traits have been coded assuming these conditions.
   CHECK(frame->metadata().allow_overlay);
   CHECK(!frame->metadata().end_of_stream);
   CHECK(frame->metadata().power_efficient);
+  CHECK(frame->HasMappableGpuBuffer());
 
-  stable_video_decoder_client_remote_->OnVideoFrameDecoded(
-      MediaVideoFrameToMojoVideoFrame(std::move(frame), frame_registry_),
-      can_read_without_stalling, *release_token);
+  video_decoder_client_remote_->OnVideoFrameDecoded(
+      std::move(frame), can_read_without_stalling, *release_token);
 }
 
-void StableVideoDecoderService::OnWaiting(WaitingReason reason) {
+void OOPVideoDecoderService::OnWaiting(WaitingReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(stable_video_decoder_client_remote_.is_bound());
-  stable_video_decoder_client_remote_->OnWaiting(reason);
+  DCHECK(video_decoder_client_remote_.is_bound());
+  video_decoder_client_remote_->OnWaiting(reason);
 }
 
-void StableVideoDecoderService::RequestOverlayInfo(
-    bool restart_for_transitions) {
+void OOPVideoDecoderService::RequestOverlayInfo(bool restart_for_transitions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }
 
-void StableVideoDecoderService::AddLogRecord(const MediaLogRecord& event) {
+void OOPVideoDecoderService::AddLogRecord(const MediaLogRecord& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(stable_media_log_remote_.is_bound());
-  stable_media_log_remote_->AddLogRecord(event);
+  DCHECK(media_log_remote_.is_bound());
+  media_log_remote_->AddLogRecord(event);
 }
 
 }  // namespace media

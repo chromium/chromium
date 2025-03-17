@@ -272,6 +272,12 @@ def _get_all_target_details(args):
   incomplete_targets = []
   all_target_details = []
 
+  centipede_target_binpath = os.path.join(args.fuzzer_binaries_dir, "centipede")
+  if args.fuzzer == CENTIPEDE:
+    if not os.path.isfile(centipede_target_binpath):
+      print(f'{centipede_target_binpath} does not exist.')
+      return []
+
   for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
     fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir,
                                          fuzzer_target)
@@ -289,6 +295,10 @@ def _get_all_target_details(args):
       if 'DISPLAY' in os.environ:
         # Inherit X settings from the real environment
         env['DISPLAY'] = os.environ['DISPLAY']
+      if args.fuzzer == CENTIPEDE:
+        cmd = [centipede_target_binpath, f'--binary={fuzzer_target_binpath}']
+      else:  # libfuzzer
+        cmd = [fuzzer_target_binpath]
       all_target_details.append({
           'name':
           fuzzer_target,
@@ -300,10 +310,8 @@ def _get_all_target_details(args):
           env,
           # RSS limit 8GB. Some of our fuzzers which involve running significant
           # chunks of Chromium code require more than the 2GB default.
-          'cmd': [
-              fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192',
-              fuzzer_target_corporadir
-          ],
+          'cmd':
+          cmd + ['-runs=0', '-rss_limit_mb=8192', fuzzer_target_corporadir],
           'corpus':
           fuzzer_target_corporadir,
           'files':

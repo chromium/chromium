@@ -34,7 +34,6 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -74,7 +73,6 @@
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "content/public/browser/stable_video_decoder_factory.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -271,8 +269,7 @@ void MediaInterfaceProxy::CreateAudioDecoder(
 
 void MediaInterfaceProxy::CreateVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-        dst_video_decoder) {
+    mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // The browser process cannot act as a proxy for video decoding and clients
   // should not attempt to use it that way.
@@ -282,23 +279,11 @@ void MediaInterfaceProxy::CreateVideoDecoder(
   if (!factory)
     return;
 
-  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-      oop_video_decoder;
+  mojo::PendingRemote<media::mojom::VideoDecoder> oop_video_decoder;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-      render_frame_host().GetProcess()->CreateStableVideoDecoder(
-          oop_video_decoder.InitWithNewPipeAndPassReceiver());
-      break;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      // Well-behaved clients shouldn't call CreateVideoDecoder() in this OOP-VD
-      // mode and MediaInterfaceProxy::CreateVideoDecoder() should always be
-      // called during a message dispatch.
-      CHECK(mojo::IsInMessageDispatch());
-      mojo::ReportBadMessage("CreateVideoDecoder() called unexpectedly");
-      return;
-    case media::OOPVDMode::kDisabled:
-      break;
+  if (media::IsOutOfProcessVideoDecodingEnabled()) {
+    render_frame_host().GetProcess()->CreateOOPVideoDecoder(
+        oop_video_decoder.InitWithNewPipeAndPassReceiver());
   }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   factory->CreateVideoDecoder(std::move(receiver),
@@ -306,24 +291,16 @@ void MediaInterfaceProxy::CreateVideoDecoder(
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void MediaInterfaceProxy::CreateStableVideoDecoder(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-        video_decoder) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-    case media::OOPVDMode::kDisabled:
-      // Well-behaved clients shouldn't call CreateStableVideoDecoder() in this
-      // OOP-VD mode and MediaInterfaceProxy::CreateStableVideoDecoder() should
-      // always be called during a message dispatch.
-      CHECK(mojo::IsInMessageDispatch());
-      mojo::ReportBadMessage("CreateStableVideoDecoder() called unexpectedly");
-      return;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      render_frame_host().GetProcess()->CreateStableVideoDecoder(
-          std::move(video_decoder));
-      break;
-  }
+void MediaInterfaceProxy::CreateVideoDecoderWithTracker(
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) {
+  // mojo::ReportBadMessage() should be called directly within the stack frame
+  // of a message dispatch, hence the CHECK().
+  // CreateVideoDecoderWithTracker() should be called by the browser process
+  // only. This implementation is exposed to the renderer. Well-behaved clients
+  // (renderers) shouldn't call CreateVideoDecoderWithTracker().
+  CHECK(mojo::IsInMessageDispatch());
+  mojo::ReportBadMessage("CreateVideoDecoderWithTracker() called unexpectedly");
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 

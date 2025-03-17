@@ -66,6 +66,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
@@ -196,8 +197,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
   // Logs in `account_id`.
   void LogIn(const AccountId& account_id) {
     user_manager::UserManager::Get()->UserLoggedIn(
-        account_id, account_id.GetUserEmail(), false /* browser_restart */,
-        false /* is_child */);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   // Verifies user image info.

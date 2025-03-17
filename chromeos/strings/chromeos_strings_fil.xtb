@@ -929,6 +929,7 @@
 <translation id="5286263799730375393">kulay ng backlight</translation>
 <translation id="5292579816060236070">Wallpaper na pagsikat ng araw</translation>
 <translation id="5294769550414936029">bersyon <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">toggle ng access sa camera</translation>
 <translation id="5300814202279832142">Ilipat sa desk ang window</translation>
 <translation id="5302048478445481009">Wika</translation>
 <translation id="5303837385540978511">Wallpaper na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
@@ -1044,6 +1045,7 @@
 <translation id="5896602941605730551">I-play</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
+<translation id="5903822368221507416">I-hide ang mga tab</translation>
 <translation id="5904994456462260490">Magdagdag ng bagong APN</translation>
 <translation id="590746845088109442">mga pusa</translation>
 <translation id="5907649332524363701">kulay ng key</translation>
@@ -1395,6 +1397,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7388345524791662148">Higit pang opsyon para sa <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Built-in na touchpad</translation>
 <translation id="7397270852490618635">I-off ang maliwanag na tema</translation>
+<translation id="7400166052988585408">Ilo-lock ng iyong guro ang iyong screen sa loob ng <ph name="NUM_SECONDS" /> (na) segundo</translation>
 <translation id="7401543881546089382">Tanggalin ang shortcut</translation>
 <translation id="7405493795721832710">Handa nang i-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversion</translation>

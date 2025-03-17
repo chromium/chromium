@@ -31,7 +31,8 @@ bool IsFreedHeapPointer(uintptr_t address) {
       reinterpret_cast<void*>(address), nullptr, 0, &region_ptr, &region_size);
 
   auto region_base = reinterpret_cast<uintptr_t>(region_ptr);
-  if (strcmp(allocation_type, "heap") != 0 || address < region_base ||
+  if (UNSAFE_TODO(strcmp(allocation_type, "heap")) != 0 ||
+      address < region_base ||
       address >=
           region_base + region_size) {  // We exclude pointers one past the end
                                         // of an allocations from the analysis

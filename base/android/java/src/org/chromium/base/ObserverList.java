@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,11 +29,16 @@ import javax.annotation.concurrent.NotThreadSafe;
  * This class is not threadsafe. Observers MUST be added, removed and will be notified on the same
  * thread this is created.
  *
+ * Normally this class would not need {@code extends @Nullable Object} for the template param E,
+ * but because addObserver and removeObserver take {@code @Nullable E obs} the annotation on the
+ * template param E is necessary for NullAway to work for users of this class. This can be removed
+ * in the future when NullAway improves its handling of generic template parameters.
+ *
  * @param <E> The type of observers that this list should hold.
  */
 @NullMarked
 @NotThreadSafe
-public class ObserverList<E> implements Iterable<E> {
+public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
     /** Extended iterator interface that provides rewind functionality. */
     public interface RewindableIterator<E> extends Iterator<E> {
         /**
@@ -71,7 +77,7 @@ public class ObserverList<E> implements Iterable<E> {
      *
      * @return true if the observer list changed as a result of the call.
      */
-    public boolean addObserver(E obs) {
+    public boolean addObserver(@Nullable E obs) {
         if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
 
         // Avoid adding null elements to the list as they may be removed on a compaction.
@@ -93,7 +99,7 @@ public class ObserverList<E> implements Iterable<E> {
      *
      * @return true if an element was removed as a result of this call.
      */
-    public boolean removeObserver(E obs) {
+    public boolean removeObserver(@Nullable E obs) {
         if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
 
         if (obs == null) {

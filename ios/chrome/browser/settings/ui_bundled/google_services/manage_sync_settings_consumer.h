@@ -33,12 +33,12 @@ struct ManagementState;
 // Reloads `sections`. Does nothing if the model is not loaded yet.
 - (void)reloadSections:(NSIndexSet*)sections;
 
-// Updates the primary account details. `name` can be nil, `avatarImage` and
-// `email` can’t.
+// Updates the primary account details. `name` and `managementDescription` can
+// be nil, `avatarImage` and `email` can’t.
 - (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
                                        name:(NSString*)name
                                       email:(NSString*)email
-                            managementState:(ManagementState)managementState;
+                      managementDescription:(NSString*)managementDescription;
 
 @end
 

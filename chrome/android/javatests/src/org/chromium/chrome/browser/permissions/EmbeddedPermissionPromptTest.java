@@ -534,7 +534,7 @@ public class EmbeddedPermissionPromptTest {
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
                 ContentSettingValues.BLOCK,
-                "To use your location on this site, give Chrome access",
+                "To use your location on this site, give Chromium access",
                 "Android settings",
                 /* expectedPositiveEphemeralButtonText */ "",
                 "Cancel");
@@ -552,7 +552,7 @@ public class EmbeddedPermissionPromptTest {
                 "geolocation",
                 stringToContentSettingsType("geolocation"),
                 ContentSettingValues.ALLOW,
-                "To use your location on this site, give Chrome access",
+                "To use your location on this site, give Chromium access",
                 "Android settings",
                 /* expectedPositiveEphemeralButtonText */ "",
                 "Cancel");

@@ -1209,6 +1209,13 @@ crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Fai
 # CSS counters scope tests to be fixed with new implementation.
 crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
 
+# Temporary failures while we attempt to ship:
+# https://github.com/w3c/csswg-drafts/issues/11452
+crbug.com/397674426 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-001.html [ Failure ]
+crbug.com/397674426 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-004.html [ Failure ]
+crbug.com/397674426 external/wpt/css/css-values/calc-min-height-block-1.html [ Failure ]
+crbug.com/397674426 external/wpt/css/css-values/calc-min-width-block-intrinsic-1.html [ Failure ]
+
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
 crbug.com/591099 fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]
@@ -2619,6 +2626,25 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-fonts/font-synthesis-01.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-02.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-03.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-04.html [ Failure ]
+[ Win ] external/wpt/css/css-fonts/font-synthesis-07.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-08.html [ Failure ]
+[ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps-first-letter.html [ Failure ]
+[ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps-first-line.html [ Failure ]
+[ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-style-first-letter.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-style-first-line.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-style.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-weight-first-letter.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-weight-first-line.html [ Failure ]
+external/wpt/css/css-fonts/font-synthesis-weight.html [ Failure ]
+external/wpt/css/css-fonts/lang-attribute-affects-rendering-of-second-text-run.html [ Failure ]
+external/wpt/css/css-fonts/lang-attribute-affects-rendering.html [ Failure ]
+external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Timeout ]
+external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Timeout ]
 crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
 crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
 crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-002.html [ Failure ]
@@ -3468,8 +3494,7 @@ crbug.com/626703 external/wpt/css/css-fonts/rch-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/ric-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-008.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-synthesis-position-001.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-position-05.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-017.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-018.html [ Failure ]
@@ -9043,9 +9068,6 @@ crbug.com/387938119 external/wpt/html/semantics/embedded-content/the-object-elem
 
 crbug.com/402564647 external/wpt/scroll-to-text-fragment/scroll-to-text-diretive-center.html [ Failure ]
 
-# Disabling to allow a V8 commit to roll
-crbug.com/399851200 http/tests/inspector-protocol/tracing/user-marks.js [ Failure Pass ]
-
 # Gardener 2025-03-06
 crbug.com/401227377 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html [ Failure Pass ]
 crbug.com/400726001 [ Win ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
@@ -9064,9 +9086,6 @@ crbug.com/402339999 [ Mac14-arm64 ] compositing/reflections/nested-reflection-an
 crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
 crbug.com/402495529 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
 crbug.com/402495529 [ Mac12 ] wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
-
-# TODO(crrev.com/c/6339201): Re-enable after landing CL.
-crbug.com/42203857 http/tests/devtools/profiler/heap-snapshot.js [ Failure Skip ]
 
 # Gardener 2025-03-12
 crbug.com/402546166 [ Linux ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
@@ -9092,8 +9111,8 @@ crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding
 
 #Gardener 2025-03-17
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure Pass ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass ]
 crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-name-000-print.html [ Failure ]
 crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-visibility-hidden-001-print.html [ Failure ]
 crbug.com/404069999 [ Debug Linux ] virtual/scalefactor200/external/wpt/css/printing/zero-size-001-print.tentative.html [ Failure ]

@@ -16,13 +16,9 @@ namespace blink {
 
 class CSSVisibilityNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSVisibilityNonInterpolableValue(EVisibility start, EVisibility end)
+      : start_(start), end_(end), is_single_(start_ == end_) {}
   ~CSSVisibilityNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSVisibilityNonInterpolableValue> Create(
-      EVisibility start,
-      EVisibility end) {
-    return base::AdoptRef(new CSSVisibilityNonInterpolableValue(start, end));
-  }
 
   EVisibility Visibility() const {
     DCHECK(is_single_);
@@ -41,9 +37,6 @@ class CSSVisibilityNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSVisibilityNonInterpolableValue(EVisibility start, EVisibility end)
-      : start_(start), end_(end), is_single_(start_ == end_) {}
-
   const EVisibility start_;
   const EVisibility end_;
   const bool is_single_;
@@ -102,7 +95,8 @@ InterpolationValue CSSVisibilityInterpolationType::CreateVisibilityValue(
     EVisibility visibility) const {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
-      CSSVisibilityNonInterpolableValue::Create(visibility, visibility));
+      MakeGarbageCollected<CSSVisibilityNonInterpolableValue>(visibility,
+                                                              visibility));
 }
 
 InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
@@ -181,10 +175,11 @@ PairwiseInterpolationValue CSSVisibilityInterpolationType::MaybeMergeSingles(
       end_visibility != EVisibility::kVisible) {
     return nullptr;
   }
-  return PairwiseInterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
-                                    MakeGarbageCollected<InterpolableNumber>(1),
-                                    CSSVisibilityNonInterpolableValue::Create(
-                                        start_visibility, end_visibility));
+  return PairwiseInterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
+      MakeGarbageCollected<CSSVisibilityNonInterpolableValue>(start_visibility,
+                                                              end_visibility));
 }
 
 void CSSVisibilityInterpolationType::Composite(

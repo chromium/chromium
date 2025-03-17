@@ -63,6 +63,9 @@ class MockNavigationHandle : public NavigationHandle {
     return is_prerendered_page_activation_;
   }
   bool IsInFencedFrameTree() const override { return is_in_fenced_frame_tree_; }
+  bool IsGuestViewMainFrame() const override {
+    return GetNavigatingFrameType() == FrameType::kGuestMainFrame;
+  }
   FrameType GetNavigatingFrameType() const override {
     NOTIMPLEMENTED();
     return FrameType::kPrimaryMainFrame;

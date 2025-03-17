@@ -80,10 +80,14 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
 class UnderlyingCompatibilityChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  UnderlyingCompatibilityChecker(scoped_refptr<const NonInterpolableValue>
-                                     underlying_non_interpolable_value)
-      : underlying_non_interpolable_value_(
-            std::move(underlying_non_interpolable_value)) {}
+  explicit UnderlyingCompatibilityChecker(
+      const NonInterpolableValue* underlying_non_interpolable_value)
+      : underlying_non_interpolable_value_(underlying_non_interpolable_value) {}
+
+  void Trace(Visitor* visitor) const override {
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_non_interpolable_value_);
+  }
 
  private:
   bool IsValid(const StyleResolverState&,
@@ -93,7 +97,7 @@ class UnderlyingCompatibilityChecker
         *underlying.non_interpolable_value);
   }
 
-  scoped_refptr<const NonInterpolableValue> underlying_non_interpolable_value_;
+  Member<const NonInterpolableValue> underlying_non_interpolable_value_;
 };
 
 class InheritedShapeChecker
@@ -122,7 +126,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertNeutral(
   // const_cast is for taking refs.
   NonInterpolableValue* non_interpolable_value =
       const_cast<NonInterpolableValue*>(
-          underlying.non_interpolable_value.get());
+          underlying.non_interpolable_value.Get());
   conversion_checkers.push_back(
       MakeGarbageCollected<UnderlyingCompatibilityChecker>(
           non_interpolable_value));

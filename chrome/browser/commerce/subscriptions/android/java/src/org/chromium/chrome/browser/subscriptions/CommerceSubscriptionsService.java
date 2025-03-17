@@ -90,7 +90,7 @@ public class CommerceSubscriptionsService implements Destroyable {
 
     private void recordMetricsForEligibleAccount() {
         // Record notification opt-in metrics.
-        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
+        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded((canPost) -> {});
         mPriceDropNotificationManager.recordMetricsForNotificationCounts();
     }
 }

@@ -7,25 +7,36 @@
 <script src="helper.js" type="module"></script>
 
 <script type="module">
-  import { expireCookie, documentHasCookie, waitForCookie, addCookieAndSessionCleanup, setupShardedServerState } from "./helper.js";
+  import { expireCookie, documentHasCookie, waitForCookie, addCookieAndSessionCleanup, setupShardedServerState, configureServer } from "./helper.js";
 
-  promise_test(async t => {
+  async function runTest(t, includeSite) {
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t);
+
+    configureServer({ includeSite });
 
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
     await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
-    // Confirm that expiring the cookie still leads to a request with the cookie set (refresh occurs).
+    // Expire the cookie, and check whether a refresh has occurred.
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const url = get_host_info().HTTPS_REMOTE_ORIGIN + '/device-bound-session-credentials/verify_authenticated.py';
     const auth_response_after_expiry = await fetch(url, {credentials: "include"});
-    assert_equals(auth_response_after_expiry.status, 200);
-    assert_true(documentHasCookie(expectedCookieAndValue));
-  }, "An established session refreshes across sites");
+    // The cookie should only be refreshed if the session includes the whole site.
+    assert_equals(auth_response_after_expiry.status, includeSite ? 200 : 401);
+    assert_equals(documentHasCookie(expectedCookieAndValue), includeSite);
+  }
+
+  promise_test(async t => {
+    await runTest(t, /*includeSite=*/true);
+  }, "An established session refreshes across origins if the site is included");
+
+  promise_test(async t => {
+    await runTest(t, /*includeSite=*/false);
+  }, "An established session does not refresh across origins if the site is not included");
 </script>

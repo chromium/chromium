@@ -626,9 +626,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     fake_user_manager_->UserLoggedIn(
         user->GetAccountId(),
         user_manager::FakeUserManager::GetFakeUsernameHash(
-            user->GetAccountId()),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+            user->GetAccountId()));
     profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     profile_->GetPrefs()->SetBoolean(prefs::kNearbySharingEnabledPrefName,
                                      true);

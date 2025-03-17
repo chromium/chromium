@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "content/public/browser/browser_context.h"
@@ -96,15 +97,13 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
         readonly_video_effects_manager) {
   auto device = system_->CreateDevice(device_id).ReleaseDevice();
 #if BUILDFLAG(IS_WIN)
-  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
-      new media::VideoCaptureBufferPoolImpl(
-          params.buffer_type, 10,
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
-              system_->GetFactory()->GetDxgiDeviceManager())));
+  auto buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+      params.buffer_type, 10,
+      std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
+          system_->GetFactory()->GetDxgiDeviceManager()));
 #else
-  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
-      new media::VideoCaptureBufferPoolImpl(
-          media::VideoCaptureBufferType::kSharedMemory));
+  auto buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+      media::VideoCaptureBufferType::kSharedMemory);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(

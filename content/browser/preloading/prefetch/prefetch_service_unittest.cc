@@ -830,7 +830,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
       auto key = PrefetchContainer::Key(initiator_document_token, url);
       PrefetchMatchResolver::FindPrefetch(
-          std::move(key), /*is_nav_prerender=*/false, *prefetch_service,
+          std::move(key), PrefetchServiceWorkerState::kDisallowed,
+          /*is_nav_prerender=*/false, *prefetch_service,
           GetServingPageMetricsContainerForMostRecentNavigation(),
           std::move(callback));
   }
@@ -916,7 +917,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
     auto key = PrefetchContainer::Key(initiator_document_token, url);
     PrefetchMatchResolver::FindPrefetch(
-        std::move(key), is_nav_prerender, *prefetch_service,
+        std::move(key), PrefetchServiceWorkerState::kDisallowed,
+        is_nav_prerender, *prefetch_service,
         std::move(serving_page_metrics_container), std::move(callback));
 
     return res;

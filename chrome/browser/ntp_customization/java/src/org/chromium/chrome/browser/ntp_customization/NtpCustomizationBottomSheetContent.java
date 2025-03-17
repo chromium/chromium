@@ -11,14 +11,22 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the NTP customization. */
 public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final Runnable mBackPressRunnable;
+    private final Runnable mOnDestroyRunnable;
+    private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
 
-    public NtpCustomizationBottomSheetContent(View contentView) {
+    NtpCustomizationBottomSheetContent(
+            View contentView, Runnable backPressRunnable, Runnable onDestroy) {
         mContentView = contentView;
+        mBackPressRunnable = backPressRunnable;
+        mBackPressStateChangedSupplier = new ObservableSupplierImpl<>();
+        mOnDestroyRunnable = onDestroy;
     }
 
     @Override
@@ -37,7 +45,9 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mOnDestroyRunnable.run();
+    }
 
     @Override
     public int getPriority() {
@@ -60,6 +70,22 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public void onBackPressed() {
+        mBackPressRunnable.run();
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        mBackPressRunnable.run();
+        return true;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
     public String getSheetContentDescription(@NonNull Context context) {
         return context.getString(R.string.ntp_customization_main_bottom_sheet_content_description);
     }
@@ -79,5 +105,23 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.ntp_customization_main_bottom_sheet_closed;
+    }
+
+    /** Sets up ObservableSupplierImpl<Boolean> when opening the bottom sheet. */
+    void onSheetOpened() {
+        // Sets the value in the supplier to true to indicate that back press should be handled by
+        // the bottom sheet.
+        mBackPressStateChangedSupplier.set(true);
+    }
+
+    /** Sets up ObservableSupplierImpl<Boolean> when closing the bottom sheet. */
+    void onSheetClosed() {
+        // Sets the value in the supplier to false to indicate that back press should not be handled
+        // by the bottom sheet.
+        mBackPressStateChangedSupplier.set(false);
+    }
+
+    void setBackPressStateChangedSupplierForTesting(ObservableSupplierImpl<Boolean> supplier) {
+        mBackPressStateChangedSupplier = supplier;
     }
 }

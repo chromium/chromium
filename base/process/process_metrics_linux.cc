@@ -220,7 +220,8 @@ int ProcessMetrics::GetOpenFdCount() const {
   int total_count = 0;
   for (; dir_reader.Next();) {
     const char* name = dir_reader.name();
-    if (strcmp(name, ".") != 0 && strcmp(name, "..") != 0) {
+    if (UNSAFE_TODO(strcmp(name, ".")) != 0 &&
+        UNSAFE_TODO(strcmp(name, "..")) != 0) {
       ++total_count;
     }
   }

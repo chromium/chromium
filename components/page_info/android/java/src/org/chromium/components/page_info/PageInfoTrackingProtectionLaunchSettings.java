@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
-import android.app.Activity;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -15,6 +17,9 @@ import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -32,6 +37,8 @@ import org.chromium.ui.text.SpanApplier;
 import java.util.List;
 
 /** View showing a toggle and a description for tracking protection for a site. */
+@NullMarked
+@SuppressWarnings("NullAway.Init") // onCreatePreferences() has an early return.
 public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String TP_TITLE = "tp_title";
@@ -45,14 +52,14 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
     private ChromeSwitchPreference mTpSwitch;
     private ChromeImageViewPreference mStorageInUse;
-    private ChromeImageViewPreference mRwsInUse;
+    private @Nullable ChromeImageViewPreference mRwsInUse;
     private TextMessagePreference mTpTitle;
-    private TextMessagePreference mManagedTitle;
+    private @Nullable TextMessagePreference mManagedTitle;
     private TrackingProtectionStatusPreference mTpStatus;
     private TrackingProtectionStatusPreference mManagedStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
-    private Dialog mConfirmationDialog;
+    private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
@@ -62,23 +69,43 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     private boolean mFixedExpiration;
 
     /** Parameters to configure the cookie controls view. */
-    public static class PageInfoTrackingProtectionLaunchViewParams {
+    static class PageInfoTrackingProtectionLaunchViewParams {
         // Called when the toggle controlling third-party cookie blocking changes.
-        public boolean thirdPartyCookieBlockingEnabled;
-        public Callback<Boolean> onThirdPartyCookieToggleChanged;
-        public Runnable onClearCallback;
-        public Runnable onCookieSettingsLinkClicked;
-        public Callback<Activity> onFeedbackLinkClicked;
-        public boolean disableCookieDeletion;
-        public CharSequence hostName;
+        public final boolean thirdPartyCookieBlockingEnabled;
+        public final Callback<Boolean> onThirdPartyCookieToggleChanged;
+        public final Runnable onClearCallback;
+        public final Runnable onCookieSettingsLinkClicked;
+        public final boolean disableCookieDeletion;
+        public final CharSequence hostName;
         // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3pc;
-        public boolean isIncognito;
-        public boolean fixedExpirationForTesting;
+        public final boolean blockAll3pc;
+        public final boolean isIncognito;
+        public final boolean fixedExpirationForTesting;
+
+        public PageInfoTrackingProtectionLaunchViewParams(
+                boolean thirdPartyCookieBlockingEnabled,
+                Callback<Boolean> onThirdPartyCookieToggleChanged,
+                Runnable onClearCallback,
+                Runnable onCookieSettingsLinkClicked,
+                boolean disableCookieDeletion,
+                CharSequence hostName,
+                boolean blockAll3pc,
+                boolean isIncognito,
+                boolean fixedExpirationForTesting) {
+            this.thirdPartyCookieBlockingEnabled = thirdPartyCookieBlockingEnabled;
+            this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
+            this.onClearCallback = onClearCallback;
+            this.onCookieSettingsLinkClicked = onCookieSettingsLinkClicked;
+            this.disableCookieDeletion = disableCookieDeletion;
+            this.hostName = hostName;
+            this.blockAll3pc = blockAll3pc;
+            this.isIncognito = isIncognito;
+            this.fixedExpirationForTesting = fixedExpirationForTesting;
+        }
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
         if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
@@ -87,20 +114,18 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_tracking_protection_launch_preference);
 
-        mTpSwitch = findPreference(TP_SWITCH_PREFERENCE);
+        mTpSwitch = assumeNonNull(findPreference(TP_SWITCH_PREFERENCE));
         mTpSwitch.setUseSummaryAsTitle(false);
 
-        mTpStatus = findPreference(TP_STATUS_PREFERENCE);
-        mManagedStatus = findPreference(MANAGED_STATUS);
-        mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
-        mRwsInUse = findPreference(RWS_IN_USE_PREFERENCE);
+        mTpStatus = assertNonNull(findPreference(TP_STATUS_PREFERENCE));
+        mManagedStatus = assertNonNull(findPreference(MANAGED_STATUS));
+        mStorageInUse = assertNonNull(findPreference(STORAGE_IN_USE_PREFERENCE));
+        mRwsInUse = assumeNonNull(findPreference(RWS_IN_USE_PREFERENCE));
         mRwsInUse.setVisible(false);
-        mTpTitle = findPreference(TP_TITLE);
         mManagedTitle = findPreference(MANAGED_TITLE);
         // This part is above the toggle and changes with it, so it has to be an a11y live region.
-        if (mTpTitle != null) {
-            mTpTitle.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        }
+        mTpTitle = assumeNonNull(findPreference(TP_TITLE));
+        mTpTitle.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     }
 
     @Override
@@ -115,12 +140,13 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         return getContext().getResources().getQuantityString(resId, count, count);
     }
 
+    @Initializer
     public void setParams(PageInfoTrackingProtectionLaunchViewParams params) {
         mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
+        Preference cookieSummary = assumeNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
         ChromeClickableSpan linkSpan =
                 new ChromeClickableSpan(
                         getContext(),
@@ -197,6 +223,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                 mTpStatus.updateStatus(feature, true);
                 mManagedStatus.updateStatus(feature, false);
             } else {
+                assumeNonNull(mManagedTitle);
                 // Set the managed title and status to visible if they're not already.
                 mManagedTitle.setVisible(true);
                 mManagedStatus.setVisible(true);
@@ -215,7 +242,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             mTpSwitch.setVisible(false);
             mTpTitle.setVisible(false);
             mTpStatus.setVisible(false);
-            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
+            Preference cookieSummary = assumeNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+            cookieSummary.setVisible(false);
             return;
         }
 
@@ -264,7 +292,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
      * @param currentOrigin PageInfo current origin.
      * @return a boolean indicating if the RWS info has been shown or not.
      */
-    public boolean maybeShowRwsInfo(RwsCookieInfo rwsInfo, String currentOrigin) {
+    public boolean maybeShowRwsInfo(@Nullable RwsCookieInfo rwsInfo, String currentOrigin) {
         if (rwsInfo == null || mRwsInUse == null) {
             return false;
         }

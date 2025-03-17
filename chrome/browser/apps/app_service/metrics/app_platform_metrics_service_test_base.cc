@@ -27,6 +27,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
 
@@ -213,9 +214,8 @@ void AppPlatformMetricsServiceTestBase::AddRegularUser(
       base::WrapUnique(fake_user_manager_.get()));
   AccountId account_id = AccountId::FromUserEmail(email);
   const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-  fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   fake_user_manager_->SimulateUserProfileLoad(account_id);
 
   TestingProfile::Builder builder;

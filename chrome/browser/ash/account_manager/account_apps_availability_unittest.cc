@@ -125,9 +125,7 @@ class AccountAppsAvailabilityTest : public testing::Test {
                                     user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

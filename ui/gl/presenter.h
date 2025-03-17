@@ -128,8 +128,10 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual void SetMaxPendingSwaps(int max_pending_swaps) {}
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   // Sets preferred frame rate
   virtual void SetFrameRate(float frame_rate) {}
+#endif
 
   // Android specific. Sets vsync_id of the corresponding Choreographer frame.
   virtual void SetChoreographerVsyncIdForNextFrame(

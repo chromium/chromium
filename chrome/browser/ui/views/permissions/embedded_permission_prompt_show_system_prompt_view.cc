@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -44,8 +45,9 @@ std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetWindowTitle()
     permission_name = requests[0]->GetPermissionNameTextFragment();
   }
 
-  return l10n_util::GetStringFUTF16(IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
-                                    permission_name);
+  return l10n_util::GetStringFUTF16(
+      IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME), permission_name);
 }
 
 void EmbeddedPermissionPromptShowSystemPromptView::RunButtonCallback(

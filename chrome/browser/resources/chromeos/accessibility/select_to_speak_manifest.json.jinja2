@@ -23,6 +23,10 @@
 {% endif %}
   "permissions": [
     "accessibilityPrivate",
+{% if is_manifest_v3 == '1' %}
+    "offscreen",
+    "scripting",
+{% endif %}
     "commandLinePrivate",
     "metricsPrivate",
     "settingsPrivate",
@@ -36,6 +40,12 @@
     "clipboardWrite",
     "contextMenus"
   ],
+{% if is_manifest_v3 == '1' %}
+  "host_permissions": [
+      "https://docs.google.com/*",
+      "https://docs.sandbox.google.com/*"
+   ],
+{% endif %}
   "icons": {
       "128": "select_to_speak/sts-icon-128.png",
       "16": "select_to_speak/sts-icon-16.png",
@@ -48,11 +58,18 @@
   "content_scripts": [
     {
       "matches": [ "https://docs.google.com/document*",
-                   "https://docs.sandbox.google.com/document*" ],
+                   "https://docs.sandbox.google.com/document*"],
       "all_frames": true,
+{% if is_manifest_v3 == '1' %}
+      "js": [
+        "select_to_speak/gdocs_script.js"
+      ],
+      "world": "MAIN",
+{% else %}
       "js": [
         "common/gdocs_script.js"
       ],
+{% endif %}
       "run_at": "document_start"
     }
   ]

@@ -9,11 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.content_settings.CookieControlsBridge;
@@ -28,7 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-/**  Provides embedder-level information to PageInfoController. */
+/** Provides embedder-level information to PageInfoController. */
+@NullMarked
 public abstract class PageInfoControllerDelegate {
     @IntDef({
         OfflinePageState.NOT_OFFLINE_PAGE,
@@ -47,7 +48,7 @@ public abstract class PageInfoControllerDelegate {
     private final boolean mCookieControlsShown;
     protected @OfflinePageState int mOfflinePageState;
     protected boolean mIsHttpsImageCompressionApplied;
-    protected String mOfflinePageUrl;
+    protected @Nullable String mOfflinePageUrl;
 
     public PageInfoControllerDelegate(
             AutocompleteSchemeClassifier autocompleteSchemeClassifier,
@@ -82,8 +83,7 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /** Gets the Url of the offline page being shown if any. Returns null otherwise. */
-    @Nullable
-    public String getOfflinePageUrl() {
+    public @Nullable String getOfflinePageUrl() {
         return mOfflinePageUrl;
     }
 
@@ -114,20 +114,18 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /**
-     * Return the connection message shown for an offline page, if appropriate.
-     * Returns null if there's no offline page.
+     * Return the connection message shown for an offline page, if appropriate. Returns null if
+     * there's no offline page.
      */
-    @Nullable
-    public String getOfflinePageConnectionMessage() {
+    public @Nullable String getOfflinePageConnectionMessage() {
         return null;
     }
 
     /**
-     * Return the connection message shown for a paint preview page, if appropriate.
-     * Returns null if there's no paint preview page.
+     * Return the connection message shown for a paint preview page, if appropriate. Returns null if
+     * there's no paint preview page.
      */
-    @Nullable
-    public String getPaintPreviewPageConnectionMessage() {
+    public @Nullable String getPaintPreviewPageConnectionMessage() {
         return null;
     }
 
@@ -135,8 +133,7 @@ public abstract class PageInfoControllerDelegate {
      * Return the connection message shown for a pdf page, if appropriate. Returns null if there's
      * no pdf page.
      */
-    @Nullable
-    public String getPdfPageConnectionMessage() {
+    public @Nullable String getPdfPageConnectionMessage() {
         return null;
     }
 
@@ -170,27 +167,29 @@ public abstract class PageInfoControllerDelegate {
 
     /**
      * Creates Cookie Controls Bridge.
+     *
      * @param observer The CookieControlsObserver to create the bridge with.
      * @return the object that facilitates interfacing with native code.
      */
-    @NonNull
     public abstract CookieControlsBridge createCookieControlsBridge(
             CookieControlsObserver observer);
 
     /**
      * Allows the delegate to insert additional {@link PageInfoRowView} views.
+     *
      * @return a collection of controllers corresponding to these views.
      */
-    @NonNull
     public abstract Collection<PageInfoSubpageController> createAdditionalRowViews(
-            PageInfoMainController mainController, ViewGroup rowWrapper);
+            PageInfoMainController mainController, @Nullable ViewGroup rowWrapper);
 
-    /** @return Returns the browser context associated with this dialog. */
-    @NonNull
+    /**
+     * @return Returns the browser context associated with this dialog.
+     */
     public abstract BrowserContextHandle getBrowserContext();
 
-    /** @return Returns the SiteSettingsDelegate for this page info. */
-    @NonNull
+    /**
+     * @return Returns the SiteSettingsDelegate for this page info.
+     */
     public abstract SiteSettingsDelegate getSiteSettingsDelegate();
 
     /**

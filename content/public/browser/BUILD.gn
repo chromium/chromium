@@ -705,7 +705,7 @@ source_set("browser_sources") {
 
   if (allow_oop_video_decoder) {
     sources += [ "stable_video_decoder_factory.h" ]
-    public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
+    public_deps += [ "//media/mojo/mojom" ]
   }
 
   if (is_chromeos) {

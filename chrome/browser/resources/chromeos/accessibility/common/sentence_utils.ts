@@ -4,6 +4,7 @@
 
 import {constants} from './constants.js';
 import type {ParagraphUtils} from './paragraph_utils.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 const RoleType = chrome.automation.RoleType;
 
@@ -194,3 +195,5 @@ export class SentenceUtils {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(SentenceUtils);

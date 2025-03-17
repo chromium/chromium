@@ -3004,6 +3004,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsBlobUrlPartitioningEnabled(
       content::BrowserContext* browser_context);
 
+  // Checks if the given BrowserContext allows to reduce Accept-Language in HTTP
+  // header and Javascript getter.
+  virtual bool ShouldReduceAcceptLanguage(
+      content::BrowserContext* browser_context);
+
   // Set whether the browser is running in minimal mode (where most subsystems
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}

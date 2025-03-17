@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_page_handler.h"
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -161,6 +162,12 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   raw_ptr<Browser> attached_browser_ = nullptr;
 };
 
+mojom::WebClientSizingMode GetWebClientSizingMode() {
+  return base::FeatureList::IsEnabled(features::kGlicSizingFitWindow)
+             ? glic::mojom::WebClientSizingMode::kFitWindow
+             : glic::mojom::WebClientSizingMode::kNatural;
+}
+
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -243,6 +250,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         CreateFocusedTabData(glic_service_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
+
+    state->sizing_mode = GetWebClientSizingMode();
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();

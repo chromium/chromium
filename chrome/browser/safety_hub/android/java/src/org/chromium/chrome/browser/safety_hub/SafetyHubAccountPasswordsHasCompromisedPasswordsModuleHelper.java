@@ -37,7 +37,7 @@ public class SafetyHubAccountPasswordsHasCompromisedPasswordsModuleHelper
     public String getTitle() {
         return mContext.getResources()
                 .getQuantityString(
-                        R.plurals.safety_check_passwords_compromised_exist,
+                        R.plurals.safety_hub_account_passwords_compromised_exist,
                         mCompromisedPasswordsCount,
                         mCompromisedPasswordsCount);
     }

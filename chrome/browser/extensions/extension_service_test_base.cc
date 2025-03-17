@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -496,7 +497,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
   // provider and if there is something already registered there then it will
   // interfere with the tests. Those tests that need an external provider
   // will register one specifically.
-  service_->ClearProvidersForTesting();
+  ExternalProviderManager::Get(profile())->ClearProvidersForTesting();
 
   service_->delayed_install_manager()->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,

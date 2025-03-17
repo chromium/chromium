@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.LearnMorePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -1258,7 +1259,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         mLocationTriStatePref = assumeNonNull(screen.findPreference(LOCATION_TRI_STATE_PREF_KEY));
         mDesktopSiteWindowPref =
                 assumeNonNull(screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY));
-        Preference explainProtectedMediaKey =
+        LearnMorePreference explainProtectedMediaKey =
                 assumeNonNull(screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY));
         PreferenceGroup allowedGroup = assumeNonNull(screen.findPreference(ALLOWED_GROUP));
         PreferenceGroup blockedGroup = assumeNonNull(screen.findPreference(BLOCKED_GROUP));
@@ -1410,12 +1411,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                                 .launchProtectedContentHelpAndFeedbackActivity(getActivity());
                         return true;
                     });
+            // Set more descriptive accessibility description to the learn more button.
+            explainProtectedMediaKey.setLearnMoreSettingName(
+                    getContext().getString(R.string.protected_content));
 
-            // On small screens with no touch input, nested focusable items inside a LinearLayout in
-            // ListView cause focus problems when using a keyboard (crbug.com/974413).
-            // TODO(chouinard): Verify on a small screen device whether this patch is still needed
-            // now that we've migrated this fragment to Support Library (mListView is a RecyclerView
-            // now).
+            // On small screens with no touch input, nested focusable items inside a
+            // LinearLayout in ListView cause focus problems when using a keyboard
+            // (crbug.com/974413).
+            // TODO(chouinard): Verify on a small screen device whether this patch is still
+            // needed now that we've migrated this fragment to Support Library (mListView is
+            // a RecyclerView now).
             mListView.setFocusable(false);
         } else {
             screen.removePreference(explainProtectedMediaKey);

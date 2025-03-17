@@ -39,7 +39,7 @@ namespace base {
     // glibc did not use buf and returned a static string instead. Copy it
     // into buf.
     buf[0] = '\0';
-    strncat(buf, rc, len - 1);
+    UNSAFE_TODO(strncat(buf, rc, len - 1));
   }
   // The GNU version never fails. Unknown errors get an "unknown error" message.
   // The result is always null terminated.
@@ -87,8 +87,8 @@ namespace base {
       strerror_error = result;
     }
     // snprintf truncates and always null-terminates.
-    snprintf(buf, len, "Error %d while retrieving error %d", strerror_error,
-             err);
+    UNSAFE_TODO(snprintf(buf, len, "Error %d while retrieving error %d",
+                         strerror_error, err));
   }
   errno = old_errno;
 }

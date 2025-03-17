@@ -439,10 +439,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const GURL& url,
       network::mojom::SharedDictionaryError error) override {}
 
-  void OnSRIMessageSignatureError(
+  void OnSRIMessageSignatureIssue(
       const std::string& devtool_request_id,
       const GURL& url,
-      network::mojom::SRIMessageSignatureError error) override {}
+      std::vector<network::mojom::SRIMessageSignatureIssuePtr> issue) override {
+  }
 
   void OnCorsError(const std::optional<std::string>& devtool_request_id,
                    const std::optional<::url::Origin>& initiator_origin,

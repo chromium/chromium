@@ -20,7 +20,7 @@
 
     // Configure server to configure cookies for next two created sessions.
     configureServer({
-      cookieNamesAndValuesForNextRegisteredSessions: [expectedCookieAndValue1, expectedCookieAndValue2]
+      cookieDetailsForNextRegisteredSessions: [[{ nameAndValue: expectedCookieAndValue1 }], [{ nameAndValue: expectedCookieAndValue2 }]]
     });
 
     // Prompt starting one session, and wait until registration completes.

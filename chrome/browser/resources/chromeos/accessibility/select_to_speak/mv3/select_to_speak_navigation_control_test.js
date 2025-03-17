@@ -23,9 +23,10 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    window.EventType = chrome.automation.EventType;
-    window.RoleType = chrome.automation.RoleType;
-    window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
+    globalThis.SelectToSpeakState =
+        chrome.accessibilityPrivate.SelectToSpeakState;
     chrome.accessibilityPrivate.updateSelectToSpeakPanel =
         this.updateSelectToSpeakPanel;
 

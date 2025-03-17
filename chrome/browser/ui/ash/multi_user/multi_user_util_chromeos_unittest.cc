@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -66,8 +67,8 @@ class MultiUserUtilTest : public ChromeAshTestBase {
     auto* user = fake_user_manager_->AddUser(
         multi_user_util::GetAccountIdFromEmail(account_info.email));
     fake_user_manager_->UserLoggedIn(
-        user->GetAccountId(), user->username_hash(),
-        false /* browser_restart */, false /* is_child */);
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
     return account_info.account_id;
   }

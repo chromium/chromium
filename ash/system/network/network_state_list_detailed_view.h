@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/login_status.h"
@@ -46,6 +47,12 @@ class ASH_EXPORT NetworkStateListDetailedView
   ~NetworkStateListDetailedView() override;
 
   void Init();
+
+  // Asks the info bubble to close, if it exists. Returns whether it existed.
+  bool ResetInfoBubble();
+
+  // Restores activation to this view's widget.
+  void OnInfoBubbleDestroyed();
 
   void ToggleInfoBubbleForTesting();
 
@@ -93,9 +100,7 @@ class ASH_EXPORT NetworkStateListDetailedView
 
   // Create and manage the network info bubble.
   void ToggleInfoBubble();
-  bool ResetInfoBubble();
-  void OnInfoBubbleDestroyed();
-  views::View* CreateNetworkInfoView();
+  std::unique_ptr<views::View> CreateNetworkInfoView();
 
   // Scan and start timer to periodically request a network scan.
   void ScanAndStartTimer();

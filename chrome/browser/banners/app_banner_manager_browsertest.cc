@@ -405,15 +405,8 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                 std::nullopt);
 }
 
-// TODO(crbug.com/402671377): This test is flaky.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DelayedManifestTriggersPipeline \
-  DISABLED_DelayedManifestTriggersPipeline
-#else
-#define MAYBE_DelayedManifestTriggersPipeline DelayedManifestTriggersPipeline
-#endif
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
-                       MAYBE_DelayedManifestTriggersPipeline) {
+                       DelayedManifestTriggersPipeline) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(
       web_contents(), manager.get(),
@@ -514,13 +507,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   EXPECT_TRUE(blink::IsDefaultManifest(banner->manifest(), page_url));
 }
 
-// TODO(crbug.com/402671377): This test is flaky.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_MissingManifest DISABLED_MissingManifest
-#else
-#define MAYBE_MissingManifest MissingManifest
-#endif
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, MAYBE_MissingManifest) {
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, MissingManifest) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(web_contents(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_missing.json"),
@@ -554,14 +541,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, DoesNotShowInIncognito) {
 }
 #endif
 
-// TODO(crbug.com/402671377): This test is flaky.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_WebAppBannerNotCreated DISABLED_WebAppBannerNotCreated
-#else
-#define MAYBE_WebAppBannerNotCreated WebAppBannerNotCreated
-#endif
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
-                       MAYBE_WebAppBannerNotCreated) {
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::HistogramTester histograms;
 
@@ -1010,13 +990,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, MAYBE_ShowBanner) {
             InstallableWebAppCheckResult::kYes_Promotable);
 }
 
-// TODO(crbug.com/402671377): This test is flaky.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NoServiceWorker DISABLED_NoServiceWorker
-#else
-#define MAYBE_NoServiceWorker NoServiceWorker
-#endif
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, MAYBE_NoServiceWorker) {
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, NoServiceWorker) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
 
   RunBannerTest(web_contents(), manager.get(),

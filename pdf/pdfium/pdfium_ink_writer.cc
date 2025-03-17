@@ -152,15 +152,14 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
 
   CHECK_EQ(brush.CoatCount(), 1u);
   const ink::BrushCoat& coat = brush.GetCoats()[0];
-  CHECK_EQ(coat.tips.size(), 1u);
   // third_party/ink/src/ink/brush/brush_tip.h says this can have a value up to
   // 2.0f, but that should never be the case, as //pdf code never sets it that
   // high.
-  CHECK_LE(coat.tips[0].opacity_multiplier, 1.0f);
+  CHECK_LE(coat.tip.opacity_multiplier, 1.0f);
 
   bool result = FPDFPageObj_SetFillColor(path, SkColorGetR(color),
                                          SkColorGetG(color), SkColorGetB(color),
-                                         coat.tips[0].opacity_multiplier * 255);
+                                         coat.tip.opacity_multiplier * 255);
   CHECK(result);
 }
 

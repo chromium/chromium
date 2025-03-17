@@ -7,6 +7,7 @@ import {AutomationUtil} from './automation_util.js';
 import {constants} from './constants.js';
 import {ParagraphUtils} from './paragraph_utils.js';
 import {RectUtil} from './rect_util.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 const PositionType = chrome.automation.PositionType;
@@ -588,3 +589,5 @@ export namespace NodeUtils {
     offset: number;
   }
 }
+
+TestImportManager.exportForTesting(NodeUtils);

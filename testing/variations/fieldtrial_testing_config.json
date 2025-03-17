@@ -1367,11 +1367,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnableWithDownload",
                     "enable_features": [
-                        "AsyncNotificationManager"
-                    ],
-                    "disable_features": [
+                        "AsyncNotificationManager",
                         "AsyncNotificationManagerForDownload"
                     ]
                 }
@@ -1808,21 +1806,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableCardInfoRuntimeRetrieval"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableDisablingSuggestionsOnJSFocus": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAndroidDisableSuggestionsOnJSFocus"
                     ]
                 }
             ]
@@ -4014,6 +3997,26 @@
             ]
         }
     ],
+    "CanvasTextNg": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CanvasTextNg"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastMirroringPlayoutDelayChromeOS": [
         {
             "platforms": [
@@ -4252,21 +4255,6 @@
                     "name": "Enabled_Nonstable_20230320",
                     "enable_features": [
                         "CheckHTMLParserBudgetLessOften"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CheckWebAppExistenceAsync": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CheckWebAppExistenceAsync"
                     ]
                 }
             ]
@@ -8191,7 +8179,7 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpc": [
+    "DirectCompositorThreadIpcMacLinuxChromeOS": [
         {
             "platforms": [
                 "chromeos",
@@ -8250,6 +8238,21 @@
                         "DisableBruschettaInstallChecks"
                     ],
                     "min_os_version": "131.0.6740.0"
+                }
+            ]
+        }
+    ],
+    "DisableCompositedProgressBar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableCompositedProgressBar"
+                    ]
                 }
             ]
         }
@@ -12661,6 +12664,24 @@
             ]
         }
     ],
+    "IOSTabResumptionThumbnails": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "tr-images-type": "thumbnails"
+                    },
+                    "enable_features": [
+                        "TabResumptionImages"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUpdateFirstRunSequence": [
         {
             "platforms": [
@@ -13022,6 +13043,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InputScenarioPriorityBoost"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InputVizard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputOnViz"
                     ]
                 }
             ]
@@ -16831,21 +16867,6 @@
             ]
         }
     ],
-    "PasswordlessGaiaForConsumers": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordlessGaiaForConsumers"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordlessSetup": [
         {
             "platforms": [
@@ -17240,6 +17261,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToModernPin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlainTextPainter": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlainTextPainter"
                     ]
                 }
             ]
@@ -18030,29 +18071,6 @@
                         "IPH_PriceTrackingPageActionIconLabelFeature"
                     ],
                     "disable_features": []
-                }
-            ]
-        }
-    ],
-    "PriceTrackingPromoIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Tips_And_Price_Tracking_Enabled",
-                    "params": {
-                        "TipsEphemeralCardExperimentTrainParam": "lens_ephemeral_module_search_variation,save_passwords_ephemeral_module,enhanced_safe_browsing_ephemeral_module,address_bar_position_ephemeral_module",
-                        "TipsEphemeralCardModuleMaxImpressionCount": "3",
-                        "TipsLensShopExperimentType": "0",
-                        "TipsSafeBrowsingExperimentType": "0"
-                    },
-                    "enable_features": [
-                        "PriceTrackingPromo",
-                        "SegmentationPlatformEphemeralCardRanker",
-                        "SegmentationPlatformTipsEphemeralCard"
-                    ]
                 }
             ]
         }

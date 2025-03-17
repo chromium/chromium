@@ -1330,8 +1330,7 @@ BASE_FEATURE(kBackgroundListening,
 // Spawn utility processes to perform hardware decode acceleration on behalf of
 // renderer processes (instead of using the GPU process). The GPU process will
 // still be used as a proxy between renderers and utility processes (see
-// go/oop-vd-dd). This feature and |kUseGTFOOutOfProcessVideoDecoding| are
-// mutually exclusive.
+// go/oop-vd-dd).
 BASE_FEATURE(kUseOutOfProcessVideoDecoding,
              "UseOutOfProcessVideoDecoding",
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1340,17 +1339,6 @@ BASE_FEATURE(kUseOutOfProcessVideoDecoding,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Spawn utility processes to perform hardware decode acceleration on behalf of
-// renderer processes (instead of using the GPU process). The GPU process will
-// NOT be used as a proxy between renderers and utility processes (see
-// go/oopvd-gtfo-dd). This feature and |kUseOutOfProcessVideoDecoding| are
-// mutually exclusive.
-// Owner: andrescj@chromium.org
-// Expiry: one milestone after this path is enabled by default
-BASE_FEATURE(kUseGTFOOutOfProcessVideoDecoding,
-             "UseGTFOOutOfProcessVideoDecoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1768,28 +1756,16 @@ bool IsMediaFoundationD3D11VideoCaptureEnabled() {
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-OOPVDMode GetOutOfProcessVideoDecodingMode() {
+bool IsOutOfProcessVideoDecodingEnabled() {
 #if BUILDFLAG(IS_CASTOS)
   // The sandbox for OOP-VD was designed assuming that we're not on CastOS (see
   // go/oop-vd-sandbox).
   //
   // TODO(b/210759684): revisit the sandbox to see if this restriction is
   // necessary.
-  return OOPVDMode::kDisabled;
+  return false;
 #else
-  const bool use_gtfo_oopvd =
-      base::FeatureList::IsEnabled(kUseGTFOOutOfProcessVideoDecoding);
-  const bool use_regular_oopvd =
-      base::FeatureList::IsEnabled(kUseOutOfProcessVideoDecoding);
-  LOG_IF(WARNING, use_gtfo_oopvd && use_regular_oopvd)
-      << "UseGTFOOutOfProcessVideoDecoding and UseOutOfProcessVideoDecoding "
-         "are both enabled; ignoring UseOutOfProcessVideoDecoding";
-  if (use_gtfo_oopvd) {
-    return OOPVDMode::kEnabledWithoutGpuProcessAsProxy;
-  } else if (use_regular_oopvd) {
-    return OOPVDMode::kEnabledWithGpuProcessAsProxy;
-  }
-  return OOPVDMode::kDisabled;
+  return base::FeatureList::IsEnabled(kUseOutOfProcessVideoDecoding);
 #endif
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

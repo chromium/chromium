@@ -46,10 +46,12 @@ ${function() {
       </cr-button>
     </div>
   </div>
+<if expr="enable_glic">
   <div id="footer-text" class="subtitle"
       ?hidden="${this.shouldHideFooterText_()}">
     $i18nRaw{glicAddProfileHelper}
   </div>
+</if>
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"

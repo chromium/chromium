@@ -17,6 +17,7 @@
   await dp.Page.onceLoadEventFired();
   await session.evaluateAsync('dispatchIdleCallback();');
   await session.evaluateAsync('dispatchConsoleTimings();');
+  await session.evaluateAsync('dispatchConsoleTimeStamps();');
   await session.evaluateAsync('dispatchUserTimings();');
   await session.evaluateAsync('dispatchAnimationFrame();');
   await session.evaluateAsync('dispatchTimer();');
@@ -25,7 +26,9 @@
   const allEvents = await tracingHelper.stopTracing(
       /devtools\.timeline|blink\.console|blink\.user_timing/);
 
-  const timeStamp = tracingHelper.findEvent('TimeStamp', Phase.INSTANT);
+  const timeStampWithLabels = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with labels");
+  const markReference = tracingHelper.findEvent('Timestamp reference', Phase.INSTANT);
+  const timeStampWithNumbers = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with numeric values");
   const consoleTimeEvents =
       allEvents.filter(event => event.name === 'console time');
 
@@ -63,8 +66,15 @@
           event.args.data.id === animationFrameId);
 
 
-  testRunner.log('Got a TimeStamp event:');
-  tracingHelper.logEventShape(timeStamp);
+  testRunner.log('Got a TimeStamp event with labeled start and end:');
+  tracingHelper.logEventShape(timeStampWithLabels);
+
+  testRunner.log('Got a TimeStamp event with numeric start and end:');
+  tracingHelper.logEventShape(timeStampWithNumbers);
+
+  if (markReference.ts === timeStampWithNumbers.args?.data?.start && markReference.ts + 100_000 === timeStampWithNumbers.args?.data?.end) {
+    testRunner.log('TimeStamp numeric start and end are correct.');
+  }
 
   testRunner.log('Got ConsoleTime events:');
   tracingHelper.logEventShape(consoleTimeEvents[0]);
