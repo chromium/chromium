@@ -141,6 +141,18 @@ class MediaStreamVideoTrackTest
         false /* remote */, std::move(mock_source));
   }
 
+  void InitializeDisplayCaptureSource() {
+    InitializeSource();
+    MediaStreamDevice device = mock_source_->device();
+    device.type = mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+    device.display_media_info = media::mojom::DisplayMediaInformation::New(
+        media::mojom::DisplayCaptureSurfaceType::BROWSER,
+        /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+        /*capture_handle=*/nullptr,
+        /*zoom_level=*/100);
+    mock_source_->SetDevice(device);
+  }
+
   // Create a track that's associated with |mock_source_|.
   WebMediaStreamTrack CreateTrack() {
     const bool enabled = true;
@@ -459,7 +471,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
 TEST_F(MediaStreamVideoTrackTest,
        ChangingFrameMetadataTriggersConfigurationChangeEvent) {
   V8TestingScope v8_scope;
-  InitializeSource();
+  InitializeDisplayCaptureSource();
   MockMediaStreamVideoSink sink;
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
