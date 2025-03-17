@@ -94,8 +94,13 @@
     "owners": ["fserb@chromium.org", "wangxianzhu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [ "fast/canvas",
+               "wpt_internal/html/canvas/context-lost",
                "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
                "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
+    "exclusive_tests": [
+      "fast/canvas/canvas-drawImage-acceleration.html",
+      "wpt_internal/html/canvas/context-lost"
+    ],
     "args": ["--enable-accelerated-2d-canvas"],
     "expires": "never"
   },
