@@ -595,7 +595,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[1].relevance, 501);
-  EXPECT_EQ(matches[1].contents, u"10/15/2007 - John Doe - Google Docs");
+  EXPECT_EQ(matches[1].contents, u"10/15/07 - John Doe - Google Docs");
   EXPECT_EQ(matches[1].description, u"John's doodle");
   EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
   EXPECT_EQ(matches[1].icon_url, GURL("https://example.com/icon.png"));
