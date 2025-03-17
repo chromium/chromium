@@ -360,6 +360,7 @@ class VariantVector;
 
 namespace ui {
 
+class AXFragmentRootWin;
 class AXPlatformNodeWin;
 
 // A simple interface for a class that wants to be notified when Windows
@@ -396,8 +397,8 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
 };
 
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
-    uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
+class COMPONENT_EXPORT(AX_PLATFORM)
+    __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
     : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IAccessible2_4,
                            &IID_IAccessible2_4,
@@ -1203,6 +1204,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Clear the computed hypertext.
   void ResetComputedHypertext();
 
+  bool HasEventListenerForEvent(EVENTID event_id);
+  bool HasEventListenerForProperty(PROPERTYID property_id);
+
   // Convert a mojo event to an MSAA event. Exposed for testing.
   static std::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
 
@@ -1317,6 +1321,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
     LONG control_type;
     const wchar_t* aria_role;
   };
+
+  AXFragmentRootWin* GetAXFragmentRootWin();
 
   AXPlatformNodeWin* GetParentPlatformNodeWin() const;
 

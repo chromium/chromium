@@ -218,7 +218,7 @@ class BASE_EXPORT ScopedSafearray {
     DCHECK(SUCCEEDED(hr));
     LONG count = upper - lower + 1;
     // SafeArrays may have negative lower bounds, so check for wraparound.
-    DCHECK_GT(count, 0);
+    DCHECK_GE(count, 0);
     return static_cast<size_t>(count);
   }
 

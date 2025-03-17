@@ -165,6 +165,10 @@ bool IsSelectiveUIAEnablementEnabled() {
 }
 
 BASE_FEATURE(kUiaProvider, "UiaProvider", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUiaEventOptimization,
+             "UiaEventOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

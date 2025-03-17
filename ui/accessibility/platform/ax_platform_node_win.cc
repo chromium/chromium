@@ -764,28 +764,29 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 
   if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
     HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
-    if (!hwnd)
-      return;
-
-    TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
-                base::StringPrintf("0x%04lX", native_event.value()));
-    ::NotifyWinEvent((*native_event), hwnd, OBJID_CLIENT, -GetUniqueId());
+    if (hwnd) {
+      TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
+                  base::StringPrintf("0x%04lX", native_event.value()));
+      ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
+    }
   }
 
   if (std::optional<PROPERTYID> uia_property =
-          MojoEventToUIAProperty(event_type)) {
+          MojoEventToUIAProperty(event_type);
+      uia_property.has_value() && HasEventListenerForProperty(*uia_property)) {
     // For this event, we're not concerned with the old value.
     base::win::ScopedVariant old_value;
     ::VariantInit(old_value.Receive());
     base::win::ScopedVariant new_value;
     ::VariantInit(new_value.Receive());
-    GetPropertyValueImpl((*uia_property), new_value.Receive());
-    ::UiaRaiseAutomationPropertyChangedEvent(this, (*uia_property), old_value,
+    GetPropertyValueImpl(*uia_property, new_value.Receive());
+    ::UiaRaiseAutomationPropertyChangedEvent(this, *uia_property, old_value,
                                              new_value);
   }
 
-  if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type)) {
-    ::UiaRaiseAutomationEvent(this, (*uia_event));
+  if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
+      uia_event.has_value() && HasEventListenerForEvent(*uia_event)) {
+    ::UiaRaiseAutomationEvent(this, *uia_event);
   }
 
   // Keep track of objects that are a target of an alert event.
@@ -819,7 +820,8 @@ void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
     const gfx::Range& range,
     const std::wstring& active_composition_text,
     bool is_composition_committed) {
-  if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+  if (!AXPlatform::GetInstance().IsUiaProviderEnabled() ||
+      !HasEventListenerForEvent(UIA_Text_TextChangedEventId)) {
     return;
   }
 
@@ -5271,17 +5273,12 @@ IFACEMETHODIMP AXPlatformNodeWin::get_FragmentRoot(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_FRAGMENTROOT);
   UIA_VALIDATE_CALL_1_ARG(fragment_root);
 
-  gfx::AcceleratedWidget widget =
-      delegate_->GetTargetForNativeAccessibilityEvent();
-  if (widget) {
-    AXFragmentRootWin* root =
-        AXFragmentRootWin::GetForAcceleratedWidget(widget);
-    if (root != nullptr) {
-      root->GetNativeViewAccessible()->QueryInterface(
-          IID_PPV_ARGS(fragment_root));
-      DCHECK(*fragment_root);
-      return S_OK;
-    }
+  AXFragmentRootWin* root = GetAXFragmentRootWin();
+  if (root) {
+    root->GetNativeViewAccessible()->QueryInterface(
+        IID_PPV_ARGS(fragment_root));
+    DCHECK(*fragment_root);
+    return S_OK;
   }
 
   *fragment_root = nullptr;
@@ -6000,6 +5997,10 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
     }
   } else if (riid == IID_IChromeAccessible) {
     if (!features::IsIChromeAccessibleEnabled()) {
+      return E_NOINTERFACE;
+    }
+  } else if (riid == IID_IRawElementProviderAdviseEvents) {
+    if (!base::FeatureList::IsEnabled(features::kUiaEventOptimization)) {
       return E_NOINTERFACE;
     }
   }
@@ -6982,6 +6983,15 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kPortalDeprecated:
       NOTREACHED();
   }
+}
+
+AXFragmentRootWin* AXPlatformNodeWin::GetAXFragmentRootWin() {
+  gfx::AcceleratedWidget widget =
+      delegate_->GetTargetForNativeAccessibilityEvent();
+  if (widget) {
+    return AXFragmentRootWin::GetForAcceleratedWidget(widget);
+  }
+  return nullptr;
 }
 
 AXPlatformNodeWin* AXPlatformNodeWin::GetParentPlatformNodeWin() const {
@@ -8310,6 +8320,32 @@ bool AXPlatformNodeWin::IsHyperlink() {
 
 void AXPlatformNodeWin::ResetComputedHypertext() {
   hypertext_ = AXLegacyHypertext();
+}
+
+bool AXPlatformNodeWin::HasEventListenerForEvent(EVENTID event_id) {
+  if (!base::FeatureList::IsEnabled(features::kUiaEventOptimization)) {
+    return true;
+  }
+
+  AXFragmentRootWin* fragment_root = GetAXFragmentRootWin();
+  if (!fragment_root) {
+    return false;
+  }
+
+  return fragment_root->HasEventListenerForEvent(event_id);
+}
+
+bool AXPlatformNodeWin::HasEventListenerForProperty(PROPERTYID property_id) {
+  if (!base::FeatureList::IsEnabled(features::kUiaEventOptimization)) {
+    return true;
+  }
+
+  AXFragmentRootWin* fragment_root = GetAXFragmentRootWin();
+  if (!fragment_root) {
+    return false;
+  }
+
+  return fragment_root->HasEventListenerForProperty(property_id);
 }
 
 double AXPlatformNodeWin::GetHorizontalScrollPercent() {
